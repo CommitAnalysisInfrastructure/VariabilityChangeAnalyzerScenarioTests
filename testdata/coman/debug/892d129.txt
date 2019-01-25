@@ -1,0 +1,6062 @@
+commit 892d129
+diff --git a/src/mainboard/Kconfig b/src/mainboard/Kconfig
+index fdb0eac..fc38994 100644
+--- a/src/mainboard/Kconfig
++++ b/src/mainboard/Kconfig
+@@ -1,365 +1,368 @@
+ menu "Mainboard"
+ 
+ choice
+ 	prompt "Mainboard vendor"
+ 	default VENDOR_EMULATION
+ 
+ config VENDOR_AAEON
+ 	bool "Aaeon"
+ config VENDOR_ABIT
+ 	bool "Abit"
+ config VENDOR_ADLINK
+ 	bool "ADLINK"
+ config VENDOR_ADVANSUS
+ 	bool "Advansus"
+ config VENDOR_ADVANTECH
+ 	bool "Advantech"
+ config VENDOR_AMD
+ 	bool "AMD"
+ config VENDOR_AOPEN
+ 	bool "AOpen"
+ config VENDOR_ARIMA
+ 	bool "Arima"
+ config VENDOR_ARTECGROUP
+ 	bool "Artec Group"
+ config VENDOR_ASI
+ 	bool "ASI"
+ config VENDOR_ASROCK
+ 	bool "ASROCK"
+ config VENDOR_ASUS
+ 	bool "ASUS"
+ config VENDOR_A_TREND
+ 	bool "A-Trend"
+ config VENDOR_AVALUE
+ 	bool "AVALUE"
+ config VENDOR_AXUS
+ 	bool "AXUS"
+ config VENDOR_AZZA
+ 	bool "AZZA"
+ config VENDOR_BACHMANN
+ 	bool "Bachmann electronic"
+ config VENDOR_BCOM
+ 	bool "BCOM"
+ config VENDOR_BIFFEROS
+ 	bool "Bifferos"
+ config VENDOR_BIOSTAR
+ 	bool "Biostar"
+ config VENDOR_BROADCOM
+ 	bool "Broadcom"
+ config VENDOR_COMPAQ
+ 	bool "Compaq"
+ config VENDOR_DIGITALLOGIC
+ 	bool "DIGITAL-LOGIC"
+ config VENDOR_DMP
+ 	bool "DMP"
+ config VENDOR_EAGLELION
+ 	bool "EagleLion"
+ config VENDOR_ECS
+ 	bool "ECS"
+ config VENDOR_EMULATION
+ 	bool "Emulation"
+ config VENDOR_GETAC
+ 	bool "Getac"
+ config VENDOR_GIGABYTE
+ 	bool "GIGABYTE"
++config VENDOR_GIZMOSPHERE
++	bool "GizmoSphere"
+ config VENDOR_GOOGLE
+ 	bool "Google"
+ config VENDOR_HP
+ 	bool "HP"
+ config VENDOR_IBASE
+ 	bool "iBase"
+ config VENDOR_IBM
+ 	bool "IBM"
+ config VENDOR_IEI
+ 	bool "IEI"
+ config VENDOR_INTEL
+ 	bool "Intel"
+ config VENDOR_IWAVE
+ 	bool "iWave"
+ config VENDOR_IWILL
+ 	bool "IWILL"
+ config VENDOR_JETWAY
+ 	bool "Jetway"
+ config VENDOR_KONTRON
+ 	bool "Kontron"
+ config VENDOR_LANNER
+ 	bool "Lanner"
+ config VENDOR_LENOVO
+ 	bool "Lenovo"
+ config VENDOR_LIPPERT
+ 	bool "LiPPERT"
+ config VENDOR_MITAC
+ 	bool "Mitac"
+ config VENDOR_MSI
+ 	bool "MSI"
+ config VENDOR_NEC
+ 	bool "NEC"
+ config VENDOR_NEWISYS
+ 	bool "Newisys"
+ config VENDOR_NOKIA
+ 	bool "Nokia"
+ config VENDOR_NVIDIA
+ 	bool "NVIDIA"
+ config VENDOR_PCENGINES
+ 	bool "PC Engines"
+ config VENDOR_RCA
+ 	bool "RCA"
+ config VENDOR_RODA
+ 	bool "Roda"
+ config VENDOR_SAMSUNG
+ 	bool "SAMSUNG"
+ config VENDOR_SIEMENS
+ 	bool "Siemens"
+ config VENDOR_SOYO
+ 	bool "Soyo"
+ config VENDOR_SUNW
+ 	bool "Sun"
+ config VENDOR_SUPERMICRO
+ 	bool "Supermicro"
+ config VENDOR_TECHNEXION
+ 	bool "Technexion"
+ config VENDOR_TECHNOLOGIC
+ 	bool "Technologic"
+ config VENDOR_TELEVIDEO
+ 	bool "TeleVideo"
+ config VENDOR_TI
+ 	bool "TI"
+ config VENDOR_THOMSON
+ 	bool "Thomson"
+ config VENDOR_TRAVERSE
+ 	bool "Traverse Technologies"
+ config VENDOR_TYAN
+ 	bool "Tyan"
+ config VENDOR_VIA
+ 	bool "VIA"
+ config VENDOR_WINENT
+ 	bool "Win Enterprises"
+ config VENDOR_WYSE
+ 	bool "Wyse"
+ 
+ endchoice
+ 
+ source "src/mainboard/a-trend/Kconfig"
+ source "src/mainboard/aaeon/Kconfig"
+ source "src/mainboard/abit/Kconfig"
+ source "src/mainboard/adlink/Kconfig"
+ source "src/mainboard/advansus/Kconfig"
+ source "src/mainboard/advantech/Kconfig"
+ source "src/mainboard/amd/Kconfig"
+ source "src/mainboard/aopen/Kconfig"
+ source "src/mainboard/arima/Kconfig"
+ source "src/mainboard/artecgroup/Kconfig"
+ source "src/mainboard/asi/Kconfig"
+ source "src/mainboard/asrock/Kconfig"
+ source "src/mainboard/asus/Kconfig"
+ source "src/mainboard/avalue/Kconfig"
+ source "src/mainboard/axus/Kconfig"
+ source "src/mainboard/azza/Kconfig"
+ source "src/mainboard/bachmann/Kconfig"
+ source "src/mainboard/bcom/Kconfig"
+ source "src/mainboard/bifferos/Kconfig"
+ source "src/mainboard/biostar/Kconfig"
+ source "src/mainboard/broadcom/Kconfig"
+ source "src/mainboard/compaq/Kconfig"
+ source "src/mainboard/digitallogic/Kconfig"
+ source "src/mainboard/dmp/Kconfig"
+ source "src/mainboard/eaglelion/Kconfig"
+ source "src/mainboard/ecs/Kconfig"
+ source "src/mainboard/emulation/Kconfig"
+ source "src/mainboard/getac/Kconfig"
+ source "src/mainboard/gigabyte/Kconfig"
++source "src/mainboard/gizmosphere/Kconfig"
+ source "src/mainboard/google/Kconfig"
+ source "src/mainboard/hp/Kconfig"
+ source "src/mainboard/ibase/Kconfig"
+ source "src/mainboard/ibm/Kconfig"
+ source "src/mainboard/iei/Kconfig"
+ source "src/mainboard/intel/Kconfig"
+ source "src/mainboard/iwave/Kconfig"
+ source "src/mainboard/iwill/Kconfig"
+ source "src/mainboard/jetway/Kconfig"
+ source "src/mainboard/kontron/Kconfig"
+ source "src/mainboard/lanner/Kconfig"
+ source "src/mainboard/lenovo/Kconfig"
+ source "src/mainboard/lippert/Kconfig"
+ source "src/mainboard/mitac/Kconfig"
+ source "src/mainboard/msi/Kconfig"
+ source "src/mainboard/nec/Kconfig"
+ source "src/mainboard/newisys/Kconfig"
+ source "src/mainboard/nokia/Kconfig"
+ source "src/mainboard/nvidia/Kconfig"
+ source "src/mainboard/pcengines/Kconfig"
+ source "src/mainboard/rca/Kconfig"
+ source "src/mainboard/roda/Kconfig"
+ source "src/mainboard/samsung/Kconfig"
+ source "src/mainboard/siemens/Kconfig"
+ source "src/mainboard/soyo/Kconfig"
+ source "src/mainboard/sunw/Kconfig"
+ source "src/mainboard/supermicro/Kconfig"
+ source "src/mainboard/technexion/Kconfig"
+ source "src/mainboard/technologic/Kconfig"
+ source "src/mainboard/televideo/Kconfig"
+ source "src/mainboard/thomson/Kconfig"
+ source "src/mainboard/ti/Kconfig"
+ source "src/mainboard/traverse/Kconfig"
+ source "src/mainboard/tyan/Kconfig"
+ source "src/mainboard/via/Kconfig"
+ source "src/mainboard/winent/Kconfig"
+ source "src/mainboard/wyse/Kconfig"
+ 
+ config BOARD_ROMSIZE_KB_64
+ 	bool
+ config BOARD_ROMSIZE_KB_128
+ 	bool
+ config BOARD_ROMSIZE_KB_256
+ 	bool
+ config BOARD_ROMSIZE_KB_512
+ 	bool
+ config BOARD_ROMSIZE_KB_1024
+ 	bool
+ config BOARD_ROMSIZE_KB_2048
+ 	bool
+ config BOARD_ROMSIZE_KB_4096
+ 	bool
+ config BOARD_ROMSIZE_KB_8192
+ 	bool
+ config BOARD_ROMSIZE_KB_16384
+ 	bool
+ 
+ # TODO: No help text possible for choice fields?
+ choice
+ 	prompt "ROM chip size"
+ 	default COREBOOT_ROMSIZE_KB_64 if BOARD_ROMSIZE_KB_64
+ 	default COREBOOT_ROMSIZE_KB_128 if BOARD_ROMSIZE_KB_128
+ 	default COREBOOT_ROMSIZE_KB_256 if BOARD_ROMSIZE_KB_256
+ 	default COREBOOT_ROMSIZE_KB_512 if BOARD_ROMSIZE_KB_512
+ 	default COREBOOT_ROMSIZE_KB_1024 if BOARD_ROMSIZE_KB_1024
+ 	default COREBOOT_ROMSIZE_KB_2048 if BOARD_ROMSIZE_KB_2048
+ 	default COREBOOT_ROMSIZE_KB_4096 if BOARD_ROMSIZE_KB_4096
+ 	default COREBOOT_ROMSIZE_KB_8192 if BOARD_ROMSIZE_KB_8192
+ 	default COREBOOT_ROMSIZE_KB_16384 if BOARD_ROMSIZE_KB_16384
+ 	help
+ 	  Select the size of the ROM chip you intend to flash coreboot on.
+ 
+ 	  The build system will take care of creating a coreboot.rom file
+ 	  of the matching size.
+ 
+ config COREBOOT_ROMSIZE_KB_64
+ 	bool "64 KB"
+ 	help
+ 	  Choose this option if you have a 64 KB ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_128
+ 	bool "128 KB"
+ 	help
+ 	  Choose this option if you have a 128 KB ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_256
+ 	bool "256 KB"
+ 	help
+ 	  Choose this option if you have a 256 KB ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_512
+ 	bool "512 KB"
+ 	help
+ 	  Choose this option if you have a 512 KB ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_1024
+ 	bool "1024 KB (1 MB)"
+ 	help
+ 	  Choose this option if you have a 1024 KB (1 MB) ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_2048
+ 	bool "2048 KB (2 MB)"
+ 	help
+ 	  Choose this option if you have a 2048 KB (2 MB) ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_4096
+ 	bool "4096 KB (4 MB)"
+ 	help
+ 	  Choose this option if you have a 4096 KB (4 MB) ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_8192
+ 	bool "8192 KB (8 MB)"
+ 	help
+ 	  Choose this option if you have a 8192 KB (8 MB) ROM chip.
+ 
+ config COREBOOT_ROMSIZE_KB_16384
+ 	bool "16384 KB (16 MB)"
+ 	help
+ 	  Choose this option if you have a 16384 KB (16 MB) ROM chip.
+ 
+ endchoice
+ 
+ # Map the config names to an integer (KB).
+ config COREBOOT_ROMSIZE_KB
+ 	int
+ 	default 64 if COREBOOT_ROMSIZE_KB_64
+ 	default 128 if COREBOOT_ROMSIZE_KB_128
+ 	default 256 if COREBOOT_ROMSIZE_KB_256
+ 	default 512 if COREBOOT_ROMSIZE_KB_512
+ 	default 1024 if COREBOOT_ROMSIZE_KB_1024
+ 	default 2048 if COREBOOT_ROMSIZE_KB_2048
+ 	default 4096 if COREBOOT_ROMSIZE_KB_4096
+ 	default 8192 if COREBOOT_ROMSIZE_KB_8192
+ 	default 16384 if COREBOOT_ROMSIZE_KB_16384
+ 
+ # Map the config names to a hex value (bytes).
+ config ROM_SIZE
+ 	hex
+ 	default 0x10000 if COREBOOT_ROMSIZE_KB_64
+ 	default 0x20000 if COREBOOT_ROMSIZE_KB_128
+ 	default 0x40000 if COREBOOT_ROMSIZE_KB_256
+ 	default 0x80000 if COREBOOT_ROMSIZE_KB_512
+ 	default 0x100000 if COREBOOT_ROMSIZE_KB_1024
+ 	default 0x200000 if COREBOOT_ROMSIZE_KB_2048
+ 	default 0x400000 if COREBOOT_ROMSIZE_KB_4096
+ 	default 0x800000 if COREBOOT_ROMSIZE_KB_8192
+ 	default 0x1000000 if COREBOOT_ROMSIZE_KB_16384
+ 
+ config ENABLE_POWER_BUTTON
+ 	bool "Enable the power button" if POWER_BUTTON_IS_OPTIONAL
+ 	default y if POWER_BUTTON_DEFAULT_ENABLE
+ 	default n if POWER_BUTTON_DEFAULT_DISABLE
+ 	help
+ 	  The selected mainboard can optionally have the power button tied
+ 	  to ground with a jumper so that the button appears to be
+ 	  constantly depressed. If this option is enabled and the jumper is
+ 	  installed then the board will turn on, but turn off again after a
+ 	  short timeout, usually 4 seconds.
+ 
+ 	  Select Y here if you have removed the jumper and want to use an
+ 	  actual power button. Select N if you have the jumper installed.
+ 
+ config ENABLE_POWER_BUTTON
+ 	def_bool y if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_ENABLE
+ 	def_bool n if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_DISABLE
+ 
+ config MAINBOARD_SERIAL_NUMBER
+ 	string "SMBIOS Serial Number"
+ 	depends on GENERATE_SMBIOS_TABLES
+ 	default "123456789"
+         help
+ 	  The Serial Number to store in SMBIOS structures.
+ 
+ config MAINBOARD_VERSION
+ 	string "SMBIOS Version Number"
+ 	depends on GENERATE_SMBIOS_TABLES
+ 	default "1.0"
+ 	help
+ 	  The Version Number to store in SMBIOS structures.
+ 
+ config MAINBOARD_SMBIOS_MANUFACTURER
+ 	string "SMBIOS Manufacturer"
+ 	depends on GENERATE_SMBIOS_TABLES
+ 	default MAINBOARD_VENDOR
+ 	help
+ 	  Override the default Manufacturer stored in SMBIOS structures.
+ 
+ config MAINBOARD_SMBIOS_PRODUCT_NAME
+ 	string "SMBIOS Product name"
+ 	depends on GENERATE_SMBIOS_TABLES
+ 	default MAINBOARD_PART_NUMBER
+ 	help
+ 	  Override the default Product name stored in SMBIOS structures.
+ 
+ endmenu
+diff --git a/src/mainboard/gizmosphere/Kconfig b/src/mainboard/gizmosphere/Kconfig
+new file mode 100755
+index 0000000..a9a4eae
+--- /dev/null
++++ b/src/mainboard/gizmosphere/Kconfig
+@@ -0,0 +1,36 @@
++#
++# This file is part of the coreboot project.
++#
++# Copyright (C) 2013 Sage Electronic Engineering, LLC
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; version 2 of the License.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++#
++
++if VENDOR_GIZMOSPHERE
++
++choice
++	prompt "Mainboard model"
++
++config BOARD_GIZMOSPHERE_GIZMO
++	bool "Gizmo"
++
++endchoice
++
++source "src/mainboard/gizmosphere/gizmo/Kconfig"
++
++config MAINBOARD_VENDOR
++	string
++	default "GizmoSphere"
++
++endif # VENDOR_GIZMOSPHERE
+diff --git a/src/mainboard/gizmosphere/gizmo/BiosCallOuts.c b/src/mainboard/gizmosphere/gizmo/BiosCallOuts.c
+new file mode 100755
+index 0000000..bd593d8
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/BiosCallOuts.c
+@@ -0,0 +1,516 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "agesawrapper.h"
++#include "amdlib.h"
++#include "BiosCallOuts.h"
++#include "heapManager.h"
++#include "SB800.h"
++#include <cbfs.h>
++#include <string.h>
++#include <device/dram/ddr3.h>
++
++#define SPD_SIZE    128
++#define SPD_CRC_HI  127
++#define SPD_CRC_LO  126
++
++STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
++{
++	{AGESA_ALLOCATE_BUFFER,
++	 BiosAllocateBuffer
++	},
++
++	{AGESA_DEALLOCATE_BUFFER,
++	 BiosDeallocateBuffer
++	},
++
++	{AGESA_DO_RESET,
++	 BiosReset
++	},
++
++	{AGESA_LOCATE_BUFFER,
++	 BiosLocateBuffer
++	},
++
++	{AGESA_READ_SPD,
++	 BiosReadSpd
++	},
++
++	{AGESA_READ_SPD_RECOVERY,
++	 BiosDefaultRet
++	},
++
++	{AGESA_RUNFUNC_ONAP,
++	 BiosRunFuncOnAp
++	},
++
++	{AGESA_GNB_PCIE_SLOT_RESET,
++	 BiosGnbPcieSlotReset
++	},
++
++	{AGESA_HOOKBEFORE_DRAM_INIT,
++	 BiosHookBeforeDramInit
++	},
++
++	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,
++	 BiosHookBeforeDramInitRecovery
++	},
++
++	{AGESA_HOOKBEFORE_DQS_TRAINING,
++	 BiosHookBeforeDQSTraining
++	},
++
++	{AGESA_HOOKBEFORE_EXIT_SELF_REF,
++	 BiosHookBeforeExitSelfRefresh
++	},
++};
++
++AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	UINTN i;
++	AGESA_STATUS CalloutStatus;
++	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
++
++	/*
++	 * printk(BIOS_SPEW,"%s function: %x\n", __func__, (u32) Func);
++	 */
++
++	CalloutStatus = AGESA_UNSUPPORTED;
++
++	for (i = 0; i < CallOutCount; i++) {
++		if (BiosCallouts[i].CalloutName == Func) {
++			CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
++			return CalloutStatus;
++		}
++	}
++
++	return CalloutStatus;
++}
++
++AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	UINT32              AvailableHeapSize;
++	UINT8               *BiosHeapBaseAddr;
++	UINT32              CurrNodeOffset;
++	UINT32              PrevNodeOffset;
++	UINT32              FreedNodeOffset;
++	UINT32              BestFitNodeOffset;
++	UINT32              BestFitPrevNodeOffset;
++	UINT32              NextFreeOffset;
++	BIOS_BUFFER_NODE   *CurrNodePtr;
++	BIOS_BUFFER_NODE   *FreedNodePtr;
++	BIOS_BUFFER_NODE   *BestFitNodePtr;
++	BIOS_BUFFER_NODE   *BestFitPrevNodePtr;
++	BIOS_BUFFER_NODE   *NextFreePtr;
++	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
++	AGESA_BUFFER_PARAMS *AllocParams;
++
++	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
++	AllocParams->BufferPointer = NULL;
++
++	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
++	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
++	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
++
++	printk(BIOS_SPEW, "%s BiosHeapBaseAddr: %x\n", __func__, (u32) BiosHeapBaseAddr);
++
++	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
++		/* First allocation */
++		CurrNodeOffset = sizeof (BIOS_HEAP_MANAGER);
++		CurrNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + CurrNodeOffset);
++		CurrNodePtr->BufferHandle = AllocParams->BufferHandle;
++		CurrNodePtr->BufferSize = AllocParams->BufferLength;
++		CurrNodePtr->NextNodeOffset = 0;
++		AllocParams->BufferPointer = (UINT8 *) CurrNodePtr + sizeof (BIOS_BUFFER_NODE);
++
++		/* Update the remaining free space */
++		FreedNodeOffset = CurrNodeOffset + CurrNodePtr->BufferSize + sizeof (BIOS_BUFFER_NODE);
++		FreedNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + FreedNodeOffset);
++		FreedNodePtr->BufferSize = AvailableHeapSize - sizeof (BIOS_BUFFER_NODE) - CurrNodePtr->BufferSize;
++		FreedNodePtr->NextNodeOffset = 0;
++
++		/* Update the offsets for Allocated and Freed nodes */
++		BiosHeapBasePtr->StartOfAllocatedNodes = CurrNodeOffset;
++		BiosHeapBasePtr->StartOfFreedNodes = FreedNodeOffset;
++	} else {
++		/* Find out whether BufferHandle has been allocated on the heap. */
++		/* If it has, return AGESA_BOUNDS_CHK */
++		CurrNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
++		CurrNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + CurrNodeOffset);
++
++		while (CurrNodeOffset != 0) {
++			CurrNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + CurrNodeOffset);
++			if (CurrNodePtr->BufferHandle == AllocParams->BufferHandle) {
++				return AGESA_BOUNDS_CHK;
++			}
++			CurrNodeOffset = CurrNodePtr->NextNodeOffset;
++			/* If BufferHandle has not been allocated on the heap, CurrNodePtr here points
++			   to the end of the allocated nodes list.
++			*/
++
++		}
++		/* Find the node that best fits the requested buffer size */
++		FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
++		PrevNodeOffset = FreedNodeOffset;
++		BestFitNodeOffset = 0;
++		BestFitPrevNodeOffset = 0;
++		while (FreedNodeOffset != 0) {
++			FreedNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + FreedNodeOffset);
++			if (FreedNodePtr->BufferSize >= (AllocParams->BufferLength + sizeof (BIOS_BUFFER_NODE))) {
++				if (BestFitNodeOffset == 0) {
++					/* First node that fits the requested buffer size */
++					BestFitNodeOffset = FreedNodeOffset;
++					BestFitPrevNodeOffset = PrevNodeOffset;
++				} else {
++					/* Find out whether current node is a better fit than the previous nodes */
++					BestFitNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + BestFitNodeOffset);
++					if (BestFitNodePtr->BufferSize > FreedNodePtr->BufferSize) {
++						BestFitNodeOffset = FreedNodeOffset;
++						BestFitPrevNodeOffset = PrevNodeOffset;
++					}
++				}
++			}
++			PrevNodeOffset = FreedNodeOffset;
++			FreedNodeOffset = FreedNodePtr->NextNodeOffset;
++		} /* end of while loop */
++
++
++		if (BestFitNodeOffset == 0) {
++			/* If we could not find a node that fits the requested buffer */
++			/* size, return AGESA_BOUNDS_CHK */
++			return AGESA_BOUNDS_CHK;
++		} else {
++			BestFitNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + BestFitNodeOffset);
++			BestFitPrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + BestFitPrevNodeOffset);
++
++			/* If BestFitNode is larger than the requested buffer, fragment the node further */
++			if (BestFitNodePtr->BufferSize > (AllocParams->BufferLength + sizeof (BIOS_BUFFER_NODE))) {
++				NextFreeOffset = BestFitNodeOffset + AllocParams->BufferLength + sizeof (BIOS_BUFFER_NODE);
++
++				NextFreePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextFreeOffset);
++				NextFreePtr->BufferSize = BestFitNodePtr->BufferSize - (AllocParams->BufferLength + sizeof (BIOS_BUFFER_NODE));
++				NextFreePtr->NextNodeOffset = BestFitNodePtr->NextNodeOffset;
++			} else {
++				/* Otherwise, next free node is NextNodeOffset of BestFitNode */
++				NextFreeOffset = BestFitNodePtr->NextNodeOffset;
++			}
++
++			/* If BestFitNode is the first buffer in the list, then update
++			   StartOfFreedNodes to reflect the new free node
++			*/
++			if (BestFitNodeOffset == BiosHeapBasePtr->StartOfFreedNodes) {
++				BiosHeapBasePtr->StartOfFreedNodes = NextFreeOffset;
++			} else {
++				BestFitPrevNodePtr->NextNodeOffset = NextFreeOffset;
++			}
++
++			/* Add BestFitNode to the list of Allocated nodes */
++			CurrNodePtr->NextNodeOffset = BestFitNodeOffset;
++			BestFitNodePtr->BufferSize = AllocParams->BufferLength;
++			BestFitNodePtr->BufferHandle = AllocParams->BufferHandle;
++			BestFitNodePtr->NextNodeOffset = 0;
++
++			/* Remove BestFitNode from list of Freed nodes */
++			AllocParams->BufferPointer = (UINT8 *) BestFitNodePtr + sizeof (BIOS_BUFFER_NODE);
++		}
++	}
++
++	return AGESA_SUCCESS;
++}
++
++AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++
++	UINT8               *BiosHeapBaseAddr;
++	UINT32              AllocNodeOffset;
++	UINT32              PrevNodeOffset;
++	UINT32              NextNodeOffset;
++	UINT32              FreedNodeOffset;
++	UINT32              EndNodeOffset;
++	BIOS_BUFFER_NODE   *AllocNodePtr;
++	BIOS_BUFFER_NODE   *PrevNodePtr;
++	BIOS_BUFFER_NODE   *FreedNodePtr;
++	BIOS_BUFFER_NODE   *NextNodePtr;
++	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
++	AGESA_BUFFER_PARAMS *AllocParams;
++
++	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
++
++	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
++	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
++
++	/* Find target node to deallocate in list of allocated nodes.
++	   Return AGESA_BOUNDS_CHK if the BufferHandle is not found
++	*/
++	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
++	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
++	PrevNodeOffset = AllocNodeOffset;
++
++	while (AllocNodePtr->BufferHandle !=  AllocParams->BufferHandle) {
++		if (AllocNodePtr->NextNodeOffset == 0) {
++			return AGESA_BOUNDS_CHK;
++		}
++		PrevNodeOffset = AllocNodeOffset;
++		AllocNodeOffset = AllocNodePtr->NextNodeOffset;
++		AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
++	}
++
++	/* Remove target node from list of allocated nodes */
++	PrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + PrevNodeOffset);
++	PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
++
++	/* Zero out the buffer, and clear the BufferHandle */
++	LibAmdMemFill ((UINT8 *)AllocNodePtr + sizeof (BIOS_BUFFER_NODE), 0, AllocNodePtr->BufferSize, &(AllocParams->StdHeader));
++	AllocNodePtr->BufferHandle = 0;
++	AllocNodePtr->BufferSize += sizeof (BIOS_BUFFER_NODE);
++
++	/* Add deallocated node in order to the list of freed nodes */
++	FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
++	FreedNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + FreedNodeOffset);
++
++	EndNodeOffset = AllocNodeOffset + AllocNodePtr->BufferSize;
++
++	if (AllocNodeOffset < FreedNodeOffset) {
++		/* Add to the start of the freed list */
++		if (EndNodeOffset == FreedNodeOffset) {
++			/* If the freed node is adjacent to the first node in the list, concatenate both nodes */
++			AllocNodePtr->BufferSize += FreedNodePtr->BufferSize;
++			AllocNodePtr->NextNodeOffset = FreedNodePtr->NextNodeOffset;
++
++			/* Clear the BufferSize and NextNodeOffset of the previous first node */
++			FreedNodePtr->BufferSize = 0;
++			FreedNodePtr->NextNodeOffset = 0;
++
++		} else {
++			/* Otherwise, add freed node to the start of the list
++			   Update NextNodeOffset and BufferSize to include the
++			   size of BIOS_BUFFER_NODE
++			*/
++			AllocNodePtr->NextNodeOffset = FreedNodeOffset;
++		}
++		/* Update StartOfFreedNodes to the new first node */
++		BiosHeapBasePtr->StartOfFreedNodes = AllocNodeOffset;
++	} else {
++		/* Traverse list of freed nodes to find where the deallocated node
++		   should be placed
++		*/
++		NextNodeOffset = FreedNodeOffset;
++		NextNodePtr = FreedNodePtr;
++		while (AllocNodeOffset > NextNodeOffset) {
++			PrevNodeOffset = NextNodeOffset;
++			if (NextNodePtr->NextNodeOffset == 0) {
++				break;
++			}
++			NextNodeOffset = NextNodePtr->NextNodeOffset;
++			NextNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextNodeOffset);
++		}
++
++		/* If deallocated node is adjacent to the next node,
++		   concatenate both nodes
++		*/
++		if (NextNodeOffset == EndNodeOffset) {
++			NextNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextNodeOffset);
++			AllocNodePtr->BufferSize += NextNodePtr->BufferSize;
++			AllocNodePtr->NextNodeOffset = NextNodePtr->NextNodeOffset;
++
++			NextNodePtr->BufferSize = 0;
++			NextNodePtr->NextNodeOffset = 0;
++		} else {
++			/*AllocNodePtr->NextNodeOffset = FreedNodePtr->NextNodeOffset; */
++			AllocNodePtr->NextNodeOffset = NextNodeOffset;
++		}
++		/* If deallocated node is adjacent to the previous node,
++		   concatenate both nodes
++		*/
++		PrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + PrevNodeOffset);
++		EndNodeOffset = PrevNodeOffset + PrevNodePtr->BufferSize;
++		if (AllocNodeOffset == EndNodeOffset) {
++			PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
++			PrevNodePtr->BufferSize += AllocNodePtr->BufferSize;
++
++			AllocNodePtr->BufferSize = 0;
++			AllocNodePtr->NextNodeOffset = 0;
++		} else {
++			PrevNodePtr->NextNodeOffset = AllocNodeOffset;
++		}
++	}
++	return AGESA_SUCCESS;
++}
++
++AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	UINT32				AllocNodeOffset;
++	UINT8				*BiosHeapBaseAddr;
++	BIOS_BUFFER_NODE	*AllocNodePtr;
++	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
++	AGESA_BUFFER_PARAMS	*AllocParams;
++
++	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
++
++	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
++	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
++
++	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
++	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
++
++	while (AllocParams->BufferHandle != AllocNodePtr->BufferHandle) {
++		if (AllocNodePtr->NextNodeOffset == 0) {
++			AllocParams->BufferPointer = NULL;
++			AllocParams->BufferLength = 0;
++			return AGESA_BOUNDS_CHK;
++		} else {
++			AllocNodeOffset = AllocNodePtr->NextNodeOffset;
++			AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
++		}
++	}
++
++	AllocParams->BufferPointer = (UINT8 *) ((UINT8 *) AllocNodePtr + sizeof (BIOS_BUFFER_NODE));
++	AllocParams->BufferLength = AllocNodePtr->BufferSize;
++
++	return AGESA_SUCCESS;
++
++}
++
++AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	AGESA_STATUS		Status;
++
++	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
++	return Status;
++}
++
++AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	AGESA_STATUS		Status;
++	UINT8				 Value;
++	UINTN				 ResetType;
++	AMD_CONFIG_PARAMS	 *StdHeader;
++
++	ResetType = Data;
++	StdHeader = ConfigPtr;
++
++	//
++	// Perform the RESET based upon the ResetType. In case of
++	// WARM_RESET_WHENEVER and COLD_RESET_WHENEVER, the request will go to
++	// AmdResetManager. During the critical condition, where reset is required
++	// immediately, the reset will be invoked directly by writing 0x06 to port
++	// 0xCF9 (Reset Port).
++	//
++	switch (ResetType) {
++	case WARM_RESET_WHENEVER:
++	case COLD_RESET_WHENEVER:
++		break;
++
++	case WARM_RESET_IMMEDIATELY:
++	case COLD_RESET_IMMEDIATELY:
++		Value = 0x06;
++		LibAmdIoWrite (AccessWidth8, 0xCf9, &Value, StdHeader);
++		break;
++
++	default:
++		break;
++	}
++
++	Status = 0;
++	return Status;
++}
++
++AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	AGESA_STATUS Status;
++#ifdef __PRE_RAM__
++	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
++	if (info->MemChannelId > 0)
++		return AGESA_UNSUPPORTED;
++	if (info->SocketId != 0)
++		return AGESA_UNSUPPORTED;
++	if (info->DimmId != 0)
++		return AGESA_UNSUPPORTED;
++
++	struct cbfs_file *spd_file;
++
++	printk(BIOS_DEBUG, "read SPD\n");
++	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
++	if (!spd_file)
++		die("file [spd.bin] not found in CBFS");
++	if (spd_file->len < SPD_SIZE)
++		die("Missing SPD data.");
++
++	memcpy((char*)info->Buffer, (char*)CBFS_SUBHEADER(spd_file), SPD_SIZE);
++
++	u16 crc = spd_ddr3_calc_crc(info->Buffer, SPD_SIZE);
++
++	if (((info->Buffer[SPD_CRC_LO] == 0) && (info->Buffer[SPD_CRC_HI] == 0))
++	 || (info->Buffer[SPD_CRC_LO] != (crc & 0xff))
++	 || (info->Buffer[SPD_CRC_HI] != (crc >> 8))) {
++		printk(BIOS_WARNING, "SPD has a invalid or zero-valued CRC\n");
++		info->Buffer[SPD_CRC_LO] = crc & 0xff;
++		info->Buffer[SPD_CRC_HI] = crc >> 8;
++		u16 i;
++		printk(BIOS_WARNING, "\nDisplay the SPD");
++		for (i = 0; i < SPD_SIZE; i++) {
++			if((i % 16) == 0x00)
++				printk(BIOS_WARNING, "\n%02x:  ",i);
++			printk(BIOS_WARNING, "%02x ", info->Buffer[i]);
++		}
++		printk(BIOS_WARNING, "\n");
++	 }
++	Status = AGESA_SUCCESS;
++#else
++	Status = AGESA_UNSUPPORTED;
++#endif
++
++	return Status;
++}
++
++AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	return AGESA_UNSUPPORTED;
++}
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	return AGESA_SUCCESS;
++}
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	// Unlike AMD/Inagua, this board is unable to vary the RAM voltage.
++	// Make sure the right speed settings are selected.
++	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
++	return AGESA_SUCCESS;
++}
++
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	return AGESA_SUCCESS;
++}
++
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	return AGESA_SUCCESS;
++}
++/* PCIE slot reset control */
++AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
++{
++	return AGESA_SUCCESS;
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/BiosCallOuts.h b/src/mainboard/gizmosphere/gizmo/BiosCallOuts.h
+new file mode 100755
+index 0000000..463ca09
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/BiosCallOuts.h
+@@ -0,0 +1,73 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#ifndef _BIOS_CALLOUT_H_
++#define _BIOS_CALLOUT_H_
++
++#include "Porting.h"
++#include "AGESA.h"
++
++#define BIOS_HEAP_START_ADDRESS			0x10000 /* HEAP during cold boot */
++#define BIOS_HEAP_SIZE				0x20000
++#define BSP_STACK_BASE_ADDR			0x30000
++
++typedef struct _BIOS_HEAP_MANAGER {
++	UINT32 StartOfAllocatedNodes;
++	UINT32 StartOfFreedNodes;
++} BIOS_HEAP_MANAGER;
++
++typedef struct _BIOS_BUFFER_NODE {
++	UINT32 BufferHandle;
++	UINT32 BufferSize;
++	UINT32 NextNodeOffset;
++} BIOS_BUFFER_NODE;
++/*
++ * CALLOUTS
++ */
++AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++
++/* REQUIRED CALLOUTS
++ * AGESA ADVANCED CALLOUTS - CPU
++ */
++AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++
++/* AGESA ADVANCED CALLOUTS - MEMORY */
++AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
++
++/* BIOS DEFAULT RET */
++AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++/*	Call the host environment interface to provide a user hook opportunity. */
++AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++/* PCIE slot reset control */
++AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++
++#endif //_BIOS_CALLOUT_H_
+diff --git a/src/mainboard/gizmosphere/gizmo/Elpida_EDJ2116DEBG.spd.hex b/src/mainboard/gizmosphere/gizmo/Elpida_EDJ2116DEBG.spd.hex
+new file mode 100644
+index 0000000..5b3b94e
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/Elpida_EDJ2116DEBG.spd.hex
+@@ -0,0 +1,252 @@
++# Elpida EDJ2116DEBG 2Gb
++
++#	0 Number of SPD Bytes used / Total SPD Size / CRC Coverage
++#		bits[3:0]: 1 = 128 SPD Bytes Used
++#		bits[6:4]: 1 = 256 SPD Bytes Total
++#		bit7 : 0 = CRC covers bytes 0 ~ 125
++11
++
++#	1 SPD Revision
++#		0x10 = Revision 1.0
++10
++
++#	2 Key Byte / DRAM Device Type
++#		bits[7:0]: 0x0b = DDR3 SDRAM
++0B
++
++#	3 Key Byte / Module Type
++#		bits[3:0]: 3 = SO-DIMM
++#		bits[7:4]: reserved
++03
++
++#	4 SDRAM CHIP Density and Banks
++#		bits[3:0]: 3 = 2 Gigabits Total SDRAM capacity per chip
++#		bits[6:4]: 0 = 3 (8 banks)
++#		bit7 : reserved
++03
++
++#	5 SDRAM Addressing
++#		bits[2:0]: 1 = 10 Column Address Bits
++#		bits[5:3]: 2 = 14 Row Address Bits
++#		bits[7:6]: reserved
++11
++
++#	6 Module Nominal Voltage, VDD
++#		bit0 : 0 = 1.5 V operable
++#		bit1 : 0 = NOT 1.35 V operable
++#		bit2 : 0 = NOT 1.25 V operable
++#		bits[7:3]: reserved
++00
++
++#	7 Module Organization
++#		bits[2:0]: 2 = 16 bits
++#		bits[5:3]: 0 = 1 Rank
++#		bits[7:6]: reserved
++02
++
++#	8 Module Memory Bus Width
++#		bits[2:0]: 3 = Primary bus width is 64 bits
++#		bits[4:3]: 0 = 0 bits (no bus width extension)
++#		bits[7:5]: reserved
++03
++
++#	9 Fine Timebase (FTB) Dividend / Divisor
++#		bits[3:0]: 0x02 divisor
++#		bits[7:4]: 0x05 dividend
++#		5 / 2 = 2.5ps
++52
++
++#	10 Medium Timebase (MTB) Dividend
++#	11 Medium Timebase (MTB) Divisor
++#		1 / 8 = .125 ns - used for clock freq of 400 through 1066 MHz
++01 08
++
++#	12 SDRAM Minimum Cycle Time (tCKmin)
++#		0x0a = tCKmin of 1.25 ns = DDR3-1600 (800 MHz clock)
++#		0x0c = tCKmin of 1.25 ns = DDR3-1333 (667 MHz clock)
++0C
++
++#	13 Reserved
++00
++
++#	14 CAS Latencies Supported, Least Significant Byte
++#		0xfc = CL 6,7,8,9,10,11
++#		0xfe = CL 5,6,7,8,9,10,11
++#	15 CAS Latencies Supported, Most Significant Byte
++#		Cas Latencies of 11 - 5 are supported
++FC 00
++
++#	16 Minimum CAS Latency Time (tAAmin)
++#		0x69 = 13.125ns
++#		0x6E = 13.75ns - DDR3-1600K
++69
++
++#	17 Minimum Write Recovery Time (tWRmin)
++#		0x78 = tWR of 15ns - All DDR3 speed grades
++78
++
++#	18 Minimum RAS# to CAS# Delay Time (tRCDmin)
++#		0x69 = 13.125ns
++#		0x6E = 13.75ns - DDR3-1600K
++69
++
++#	19 Minimum Row Active to Row Active Delay Time (tRRDmin)
++#		0x38 = 7.0ns
++#		0x3C = 7.5ns
++38
++
++#	20 Minimum Row Precharge Delay Time (tRPmin)
++#		0x69 = 13.125ns -
++#		0x6E = 13.75ns - DDR3-1600K
++69
++
++#	21 Upper Nibbles for tRAS and tRC
++#		bits[3:0]: tRAS most significant nibble = 1 (see byte 22)
++#		bits[7:4]: tRC most significant nibble = 1 (see byte 23)
++11
++
++#	22 Minimum Active to Precharge Delay Time (tRASmin), LSB
++#		0x118 = 35ns - DDR3-1600 (see byte 21)
++#		0x120 = 36ns - DDR3
++20
++
++#	23 Minimum Active to Active/Refresh Delay Time (tRCmin), LSB
++#		0x186 = 48.75ns - DDR3-1600K
++#		0x189 = 49.125ns - DDR3-
++89
++
++#	24 Minimum Refresh Recovery Delay Time (tRFCmin), LSB
++#	25 Minimum Refresh Recovery Delay Time (tRFCmin), MSB
++#		0x500 = 160ns - for 2 Gigabit chips
++00 05
++
++#	26 Minimum Internal Write to Read Command Delay Time (tWTRmin)
++#		0x3c = 7.5 ns - All DDR3 SDRAM speed bins
++3C
++
++#	27 Minimum Internal Read to Precharge Command Delay Time (tRTPmin)
++#		0x3c = 7.5ns - All DDR3 SDRAM speed bins
++3C
++
++#	28 Upper Nibble for tFAWmin
++#	29 Minimum Four Activate Window Delay Time (tFAWmin)
++#		0x0140 = 40ns - DDR3-1600, 2 KB page size
++#		0x0168 = 45ns - DDR3- , 2 KB page size
++01 68
++
++#	30 SDRAM Optional Feature
++#		bit0 : 1= RZQ/6 supported
++#		bit1 : 1 = RZQ/7 supported
++#		bits[6:2]: reserved
++#		bit7 : 1 = DLL Off mode supported
++83
++
++#	31 SDRAM Thermal and Refresh Options
++#		bit0 : 1 = Temp up to 95c supported
++#		bit1 : 0 = 85-95c uses 2x refresh rate
++#		bit2 : 1 = Auto Self Refresh supported
++#		bit3 : 0 = no on die thermal sensor
++#		bits[6:4]: reserved
++#		bit7 : 0 = partial self refresh supported
++05
++
++#	32 Module Thermal Sensor
++#		0 = Thermal sensor not incorporated onto this assembly
++00
++
++#	33 SDRAM Device Type
++#		bits[1:0]: 0 = Signal Loading not specified
++#		bits[3:2]: reserved
++#		bits[6:4]: 0 = Die count not specified
++#		bit7 : 0 = Standard Monolithic DRAM Device
++00
++
++#	34 Fine Offset for SDRAM Minimum Cycle Time (tCKmin)
++00
++
++#	35 Fine Offset for Minimum CAS Latency Time (tAAmin)
++00
++
++#	36 Fine Offset for Minimum RAS# to CAS# Delay Time (tRCDmin)
++00
++
++#	37 Fine Offset for Minimum Row Precharge Delay Time (tRPmin)
++00
++
++#	38 Fine Offset for Minimum Active to Active/Refresh Delay (tRCmin)
++00
++
++#	39 (reserved)
++00
++
++#	40 - 47 (reserved)
++00 00 00 00 00 00 00 00
++
++#	48 - 55 (reserved)
++00 00 00 00 00 00 00 00
++
++#	56 - 59 (reserved)
++00 00 00 00
++
++#	60 Raw Card Extension, Module Nominal Height
++#		bits[4:0]: 0 = <= 15mm tall
++#		bits[7:5]: 0 = raw card revision 0-3
++00
++
++#	61 Module Maximum Thickness
++#		bits[3:0]: 0 = thickness front <= 1mm
++#		bits[7:4]: 0 = thinkness back <= 1mm
++00
++
++#	62 Reference Raw Card Used
++#		bits[4:0]: 0 = Reference Raw card A used
++#		bits[6:5]: 0 = revision 0
++#		bit7 : 0 = Reference raw cards A through AL
++00
++
++#	63 Address Mapping from Edge Connector to DRAM
++#		bit0 : 0 = standard mapping (not mirrored)
++#		bits[7:1]: reserved
++00
++
++#	64 - 71 (reserved)
++00 00 00 00 00 00 00 00
++
++#	72 - 79 (reserved)
++00 00 00 00 00 00 00 00
++
++#	80 - 87 (reserved)
++00 00 00 00 00 00 00 00
++
++#	88 - 95 (reserved)
++00 00 00 00 00 00 00 00
++
++#	96 - 103 (reserved)
++00 00 00 00 00 00 00 00
++
++#	104 - 111 (reserved)
++00 00 00 00 00 00 00 00
++
++#	112 - 116 (reserved)
++00 00 00 00 00
++
++#	117 - 118 Module ID: Module Manufacturers JEDEC ID Code
++#		0x0001 = AMD
++00 01
++
++#	119 Module ID: Module Manufacturing Location - OEM specified
++00
++
++#	120 Module ID: Module Manufacture Year in BCD
++#		0x13 = 2013
++13
++
++#	121 Module ID: Module Manufacture week
++#		0x12 = 12th week
++12
++
++#	122 - 125: Module Serial Number
++53 41 47 45
++
++#	126 - 127: Cyclical Redundancy Code
++9D A6
+diff --git a/src/mainboard/gizmosphere/gizmo/Kconfig b/src/mainboard/gizmosphere/gizmo/Kconfig
+new file mode 100755
+index 0000000..3a1ef5c
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/Kconfig
+@@ -0,0 +1,105 @@
++#
++# This file is part of the coreboot project.
++#
++# Copyright (C) 2011 Advanced Micro Devices, Inc.
++# Copyright (C) 2013 Sage Electronic Engineering, LLC
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; version 2 of the License.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++#
++
++if BOARD_GIZMOSPHERE_GIZMO
++
++config BOARD_SPECIFIC_OPTIONS # dummy
++	def_bool y
++	select ARCH_X86
++	select CPU_AMD_AGESA_FAMILY14
++	select NORTHBRIDGE_AMD_AGESA_FAMILY14
++	select SOUTHBRIDGE_AMD_CIMX_SB800
++	select HAVE_OPTION_TABLE
++	select HAVE_PIRQ_TABLE
++	select HAVE_MP_TABLE
++	select HAVE_ACPI_RESUME
++	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
++	select LIFT_BSP_APIC_ID
++	select SERIAL_CPU_INIT
++	select AMDMCT
++	select HAVE_ACPI_TABLES
++	select BOARD_ROMSIZE_KB_2048
++	select GFXUMA
++
++config MAINBOARD_DIR
++	string
++	default gizmosphere/gizmo
++
++config APIC_ID_OFFSET
++	hex
++	default 0x0
++
++config MAINBOARD_PART_NUMBER
++	string
++	default "Gizmo"
++
++config HW_MEM_HOLE_SIZEK
++	hex
++	default 0x200000
++
++config MAX_CPUS
++	int
++	default 2
++
++config MAX_PHYSICAL_CPUS
++	int
++	default 1
++
++config HW_MEM_HOLE_SIZE_AUTO_INC
++	bool
++	default n
++
++config IRQ_SLOT_COUNT
++	int
++	default 11
++
++config RAMTOP
++	hex
++	default 0x1000000
++
++config HEAP_SIZE
++	hex
++	default 0xc0000
++
++config RAMBASE
++	hex
++	default 0x200000
++
++config ONBOARD_VGA_IS_PRIMARY
++	bool
++	default y
++
++config VGA_BIOS
++	bool
++	default n
++
++config VGA_BIOS_ID
++	string
++	default "1002,9804"
++
++config SB800_AHCI_ROM
++	bool
++	default n
++
++config DRIVERS_PS2_KEYBOARD
++	bool
++	default n
++
++endif # BOARD_GIZMOSPHERE_GIZMO
+diff --git a/src/mainboard/gizmosphere/gizmo/Makefile.inc b/src/mainboard/gizmosphere/gizmo/Makefile.inc
+new file mode 100755
+index 0000000..3f4224b
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/Makefile.inc
+@@ -0,0 +1,57 @@
++#
++# This file is part of the coreboot project.
++#
++# Copyright (C) 2011 Advanced Micro Devices, Inc.
++# Copyright (C) 2013 Sage Electronic Engineering, LLC
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; version 2 of the License.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++#
++
++ifeq ($(CONFIG_AHCI_BIOS),y)
++stripped_ahcibios_id = $(call strip_quotes,$(CONFIG_AHCI_BIOS_ID))
++cbfs-files-$(CONFIG_AHCI_BIOS) += pci$(stripped_ahcibios_id).rom
++pci$(stripped_ahcibios_id).rom-file := $(call strip_quotes,$(CONFIG_AHCI_BIOS_FILE))
++pci$(stripped_ahcibios_id).rom-type := optionrom
++endif
++
++romstage-y += buildOpts.c
++romstage-y += agesawrapper.c
++romstage-y += BiosCallOuts.c
++romstage-y += PlatformGnbPcie.c
++romstage-y += ../../../device/dram/ddr3.c
++
++ramstage-y += buildOpts.c
++ramstage-y += agesawrapper.c
++ramstage-y += BiosCallOuts.c
++ramstage-y += PlatformGnbPcie.c
++
++## DIMM SPD for on-board memory
++SPD_BIN = $(obj)/spd.bin
++
++# Order of names in SPD_SOURCES is important!
++SPD_SOURCES  = Elpida_EDJ2116DEBG
++
++SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
++
++# Include spd rom data
++$(SPD_BIN): $(SPD_DEPS)
++	for f in $+; \
++	  do for c in $$(cat $$f | grep -v ^#); \
++	    do echo -e -n "\\x$$c"; \
++	  done; \
++	done > $@
++
++cbfs-files-y += spd.bin
++spd.bin-file := $(SPD_BIN)
++spd.bin-type := 0xab
+diff --git a/src/mainboard/gizmosphere/gizmo/OptionsIds.h b/src/mainboard/gizmosphere/gizmo/OptionsIds.h
+new file mode 100755
+index 0000000..3655b5e
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/OptionsIds.h
+@@ -0,0 +1,65 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/**
++ * @file
++ *
++ * IDS Option File
++ *
++ * This file is used to switch on/off IDS features.
++ *
++ * @xrefitem bom "File Content Label" "Release Content"
++ * @e project:      AGESA
++ * @e sub-project:  Core
++ * @e \$Revision: 12067 $   @e \$Date: 2009-04-11 04:34:13 +0800 (Sat, 11 Apr 2009) $
++ */
++#ifndef _OPTION_IDS_H_
++#define _OPTION_IDS_H_
++
++/**
++ *
++ *  This file generates the defaults tables for the Integrated Debug Support
++ * Module. The documented build options are imported from a user controlled
++ * file for processing. The build options for the Integrated Debug Support
++ * Module are listed below:
++ *
++ *    IDSOPT_IDS_ENABLED
++ *    IDSOPT_ERROR_TRAP_ENABLED
++ *    IDSOPT_CONTROL_ENABLED
++ *    IDSOPT_TRACING_ENABLED
++ *    IDSOPT_PERF_ANALYSIS
++ *    IDSOPT_ASSERT_ENABLED
++ *    IDS_DEBUG_PORT
++ *    IDSOPT_CAR_CORRUPTION_CHECK_ENABLED
++ *
++ **/
++
++#define IDSOPT_IDS_ENABLED     TRUE
++//#define IDSOPT_TRACING_ENABLED TRUE
++#define IDSOPT_ASSERT_ENABLED  TRUE
++
++//#define IDSOPT_DEBUG_ENABLED  FALSE
++//#undef IDSOPT_HOST_SIMNOW
++//#define IDSOPT_HOST_SIMNOW    FALSE
++//#undef IDSOPT_HOST_HDT
++//#define IDSOPT_HOST_HDT       FALSE
++//#define IDS_DEBUG_PORT    0x80
++
++#endif
+diff --git a/src/mainboard/gizmosphere/gizmo/PlatformGnbPcie.c b/src/mainboard/gizmosphere/gizmo/PlatformGnbPcie.c
+new file mode 100755
+index 0000000..a2560e0
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/PlatformGnbPcie.c
+@@ -0,0 +1,163 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "AGESA.h"
++#include "amdlib.h"
++#include "Ids.h"
++#include "heapManager.h"
++#include "PlatformGnbPcieComplex.h"
++#include "Filecode.h"
++#include "BiosCallOuts.h"
++
++/*---------------------------------------------------------------------------------------*/
++/**
++ *	OemCustomizeInitEarly
++ *
++ *	Description:
++ *	This stub function will call the host environment through the binary block
++ *	interface (call-out port) to provide a user hook opportunity
++ *
++ *	Parameters:
++ *	@param[in]		**PeiServices
++ *	@param[in]		*InitEarly
++ *
++ *	@retval		 VOID
++ *
++ **/
++/*---------------------------------------------------------------------------------------*/
++VOID
++OemCustomizeInitEarly (
++	IN	OUT AMD_EARLY_PARAMS	*InitEarly
++	)
++{
++	AGESA_STATUS		 Status;
++	VOID				 *BrazosPcieComplexListPtr;
++	VOID				 *BrazosPciePortPtr;
++	VOID				 *BrazosPcieDdiPtr;
++
++	ALLOCATE_HEAP_PARAMS AllocHeapParams;
++
++PCIe_PORT_DESCRIPTOR PortList [] = {
++		// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
++		{
++			0, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
++			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
++			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 4)
++		},
++		// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
++		{
++			0, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
++			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
++			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT5_PORT_PRESENT, GNB_GPP_PORT5_CHANNEL_TYPE, 5, GNB_GPP_PORT5_HOTPLUG_SUPPORT, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_LINK_ASPM, 5)
++		},
++		// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
++		{
++			0, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
++			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
++			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT6_PORT_PRESENT, GNB_GPP_PORT6_CHANNEL_TYPE, 6, GNB_GPP_PORT6_HOTPLUG_SUPPORT, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_LINK_ASPM, 6)
++		},
++		// Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
++		{
++			0,
++			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
++			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT7_PORT_PRESENT, GNB_GPP_PORT7_CHANNEL_TYPE, 7, GNB_GPP_PORT7_HOTPLUG_SUPPORT, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_LINK_ASPM, 7)
++		},
++		// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
++		{
++			DESCRIPTOR_TERMINATE_LIST, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
++			PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
++			PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
++		}
++};
++
++PCIe_DDI_DESCRIPTOR DdiList [] = {
++		// Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...)
++		{
++			0,	 //Descriptor flags
++			PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
++			//PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
++			{ConnectorTypeDP, Aux1, Hdp1}
++		},
++		// Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...)
++		{
++			DESCRIPTOR_TERMINATE_LIST, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
++			PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
++			//PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
++			{ConnectorTypeDP, Aux2, Hdp2}
++		}
++};
++
++PCIe_COMPLEX_DESCRIPTOR Brazos = {
++		DESCRIPTOR_TERMINATE_LIST,
++		0,
++		&PortList[0],
++		&DdiList[0]
++};
++
++	// GNB PCIe topology Porting
++
++	//
++	// Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
++	//
++	AllocHeapParams.RequestedBufferSize = sizeof(Brazos) + sizeof(PortList) + sizeof(DdiList);
++
++	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
++	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
++	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
++	if ( Status!= AGESA_SUCCESS) {
++	// Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
++	ASSERT(FALSE);
++	return;
++	}
++
++	BrazosPcieComplexListPtr	=	(PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
++
++	AllocHeapParams.BufferPtr += sizeof(Brazos);
++	BrazosPciePortPtr		 =	(PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
++
++	AllocHeapParams.BufferPtr += sizeof(PortList);
++	BrazosPcieDdiPtr			=	(PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
++
++	LibAmdMemFill (BrazosPcieComplexListPtr,
++					 0,
++					 sizeof(Brazos),
++					 &InitEarly->StdHeader);
++
++	LibAmdMemFill (BrazosPciePortPtr,
++					 0,
++					 sizeof(PortList),
++					 &InitEarly->StdHeader);
++
++	LibAmdMemFill (BrazosPcieDdiPtr,
++					 0,
++					 sizeof(DdiList),
++					 &InitEarly->StdHeader);
++
++	LibAmdMemCopy	(BrazosPcieComplexListPtr, &Brazos, sizeof(Brazos), &InitEarly->StdHeader);
++	LibAmdMemCopy	(BrazosPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
++	LibAmdMemCopy	(BrazosPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
++
++
++	((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->PciePortList =	(PCIe_PORT_DESCRIPTOR*)BrazosPciePortPtr;
++	((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->DdiLinkList	=	(PCIe_DDI_DESCRIPTOR*)BrazosPcieDdiPtr;
++
++	InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
++	InitEarly->GnbConfig.PsppPolicy		= 0;
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/PlatformGnbPcieComplex.h b/src/mainboard/gizmosphere/gizmo/PlatformGnbPcieComplex.h
+new file mode 100755
+index 0000000..5cd4b41
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/PlatformGnbPcieComplex.h
+@@ -0,0 +1,74 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#ifndef _PLATFORM_GNB_PCIE_COMPLEX_H
++#define _PLATFORM_GNB_PCIE_COMPLEX_H
++
++#include "Porting.h"
++#include "AGESA.h"
++#include "amdlib.h"
++#include <cpu/amd/agesa/s3_resume.h>
++
++//GNB GPP Port4
++#define GNB_GPP_PORT4_PORT_PRESENT		1	//0:Disable 1:Enable
++#define GNB_GPP_PORT4_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
++#define GNB_GPP_PORT4_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
++#define GNB_GPP_PORT4_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)
++											 //3:Half-swing(-3.5db) 4:extended length (-6db) 5:extended length(-8db)
++#define GNB_GPP_PORT4_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
++
++//GNB GPP Port5
++#define GNB_GPP_PORT5_PORT_PRESENT		1	//0:Disable 1:Enable
++#define GNB_GPP_PORT5_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
++#define GNB_GPP_PORT5_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
++#define GNB_GPP_PORT5_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)
++											 //3:Half-swing(-3.5db) 4:extended length (-6db) 5:extended length(-8db)
++#define GNB_GPP_PORT5_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
++
++//GNB GPP Port6
++#define GNB_GPP_PORT6_PORT_PRESENT		1	//0:Disable 1:Enable
++#define GNB_GPP_PORT6_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
++#define GNB_GPP_PORT6_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
++#define GNB_GPP_PORT6_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)
++											 //3:Half-swing(-3.5db) 4:extended length (-6db) 5:extended length(-8db)
++#define GNB_GPP_PORT6_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
++
++//GNB GPP Port7
++#define GNB_GPP_PORT7_PORT_PRESENT		1	//0:Disable 1:Enable
++#define GNB_GPP_PORT7_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
++#define GNB_GPP_PORT7_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
++#define GNB_GPP_PORT7_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)
++											 //3:Half-swing(-3.5db) 4:extended length (-6db) 5:extended length(-8db)
++#define GNB_GPP_PORT7_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
++
++//GNB GPP Port8
++#define GNB_GPP_PORT8_PORT_PRESENT		1	//0:Disable 1:Enable
++#define GNB_GPP_PORT8_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
++#define GNB_GPP_PORT8_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
++#define GNB_GPP_PORT8_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)
++											 //3:Half-swing(-3.5db) 4:extended length (-6db) 5:extended length(-8db)
++#define GNB_GPP_PORT8_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
++
++VOID
++OemCustomizeInitEarly (
++	IN	OUT AMD_EARLY_PARAMS	*InitEarly
++	);
++
++#endif //_PLATFORM_GNB_PCIE_COMPLEX_H
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/gpe.asl b/src/mainboard/gizmosphere/gizmo/acpi/gpe.asl
+new file mode 100644
+index 0000000..ed416eb
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/gpe.asl
+@@ -0,0 +1,84 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++Scope(\_GPE) {	/* Start Scope GPE */
++
++	/*  General event 3  */
++	Method(_L03) {
++		/* DBGO("\\_GPE\\_L00\n") */
++		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
++	}
++
++	/*  Legacy PM event  */
++	Method(_L08) {
++		/* DBGO("\\_GPE\\_L08\n") */
++	}
++
++	/*  Temp warning (TWarn) event  */
++	Method(_L09) {
++		/* DBGO("\\_GPE\\_L09\n") */
++		/* Notify (\_TZ.TZ00, 0x80) */
++	}
++
++	/*  USB controller PME#  */
++	Method(_L0B) {
++		/* DBGO("\\_GPE\\_L0B\n") */
++		Notify(\_SB.PCI0.UOH1, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.UOH2, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.UOH3, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.UOH4, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.UOH5, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.UOH6, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.UEH1, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
++	}
++
++	/*  ExtEvent0 SCI event  */
++	Method(_L10) {
++		/* DBGO("\\_GPE\\_L10\n") */
++	}
++
++
++	/*  ExtEvent1 SCI event  */
++	Method(_L11) {
++		/* DBGO("\\_GPE\\_L11\n") */
++	}
++
++	/*  GPIO0 or GEvent8 event  */
++	Method(_L18) {
++		/* DBGO("\\_GPE\\_L18\n") */
++		Notify(\_SB.PCI0.PBR4, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.PBR5, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.PBR6, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PCI0.PBR7, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
++	}
++
++	/*  Azalia SCI event  */
++	Method(_L1B) {
++		/* DBGO("\\_GPE\\_L1B\n") */
++		Notify(\_SB.PCI0.AZHD, 0x02) /* NOTIFY_DEVICE_WAKE */
++		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
++	}
++} 	/* End Scope GPE */
++
++/* Contains the GPEs for USB overcurrent */
++#include "usb_oc.asl"
++
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/ide.asl b/src/mainboard/gizmosphere/gizmo/acpi/ide.asl
+new file mode 100755
+index 0000000..016576d
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/ide.asl
+@@ -0,0 +1,245 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/*
++Scope (_SB) {
++	Device(PCI0) {
++		Device(IDEC) {
++			Name(_ADR, 0x00140001)
++			#include "ide.asl"
++		}
++	}
++}
++*/
++
++/* Some timing tables */
++Name(UDTT, Package(){ /* Udma timing table */
++	120, 90, 60, 45, 30, 20, 15, 0	/* UDMA modes 0 -> 6 */
++})
++
++Name(MDTT, Package(){ /* MWDma timing table */
++	480, 150, 120, 0	/* Legacy DMA modes 0 -> 2 */
++})
++
++Name(POTT, Package(){ /* Pio timing table */
++	600, 390, 270, 180, 120, 0	/* PIO modes 0 -> 4 */
++})
++
++/* Some timing register value tables */
++Name(MDRT, Package(){ /* MWDma timing register table */
++	0x77, 0x21, 0x20, 0xFF	/* Legacy DMA modes 0 -> 2 */
++})
++
++Name(PORT, Package(){
++	0x99, 0x47, 0x34, 0x22, 0x20, 0x99	/* PIO modes 0 -> 4 */
++})
++
++OperationRegion(ICRG, PCI_Config, 0x40, 0x20) /* ide control registers */
++	Field(ICRG, AnyAcc, NoLock, Preserve)
++{
++	PPTS, 8,	/* Primary PIO Slave Timing */
++	PPTM, 8,	/* Primary PIO Master Timing */
++	OFFSET(0x04), PMTS, 8,	/* Primary MWDMA Slave Timing */
++	PMTM, 8,	/* Primary MWDMA Master Timing */
++	OFFSET(0x08), PPCR, 8,	/* Primary PIO Control */
++	OFFSET(0x0A), PPMM, 4,	/* Primary PIO master Mode */
++	PPSM, 4,	/* Primary PIO slave Mode */
++	OFFSET(0x14), PDCR, 2,	/* Primary UDMA Control */
++	OFFSET(0x16), PDMM, 4,	/* Primary UltraDMA Mode */
++	PDSM, 4,	/* Primary UltraDMA Mode */
++}
++
++Method(GTTM, 1) /* get total time*/
++{
++	Store(And(Arg0, 0x0F), Local0)	/* Recovery Width */
++	Increment(Local0)
++	Store(ShiftRight(Arg0, 4), Local1)	/* Command Width */
++	Increment(Local1)
++	Return(Multiply(30, Add(Local0, Local1)))
++}
++
++Device(PRID)
++{
++	Name (_ADR, Zero)
++	Method(_GTM, 0)
++	{
++		NAME(OTBF, Buffer(20) { /* out buffer */
++			0xFF, 0xFF, 0xFF, 0xFF,
++			0xFF, 0xFF, 0xFF, 0xFF,
++			0xFF, 0xFF, 0xFF, 0xFF,
++			0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00
++		})
++
++		CreateDwordField(OTBF, 0, PSD0)   /* PIO spd0 */
++		CreateDwordField(OTBF, 4, DSD0)   /* DMA spd0 */
++		CreateDwordField(OTBF, 8, PSD1)   /* PIO spd1 */
++		CreateDwordField(OTBF, 12, DSD1) /* DMA spd1 */
++		CreateDwordField(OTBF, 16, BFFG) /* buffer flags */
++
++		/* Just return if the channel is disabled */
++		If(And(PPCR, 0x01)) { /* primary PIO control */
++			Return(OTBF)
++		}
++
++		/* Always tell them independent timing available and IOChannelReady used on both drives */
++		Or(BFFG, 0x1A, BFFG)
++
++		Store(GTTM(PPTM), PSD0) /* save total time of primary PIO master timming  to PIO spd0 */
++		Store(GTTM(PPTS), PSD1) /* save total time of primary PIO slave Timing  to PIO spd1 */
++
++		If(And(PDCR, 0x01)) {	/* It's under UDMA mode */
++			Or(BFFG, 0x01, BFFG)
++			Store(DerefOf(Index(UDTT, PDMM)), DSD0)
++		}
++		Else {
++			Store(GTTM(PMTM), DSD0) /* Primary MWDMA Master Timing,  DmaSpd0 */
++		}
++
++		If(And(PDCR, 0x02)) {	/* It's under UDMA mode */
++			Or(BFFG, 0x04, BFFG)
++			Store(DerefOf(Index(UDTT, PDSM)), DSD1)
++		}
++		Else {
++			Store(GTTM(PMTS), DSD1) /* Primary MWDMA Slave Timing,  DmaSpd0 */
++		}
++
++		Return(OTBF) /* out buffer */
++	}				/* End Method(_GTM) */
++
++	Method(_STM, 3, NotSerialized)
++	{
++		NAME(INBF, Buffer(20) { /* in buffer */
++			0xFF, 0xFF, 0xFF, 0xFF,
++			0xFF, 0xFF, 0xFF, 0xFF,
++			0xFF, 0xFF, 0xFF, 0xFF,
++			0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00
++		})
++
++		CreateDwordField(INBF, 0, PSD0)    /* PIO spd0 */
++		CreateDwordField(INBF, 4, DSD0)   /* PIO spd0 */
++		CreateDwordField(INBF, 8, PSD1)   /* PIO spd1 */
++		CreateDwordField(INBF, 12, DSD1) /* DMA spd1 */
++		CreateDwordField(INBF, 16, BFFG) /*buffer flag */
++
++		Store(Match(POTT, MLE, PSD0, MTR, 0, 0), Local0)
++		Divide(Local0, 5, PPMM,) /* Primary PIO master Mode */
++		Store(Match(POTT, MLE, PSD1, MTR, 0, 0), Local1)
++		Divide(Local1, 5, PPSM,) /* Primary PIO slave Mode */
++
++		Store(DerefOf(Index(PORT, Local0)), PPTM) /* Primary PIO Master Timing */
++		Store(DerefOf(Index(PORT, Local1)), PPTS) /* Primary PIO Slave Timing */
++
++		If(And(BFFG, 0x01)) {	/* Drive 0 is under UDMA mode */
++			Store(Match(UDTT, MLE, DSD0, MTR, 0, 0), Local0)
++			Divide(Local0, 7, PDMM,)
++			Or(PDCR, 0x01, PDCR)
++		}
++		Else {
++			If(LNotEqual(DSD0, 0xFFFFFFFF)) {
++				Store(Match(MDTT, MLE, DSD0, MTR, 0, 0), Local0)
++				Store(DerefOf(Index(MDRT, Local0)), PMTM)
++			}
++		}
++
++		If(And(BFFG, 0x04)) {	/* Drive 1 is under UDMA mode */
++			Store(Match(UDTT, MLE, DSD1, MTR, 0, 0), Local0)
++			Divide(Local0, 7, PDSM,)
++			Or(PDCR, 0x02, PDCR)
++		}
++		Else {
++			If(LNotEqual(DSD1, 0xFFFFFFFF)) {
++				Store(Match(MDTT, MLE, DSD1, MTR, 0, 0), Local0)
++				Store(DerefOf(Index(MDRT, Local0)), PMTS)
++			}
++		}
++		/* Return(INBF) */
++	}		/*End Method(_STM) */
++	Device(MST)
++	{
++		Name(_ADR, 0)
++		Method(_GTF) {
++			Name(CMBF, Buffer(21) {
++				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
++				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
++				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF5
++			})
++			CreateByteField(CMBF, 1, POMD)
++			CreateByteField(CMBF, 8, DMMD)
++			CreateByteField(CMBF, 5, CMDA)
++			CreateByteField(CMBF, 12, CMDB)
++			CreateByteField(CMBF, 19, CMDC)
++
++			Store(0xA0, CMDA)
++			Store(0xA0, CMDB)
++			Store(0xA0, CMDC)
++
++			Or(PPMM, 0x08, POMD)
++
++			If(And(PDCR, 0x01)) {
++				Or(PDMM, 0x40, DMMD)
++			}
++			Else {
++				Store(Match
++				      (MDTT, MLE, GTTM(PMTM),
++				       MTR, 0, 0), Local0)
++				If(LLess(Local0, 3)) {
++					Or(0x20, Local0, DMMD)
++				}
++			}
++			Return(CMBF)
++		}
++	}		/* End Device(MST) */
++
++	Device(SLAV)
++	{
++		Name(_ADR, 1)
++		Method(_GTF) {
++			Name(CMBF, Buffer(21) {
++				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
++				0x03, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xEF,
++				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF5
++			})
++			CreateByteField(CMBF, 1, POMD)
++			CreateByteField(CMBF, 8, DMMD)
++			CreateByteField(CMBF, 5, CMDA)
++			CreateByteField(CMBF, 12, CMDB)
++			CreateByteField(CMBF, 19, CMDC)
++
++			Store(0xB0, CMDA)
++			Store(0xB0, CMDB)
++			Store(0xB0, CMDC)
++
++			Or(PPSM, 0x08, POMD)
++
++			If(And(PDCR, 0x02)) {
++				Or(PDSM, 0x40, DMMD)
++			}
++			Else {
++				Store(Match
++				      (MDTT, MLE, GTTM(PMTS),
++				       MTR, 0, 0), Local0)
++				If(LLess(Local0, 3)) {
++					Or(0x20, Local0, DMMD)
++				}
++			}
++			Return(CMBF)
++		}
++	}			/* End Device(SLAV) */
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/mainboard.asl b/src/mainboard/gizmosphere/gizmo/acpi/mainboard.asl
+new file mode 100644
+index 0000000..3a2c572
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/mainboard.asl
+@@ -0,0 +1,69 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* Data to be patched by the BIOS during POST */
++/* FIXME the patching is not done yet! */
++/* Memory related values */
++Name(LOMH, 0x0)	/* Start of unused memory in C0000-E0000 range */
++Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
++Name(PBLN, 0x0)	/* Length of BIOS area */
++
++Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)	/* Base address of PCIe config space */
++Name(HPBA, 0xFED00000)	/* Base address of HPET table */
++
++Name(SSFG, 0x0D)	/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
++
++/* Some global data */
++Name(OSTP, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
++Name(OSV, Ones)	/* Assume nothing */
++Name(PMOD, One)	/* Assume APIC */
++
++Scope(\_SB) {
++	Method(CkOT, 0){
++
++		if(LNotEqual(OSTP, Ones)) {Return(OSTP)}	/* OS version was already detected */
++
++		if(CondRefOf(\_OSI,Local1))
++		{
++			Store(1, OSTP)					/* Assume some form of XP */
++			if (\_OSI("Windows 2006"))		/* Vista */
++			{
++				Store(2, OSTP)
++			}
++		} else {
++			If(WCMP(\_OS,"Linux")) {
++				Store(3, OSTP)				/* Linux */
++			} Else {
++				Store(4, OSTP)				/* Gotta be WinCE */
++			}
++		}
++		Return(OSTP)
++	}
++}
++
++Scope(\_SI) {
++	Method(_SST, 1) {
++		/* DBGO("\\_SI\\_SST\n") */
++		/* DBGO("   New Indicator state: ") */
++		/* DBGO(Arg0) */
++		/* DBGO("\n") */
++	}
++} /* End Scope SI */
++
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/routing.asl b/src/mainboard/gizmosphere/gizmo/acpi/routing.asl
+new file mode 100755
+index 0000000..9bdffb9
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/routing.asl
+@@ -0,0 +1,408 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/*
++DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
++		)
++	{
++		#include "routing.asl"
++	}
++*/
++
++/* Routing is in System Bus scope */
++Scope(\_SB) {
++	Name(PR0, Package(){
++		/* NB devices */
++		/* Bus 0, Dev 0 - RS780 Host Controller */
++		/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics */
++		Package(){0x0001FFFF, 0, INTC, 0 },
++		Package(){0x0001FFFF, 1, INTD, 0 },
++		/* Bus 0, Dev 2 - PCIe Bridge for x8 PCIe Slot (GFX0) */
++		Package(){0x0002FFFF, 0, INTC, 0 },
++		Package(){0x0002FFFF, 1, INTD, 0 },
++		Package(){0x0002FFFF, 2, INTA, 0 },
++		Package(){0x0002FFFF, 3, INTB, 0 },
++		/* Bus 0, Dev 3 - PCIe graphics port 1 bridge */
++		Package(){0x0003FFFF, 0, INTD, 0 },
++		Package(){0x0003FFFF, 1, INTA, 0 },
++		Package(){0x0003FFFF, 2, INTB, 0 },
++		Package(){0x0003FFFF, 3, INTC, 0 },
++		/* Bus 0, Dev 4 - PCIe Bridge for Express Card Slot */
++		Package(){0x0004FFFF, 0, INTA, 0 },
++		Package(){0x0004FFFF, 1, INTB, 0 },
++		Package(){0x0004FFFF, 2, INTC, 0 },
++		Package(){0x0004FFFF, 3, INTD, 0 },
++		/* Bus 0, Dev 5 - General purpose PCIe bridge 5 */
++		Package(){0x0005FFFF, 0, INTB, 0 },
++		Package(){0x0005FFFF, 1, INTC, 0 },
++		Package(){0x0005FFFF, 2, INTD, 0 },
++		Package(){0x0005FFFF, 3, INTA, 0 },
++		/* Bus 0, Dev 6 - PCIe Bridge for Ethernet Chip */
++		Package(){0x0006FFFF, 0, INTC, 0 },
++		Package(){0x0006FFFF, 1, INTD, 0 },
++		Package(){0x0006FFFF, 2, INTA, 0 },
++		Package(){0x0006FFFF, 3, INTB, 0 },
++		/* Bus 0, Dev 7 - PCIe Bridge for x1 PCIe Slot */
++		Package(){0x0007FFFF, 0, INTD, 0 },
++		Package(){0x0007FFFF, 1, INTA, 0 },
++		Package(){0x0007FFFF, 2, INTB, 0 },
++		Package(){0x0007FFFF, 3, INTC, 0 },
++
++		Package(){0x0009FFFF, 0, INTB, 0 },
++		Package(){0x0009FFFF, 1, INTC, 0 },
++		Package(){0x0009FFFF, 2, INTD, 0 },
++		Package(){0x0009FFFF, 3, INTA, 0 },
++
++		Package(){0x000AFFFF, 0, INTC, 0 },
++		Package(){0x000AFFFF, 1, INTD, 0 },
++		Package(){0x000AFFFF, 2, INTA, 0 },
++		Package(){0x000AFFFF, 3, INTB, 0 },
++
++		Package(){0x000BFFFF, 0, INTD, 0 },
++		Package(){0x000BFFFF, 1, INTA, 0 },
++		Package(){0x000BFFFF, 2, INTB, 0 },
++		Package(){0x000BFFFF, 3, INTC, 0 },
++
++		Package(){0x000CFFFF, 0, INTA, 0 },
++		Package(){0x000CFFFF, 1, INTB, 0 },
++		Package(){0x000CFFFF, 2, INTC, 0 },
++		Package(){0x000CFFFF, 3, INTD, 0 },
++
++		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
++
++		/* SB devices */
++		/* Bus 0, Dev 17 - SATA controller #2 */
++		/* Bus 0, Dev 18 - SATA controller #1 */
++		Package(){0x0011FFFF, 0, INTD, 0 },
++
++		/* Bus 0, Dev 19 - USB: OHCI, dev 18,19 func 0-2, dev 20 func 5;
++		 * EHCI, dev 18, 19 func 2 */
++		Package(){0x0012FFFF, 0, INTC, 0 },
++		Package(){0x0012FFFF, 1, INTB, 0 },
++
++		Package(){0x0013FFFF, 0, INTC, 0 },
++		Package(){0x0013FFFF, 1, INTB, 0 },
++
++		Package(){0x0016FFFF, 0, INTC, 0 },
++		Package(){0x0016FFFF, 1, INTB, 0 },
++
++		/* Package(){0x0014FFFF, 1, INTA, 0 }, */
++
++		/* Bus 0, Dev 20 - F0:SMBus/ACPI,F1:IDE;F2:HDAudio;F3:LPC;F4:PCIBridge;F5:USB */
++		Package(){0x0014FFFF, 0, INTA, 0 },
++		Package(){0x0014FFFF, 1, INTB, 0 },
++		Package(){0x0014FFFF, 2, INTC, 0 },
++		Package(){0x0014FFFF, 3, INTD, 0 },
++
++		Package(){0x0015FFFF, 0, INTA, 0 },
++		Package(){0x0015FFFF, 1, INTB, 0 },
++		Package(){0x0015FFFF, 2, INTC, 0 },
++		Package(){0x0015FFFF, 3, INTD, 0 },
++	})
++
++	Name(APR0, Package(){
++		/* NB devices in APIC mode */
++		/* Bus 0, Dev 0 - RS780 Host Controller */
++
++		/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics */
++		Package(){0x0001FFFF, 0, 0, 18 },
++		Package(){0x0001FFFF, 1, 0, 19 },
++
++		/* Bus 0, Dev 2 - PCIe Bridge for x8 PCIe Slot (GFX0) */
++		Package(){0x0002FFFF, 0, 0, 18 },
++		/* Package(){0x0002FFFF, 1, 0, 19 }, */
++		/* Package(){0x0002FFFF, 2, 0, 16 }, */
++		/* Package(){0x0002FFFF, 3, 0, 17 }, */
++
++		/* Bus 0, Dev 3 - PCIe graphics port 1 bridge */
++		Package(){0x0003FFFF, 0, 0, 19 },
++		Package(){0x0003FFFF, 1, 0, 16 },
++		Package(){0x0003FFFF, 2, 0, 17 },
++		Package(){0x0003FFFF, 3, 0, 18 },
++
++		/* Bus 0, Dev 4 - PCIe Bridge for Express Card Slot */
++		Package(){0x0004FFFF, 0, 0, 16 },
++		Package(){0x0004FFFF, 1, 0, 17 },
++		Package(){0x0004FFFF, 2, 0, 18 },
++		Package(){0x0004FFFF, 3, 0, 19 },
++
++		/* Bus 0, Dev 5 - General purpose PCIe bridge 5 */
++		Package(){0x0005FFFF, 0, 0, 17 },
++		Package(){0x0005FFFF, 1, 0, 18 },
++		Package(){0x0005FFFF, 2, 0, 19 },
++		Package(){0x0005FFFF, 3, 0, 16 },
++
++		/* Bus 0, Dev 6 - General purpose PCIe bridge 6 */
++		Package(){0x0006FFFF, 0, 0, 18 },
++		Package(){0x0006FFFF, 1, 0, 19 },
++		Package(){0x0006FFFF, 2, 0, 16 },
++		Package(){0x0006FFFF, 3, 0, 17 },
++
++		/* Bus 0, Dev 7 - PCIe Bridge for network card */
++		Package(){0x0007FFFF, 0, 0, 19 },
++		Package(){0x0007FFFF, 1, 0, 16 },
++		Package(){0x0007FFFF, 2, 0, 17 },
++		Package(){0x0007FFFF, 3, 0, 18 },
++
++		/* Bus 0, Dev 9 - PCIe Bridge for network card */
++		Package(){0x0009FFFF, 0, 0, 17 },
++		Package(){0x0009FFFF, 1, 0, 16 },
++		Package(){0x0009FFFF, 2, 0, 17 },
++		Package(){0x0009FFFF, 3, 0, 18 },
++		/* Bus 0, Dev A - PCIe Bridge for network card */
++		Package(){0x000AFFFF, 0, 0, 18 },
++		Package(){0x000AFFFF, 1, 0, 16 },
++		Package(){0x000AFFFF, 2, 0, 17 },
++		Package(){0x000AFFFF, 3, 0, 18 },
++		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
++
++		/* SB devices in APIC mode */
++		/* Bus 0, Dev 17 - SATA controller #2 */
++		/* Bus 0, Dev 18 - SATA controller #1 */
++		Package(){0x0011FFFF, 0, 0, 19 },
++
++		/* Bus 0, Dev 19 - USB: OHCI, dev 18,19 func 0-2, dev 20 func 5;
++		 * EHCI, dev 18, 19 func 2 */
++		Package(){0x0012FFFF, 0, 0, 18 },
++		Package(){0x0012FFFF, 1, 0, 17 },
++		/* Package(){0x0012FFFF, 2, 0, 18 }, */
++
++		Package(){0x0013FFFF, 0, 0, 18 },
++		Package(){0x0013FFFF, 1, 0, 17 },
++		/* Package(){0x0013FFFF, 2, 0, 16 }, */
++
++		/* Package(){0x00140000, 0, 0, 16 }, */
++
++		Package(){0x0016FFFF, 0, 0, 18 },
++		Package(){0x0016FFFF, 1, 0, 17 },
++
++		/* Bus 0, Dev 20 - F0:SMBus/ACPI, F1:IDE; F2:HDAudio; F3:LPC; F4:PCIBridge; F5:USB */
++		Package(){0x0014FFFF, 0, 0, 16 },
++		Package(){0x0014FFFF, 1, 0, 17 },
++		Package(){0x0014FFFF, 2, 0, 18 },
++		Package(){0x0014FFFF, 3, 0, 19 },
++		/* Package(){0x00140004, 2, 0, 18 }, */
++		/* Package(){0x00140004, 3, 0, 19 }, */
++		/* Package(){0x00140005, 1, 0, 17 }, */
++		/* Package(){0x00140006, 1, 0, 17 }, */
++
++		/* TODO: pcie */
++		Package(){0x0015FFFF, 0, 0, 16 },
++		Package(){0x0015FFFF, 1, 0, 17 },
++		Package(){0x0015FFFF, 2, 0, 18 },
++		Package(){0x0015FFFF, 3, 0, 19 },
++	})
++
++	Name(PR1, Package(){
++		/* Internal graphics - RS780 VGA, Bus1, Dev5 */
++		Package(){0x0005FFFF, 0, INTA, 0 },
++		Package(){0x0005FFFF, 1, INTB, 0 },
++		Package(){0x0005FFFF, 2, INTC, 0 },
++		Package(){0x0005FFFF, 3, INTD, 0 },
++	})
++	Name(APR1, Package(){
++		/* Internal graphics - RS780 VGA, Bus1, Dev5 */
++		Package(){0x0005FFFF, 0, 0, 18 },
++		Package(){0x0005FFFF, 1, 0, 19 },
++		/* Package(){0x0005FFFF, 2, 0, 20 }, */
++		/* Package(){0x0005FFFF, 3, 0, 17 }, */
++	})
++
++	Name(PS2, Package(){
++		/* The external GFX - Hooked to PCIe slot 2 */
++		Package(){0x0000FFFF, 0, INTC, 0 },
++		Package(){0x0000FFFF, 1, INTD, 0 },
++		Package(){0x0000FFFF, 2, INTA, 0 },
++		Package(){0x0000FFFF, 3, INTB, 0 },
++	})
++	Name(APS2, Package(){
++		/* The external GFX - Hooked to PCIe slot 2 */
++		Package(){0x0000FFFF, 0, 0, 18 },
++		Package(){0x0000FFFF, 1, 0, 19 },
++		Package(){0x0000FFFF, 2, 0, 16 },
++		Package(){0x0000FFFF, 3, 0, 17 },
++	})
++
++	Name(PS4, Package(){
++		/* PCIe slot - Hooked to PCIe slot 4 */
++		Package(){0x0000FFFF, 0, INTA, 0 },
++		Package(){0x0000FFFF, 1, INTB, 0 },
++		Package(){0x0000FFFF, 2, INTC, 0 },
++		Package(){0x0000FFFF, 3, INTD, 0 },
++	})
++	Name(APS4, Package(){
++		/* PCIe slot - Hooked to PCIe slot 4 */
++		Package(){0x0000FFFF, 0, 0, 16 },
++		Package(){0x0000FFFF, 1, 0, 17 },
++		Package(){0x0000FFFF, 2, 0, 18 },
++		Package(){0x0000FFFF, 3, 0, 19 },
++	})
++
++	Name(PS5, Package(){
++		/* PCIe slot - Hooked to PCIe slot 5 */
++		Package(){0x0000FFFF, 0, INTB, 0 },
++		Package(){0x0000FFFF, 1, INTC, 0 },
++		Package(){0x0000FFFF, 2, INTD, 0 },
++		Package(){0x0000FFFF, 3, INTA, 0 },
++	})
++	Name(APS5, Package(){
++		/* PCIe slot - Hooked to PCIe slot 5 */
++		Package(){0x0000FFFF, 0, 0, 17 },
++		Package(){0x0000FFFF, 1, 0, 18 },
++		Package(){0x0000FFFF, 2, 0, 19 },
++		Package(){0x0000FFFF, 3, 0, 16 },
++	})
++
++	Name(PS6, Package(){
++		/* PCIe slot - Hooked to PCIe slot 6 */
++		Package(){0x0000FFFF, 0, INTC, 0 },
++		Package(){0x0000FFFF, 1, INTD, 0 },
++		Package(){0x0000FFFF, 2, INTA, 0 },
++		Package(){0x0000FFFF, 3, INTB, 0 },
++	})
++	Name(APS6, Package(){
++		/* PCIe slot - Hooked to PCIe slot 6 */
++		Package(){0x0000FFFF, 0, 0, 18 },
++		Package(){0x0000FFFF, 1, 0, 19 },
++		Package(){0x0000FFFF, 2, 0, 16 },
++		Package(){0x0000FFFF, 3, 0, 17 },
++	})
++
++	Name(PS7, Package(){
++		/* The onboard Ethernet chip - Hooked to PCIe slot 7 */
++		Package(){0x0000FFFF, 0, INTD, 0 },
++		Package(){0x0000FFFF, 1, INTA, 0 },
++		Package(){0x0000FFFF, 2, INTB, 0 },
++		Package(){0x0000FFFF, 3, INTC, 0 },
++	})
++	Name(APS7, Package(){
++		/* The onboard Ethernet chip - Hooked to PCIe slot 7 */
++		Package(){0x0000FFFF, 0, 0, 19 },
++		Package(){0x0000FFFF, 1, 0, 16 },
++		Package(){0x0000FFFF, 2, 0, 17 },
++		Package(){0x0000FFFF, 3, 0, 18 },
++	})
++
++	Name(PS9, Package(){
++		/* PCIe slot - Hooked to PCIe slot 9 */
++		Package(){0x0000FFFF, 0, INTD, 0 },
++		Package(){0x0000FFFF, 1, INTA, 0 },
++		Package(){0x0000FFFF, 2, INTB, 0 },
++		Package(){0x0000FFFF, 3, INTC, 0 },
++	})
++	Name(APS9, Package(){
++		/* PCIe slot - Hooked to PCIe slot 9 */
++		Package(){0x0000FFFF, 0, 0, 17 },
++		Package(){0x0000FFFF, 1, 0, 18 },
++		Package(){0x0000FFFF, 2, 0, 19 },
++		Package(){0x0000FFFF, 3, 0, 16 },
++	})
++
++	Name(PSa, Package(){
++		/* PCIe slot - Hooked to PCIe slot 10 */
++		Package(){0x0000FFFF, 0, INTD, 0 },
++		Package(){0x0000FFFF, 1, INTA, 0 },
++		Package(){0x0000FFFF, 2, INTB, 0 },
++		Package(){0x0000FFFF, 3, INTC, 0 },
++	})
++	Name(APSa, Package(){
++		/* PCIe slot - Hooked to PCIe slot 10 */
++		Package(){0x0000FFFF, 0, 0, 18 },
++		Package(){0x0000FFFF, 1, 0, 19 },
++		Package(){0x0000FFFF, 2, 0, 16 },
++		Package(){0x0000FFFF, 3, 0, 17 },
++	})
++
++	Name(PE0, Package(){
++		/* PCIe slot - Hooked to PCIe slot 10 */
++		Package(){0x0000FFFF, 0, INTA, 0 },
++		Package(){0x0000FFFF, 1, INTB, 0 },
++		Package(){0x0000FFFF, 2, INTC, 0 },
++		Package(){0x0000FFFF, 3, INTD, 0 },
++	})
++	Name(APE0, Package(){
++		/* PCIe slot - Hooked to PCIe */
++		Package(){0x0000FFFF, 0, 0, 16 },
++		Package(){0x0000FFFF, 1, 0, 17 },
++		Package(){0x0000FFFF, 2, 0, 18 },
++		Package(){0x0000FFFF, 3, 0, 19 },
++	})
++
++	Name(PE1, Package(){
++		/* PCIe slot - Hooked to PCIe slot 10 */
++		Package(){0x0000FFFF, 0, INTB, 0 },
++		Package(){0x0000FFFF, 1, INTC, 0 },
++		Package(){0x0000FFFF, 2, INTD, 0 },
++		Package(){0x0000FFFF, 3, INTA, 0 },
++	})
++	Name(APE1, Package(){
++		/* PCIe slot - Hooked to PCIe */
++		Package(){0x0000FFFF, 0, 0, 17 },
++		Package(){0x0000FFFF, 1, 0, 18 },
++		Package(){0x0000FFFF, 2, 0, 19 },
++		Package(){0x0000FFFF, 3, 0, 16 },
++	})
++
++	Name(PE2, Package(){
++		/* PCIe slot - Hooked to PCIe slot 10 */
++		Package(){0x0000FFFF, 0, INTC, 0 },
++		Package(){0x0000FFFF, 1, INTD, 0 },
++		Package(){0x0000FFFF, 2, INTA, 0 },
++		Package(){0x0000FFFF, 3, INTB, 0 },
++	})
++	Name(APE2, Package(){
++		/* PCIe slot - Hooked to PCIe */
++		Package(){0x0000FFFF, 0, 0, 18 },
++		Package(){0x0000FFFF, 1, 0, 19 },
++		Package(){0x0000FFFF, 2, 0, 16 },
++		Package(){0x0000FFFF, 3, 0, 17 },
++	})
++
++	Name(PE3, Package(){
++		/* PCIe slot - Hooked to PCIe slot 10 */
++		Package(){0x0000FFFF, 0, INTD, 0 },
++		Package(){0x0000FFFF, 1, INTA, 0 },
++		Package(){0x0000FFFF, 2, INTB, 0 },
++		Package(){0x0000FFFF, 3, INTC, 0 },
++	})
++	Name(APE3, Package(){
++		/* PCIe slot - Hooked to PCIe */
++		Package(){0x0000FFFF, 0, 0, 19 },
++		Package(){0x0000FFFF, 1, 0, 16 },
++		Package(){0x0000FFFF, 2, 0, 17 },
++		Package(){0x0000FFFF, 3, 0, 18 },
++	})
++
++	Name(PCIB, Package(){
++		/* PCI slots: slot 0, slot 1, slot 2 behind Dev14, Fun4. */
++		Package(){0x0005FFFF, 0, 0, 0x14 },
++		Package(){0x0005FFFF, 1, 0, 0x15 },
++		Package(){0x0005FFFF, 2, 0, 0x16 },
++		Package(){0x0005FFFF, 3, 0, 0x17 },
++		Package(){0x0006FFFF, 0, 0, 0x15 },
++		Package(){0x0006FFFF, 1, 0, 0x16 },
++		Package(){0x0006FFFF, 2, 0, 0x17 },
++		Package(){0x0006FFFF, 3, 0, 0x14 },
++		Package(){0x0007FFFF, 0, 0, 0x16 },
++		Package(){0x0007FFFF, 1, 0, 0x17 },
++		Package(){0x0007FFFF, 2, 0, 0x14 },
++		Package(){0x0007FFFF, 3, 0, 0x15 },
++	})
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/sata.asl b/src/mainboard/gizmosphere/gizmo/acpi/sata.asl
+new file mode 100755
+index 0000000..c7dfee7
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/sata.asl
+@@ -0,0 +1,150 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* simple name description */
++
++/*
++Scope (_SB) {
++	Device(PCI0) {
++		Device(SATA) {
++			Name(_ADR, 0x00110000)
++			#include "sata.asl"
++		}
++	}
++}
++*/
++
++Name(STTM, Buffer(20) {
++	0x78, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00,
++	0x78, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00,
++	0x1f, 0x00, 0x00, 0x00
++})
++
++/* Start by clearing the PhyRdyChg bits */
++Method(_INI) {
++	\_GPE._L1F()
++}
++
++Device(PMRY)
++{
++	Name(_ADR, 0)
++	Method(_GTM, 0x0, NotSerialized) {
++		Return(STTM)
++	}
++	Method(_STM, 0x3, NotSerialized) {}
++
++	Device(PMST) {
++		Name(_ADR, 0)
++		Method(_STA,0) {
++			if (LGreater(P0IS,0)) {
++				return (0x0F) /* sata is visible */
++			}
++			else {
++				return  (0x00) /* sata is missing */
++			}
++		}
++	}/* end of PMST */
++
++	Device(PSLA)
++	{
++		Name(_ADR, 1)
++		Method(_STA,0) {
++			if (LGreater(P1IS,0)) {
++				return (0x0F) /* sata is visible */
++			}
++			else {
++				return (0x00) /* sata is missing */
++			}
++		}
++	}	/* end of PSLA */
++}   /* end of PMRY */
++
++
++Device(SEDY)
++{
++	Name(_ADR, 1)		/* IDE Scondary Channel */
++	Method(_GTM, 0x0, NotSerialized) {
++		Return(STTM)
++	}
++	Method(_STM, 0x3, NotSerialized) {}
++
++	Device(SMST)
++	{
++		Name(_ADR, 0)
++		Method(_STA,0) {
++			if (LGreater(P2IS,0)) {
++				return (0x0F) /* sata is visible */
++			}
++			else {
++				return (0x00) /* sata is missing */
++			}
++		}
++	} /* end of SMST */
++
++	Device(SSLA)
++	{
++		Name(_ADR, 1)
++		Method(_STA,0) {
++			if (LGreater(P3IS,0)) {
++				return (0x0F) /* sata is visible */
++			}
++			else {
++				return (0x00) /* sata is missing */
++			}
++		}
++	} /* end of SSLA */
++}   /* end of SEDY */
++
++/* SATA Hot Plug Support */
++Scope(\_GPE) {
++	Method(_L1F,0x0,NotSerialized) {
++		if (\_SB.P0PR) {
++			if (LGreater(\_SB.P0IS,0)) {
++				sleep(32)
++			}
++			Notify(\_SB.PCI0.STCR.PMRY.PMST, 0x01) /* NOTIFY_DEVICE_CHECK */
++			store(one, \_SB.P0PR)
++		}
++
++		if (\_SB.P1PR) {
++			if (LGreater(\_SB.P1IS,0)) {
++				sleep(32)
++			}
++			Notify(\_SB.PCI0.STCR.PMRY.PSLA, 0x01) /* NOTIFY_DEVICE_CHECK */
++			store(one, \_SB.P1PR)
++		}
++
++		if (\_SB.P2PR) {
++			if (LGreater(\_SB.P2IS,0)) {
++				sleep(32)
++			}
++			Notify(\_SB.PCI0.STCR.SEDY.SMST, 0x01) /* NOTIFY_DEVICE_CHECK */
++			store(one, \_SB.P2PR)
++		}
++
++		if (\_SB.P3PR) {
++			if (LGreater(\_SB.P3IS,0)) {
++				sleep(32)
++			}
++			Notify(\_SB.PCI0.STCR.SEDY.SSLA, 0x01) /* NOTIFY_DEVICE_CHECK */
++			store(one, \_SB.P3PR)
++		}
++	}
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/sleep.asl b/src/mainboard/gizmosphere/gizmo/acpi/sleep.asl
+new file mode 100644
+index 0000000..61adbcb
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/sleep.asl
+@@ -0,0 +1,122 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* Wake status package */
++Name(WKST,Package(){Zero, Zero})
++
++/*
++* \_PTS - Prepare to Sleep method
++*
++*	Entry:
++*		Arg0=The value of the sleeping state S1=1, S2=2, etc
++*
++* Exit:
++*		-none-
++*
++* The _PTS control method is executed at the beginning of the sleep process
++* for S1-S5. The sleeping value is passed to the _PTS control method.	This
++* control method may be executed a relatively long time before entering the
++* sleep state and the OS may abort	the operation without notification to
++* the ACPI driver.  This method cannot modify the configuration or power
++* state of any device in the system.
++*/
++Method(\_PTS, 1) {
++	/* DBGO("\\_PTS\n") */
++	/* DBGO("From S0 to S") */
++	/* DBGO(Arg0) */
++	/* DBGO("\n") */
++
++	/* Don't allow PCIRST# to reset USB */
++	if (LEqual(Arg0,3)){
++		Store(0,URRE)
++	}
++
++	/* Clear sleep SMI status flag and enable sleep SMI trap. */
++	/*Store(One, CSSM)
++	Store(One, SSEN)*/
++
++	/* On older chips, clear PciExpWakeDisEn */
++	/*if (LLessEqual(\_SB.SBRI, 0x13)) {
++	*    	Store(0,\_SB.PWDE)
++	*}
++	*/
++
++	/* Clear wake status structure. */
++	Store(0, Index(WKST,0))
++	Store(0, Index(WKST,1))
++} /* End Method(\_PTS) */
++
++/*
++*	\_BFS OEM Back From Sleep method
++*
++*	Entry:
++*		Arg0=The value of the sleeping state S1=1, S2=2
++*
++*	Exit:
++*		-none-
++*/
++Method(\_BFS, 1) {
++	/* DBGO("\\_BFS\n") */
++	/* DBGO("From S") */
++	/* DBGO(Arg0) */
++	/* DBGO(" to S0\n") */
++}
++
++/*
++*  \_WAK System Wake method
++*
++*	Entry:
++*		Arg0=The value of the sleeping state S1=1, S2=2
++*
++*	Exit:
++*		Return package of 2 DWords
++*		Dword 1 - Status
++*			0x00000000	wake succeeded
++*			0x00000001	Wake was signaled but failed due to lack of power
++*			0x00000002	Wake was signaled but failed due to thermal condition
++*		Dword 2 - Power Supply state
++*			if non-zero the effective S-state the power supply entered
++*/
++Method(\_WAK, 1) {
++	/* DBGO("\\_WAK\n") */
++	/* DBGO("From S") */
++	/* DBGO(Arg0) */
++	/* DBGO(" to S0\n") */
++
++	/* Re-enable HPET */
++	Store(1,HPDE)
++
++	/* Restore PCIRST# so it resets USB */
++	if (LEqual(Arg0,3)){
++		Store(1,URRE)
++	}
++
++	/* Arbitrarily clear PciExpWakeStatus */
++	Store(PWST, PWST)
++
++	/* if(DeRefOf(Index(WKST,0))) {
++	*	Store(0, Index(WKST,1))
++	* } else {
++	*	Store(Arg0, Index(WKST,1))
++	* }
++	*/
++	Return(WKST)
++} /* End Method(\_WAK) */
++
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/superio.asl b/src/mainboard/gizmosphere/gizmo/acpi/superio.asl
+new file mode 100644
+index 0000000..e042553
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/superio.asl
+@@ -0,0 +1,18 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* No Super I/O device or functionality yet */
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/thermal.asl b/src/mainboard/gizmosphere/gizmo/acpi/thermal.asl
+new file mode 100644
+index 0000000..2f50475
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/thermal.asl
+@@ -0,0 +1,21 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* Thermal Zones have been #if 0 for a long time.
++ * Removing it for now because it doesn't seem to
++ * do anything when enabled anyway.
++ */
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi/usb_oc.asl b/src/mainboard/gizmosphere/gizmo/acpi/usb_oc.asl
+new file mode 100644
+index 0000000..392ad54
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi/usb_oc.asl
+@@ -0,0 +1,175 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* simple name description */
++/*
++DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
++		)
++	{
++		#include "usb.asl"
++	}
++*/
++
++/* USB overcurrent mapping pins.   */
++Name(UOM0, 0)
++Name(UOM1, 2)
++Name(UOM2, 0)
++Name(UOM3, 7)
++Name(UOM4, 2)
++Name(UOM5, 2)
++Name(UOM6, 6)
++Name(UOM7, 2)
++Name(UOM8, 6)
++Name(UOM9, 6)
++
++Method(UCOC, 0) {
++	Sleep(20)
++	Store(0x13,CMTI)
++	Store(0,GPSL)
++}
++
++/* USB Port 0 overcurrent uses Gpm 0 */
++If(LLessEqual(UOM0,9)) {
++	Scope (\_GPE) {
++		Method (_L13) {
++			UCOC()
++			if(LEqual(GPB0,PLC0)) {
++				Not(PLC0,PLC0)
++				Store(PLC0, \_SB.PT0D)
++			}
++		}
++	}
++}
++
++/* USB Port 1 overcurrent uses Gpm 1 */
++If (LLessEqual(UOM1,9)) {
++	Scope (\_GPE) {
++		Method (_L14) {
++			UCOC()
++			if (LEqual(GPB1,PLC1)) {
++				Not(PLC1,PLC1)
++				Store(PLC1, \_SB.PT1D)
++			}
++		}
++	}
++}
++
++/* USB Port 2 overcurrent uses Gpm 2 */
++If (LLessEqual(UOM2,9)) {
++	Scope (\_GPE) {
++		Method (_L15) {
++			UCOC()
++			if (LEqual(GPB2,PLC2)) {
++				Not(PLC2,PLC2)
++				Store(PLC2, \_SB.PT2D)
++			}
++		}
++	}
++}
++
++/* USB Port 3 overcurrent uses Gpm 3 */
++If (LLessEqual(UOM3,9)) {
++	Scope (\_GPE) {
++		Method (_L16) {
++			UCOC()
++			if (LEqual(GPB3,PLC3)) {
++				Not(PLC3,PLC3)
++				Store(PLC3, \_SB.PT3D)
++			}
++		}
++	}
++}
++
++/* USB Port 4 overcurrent uses Gpm 4 */
++If (LLessEqual(UOM4,9)) {
++	Scope (\_GPE) {
++		Method (_L19) {
++			UCOC()
++			if (LEqual(GPB4,PLC4)) {
++				Not(PLC4,PLC4)
++				Store(PLC4, \_SB.PT4D)
++			}
++		}
++	}
++}
++
++/* USB Port 5 overcurrent uses Gpm 5 */
++If (LLessEqual(UOM5,9)) {
++	Scope (\_GPE) {
++		Method (_L1A) {
++			UCOC()
++			if (LEqual(GPB5,PLC5)) {
++				Not(PLC5,PLC5)
++				Store(PLC5, \_SB.PT5D)
++			}
++		}
++	}
++}
++
++/* USB Port 6 overcurrent uses Gpm 6 */
++If (LLessEqual(UOM6,9)) {
++	Scope (\_GPE) {
++		/* Method (_L1C) { */
++		Method (_L06) {
++			UCOC()
++			if (LEqual(GPB6,PLC6)) {
++				Not(PLC6,PLC6)
++				Store(PLC6, \_SB.PT6D)
++			}
++		}
++	}
++}
++
++/* USB Port 7 overcurrent uses Gpm 7 */
++If (LLessEqual(UOM7,9)) {
++	Scope (\_GPE) {
++		/* Method (_L1D) { */
++		Method (_L07) {
++			UCOC()
++			if (LEqual(GPB7,PLC7)) {
++				Not(PLC7,PLC7)
++				Store(PLC7, \_SB.PT7D)
++			}
++		}
++	}
++}
++
++/* USB Port 8 overcurrent uses Gpm 8 */
++If (LLessEqual(UOM8,9)) {
++	Scope (\_GPE) {
++		Method (_L17) {
++			if (LEqual(G8IS,PLC8)) {
++				Not(PLC8,PLC8)
++				Store(PLC8, \_SB.PT8D)
++			}
++		}
++	}
++}
++
++/* USB Port 9 overcurrent uses Gpm 9 */
++If (LLessEqual(UOM9,9)) {
++	Scope (\_GPE) {
++		Method (_L0E) {
++			if (LEqual(G9IS,0)) {
++			Store(1,\_SB.PT9D)
++			}
++		}
++	}
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/acpi_tables.c b/src/mainboard/gizmosphere/gizmo/acpi_tables.c
+new file mode 100755
+index 0000000..813a304
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/acpi_tables.c
+@@ -0,0 +1,322 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include <console/console.h>
++#include <string.h>
++#include <arch/acpi.h>
++#include <arch/acpigen.h>
++#include <arch/ioapic.h>
++#include <device/pci.h>
++#include <device/pci_ids.h>
++#include <cpu/x86/msr.h>
++#include "agesawrapper.h"
++#include <cpu/amd/mtrr.h>
++#include <cpu/amd/amdfam14.h>
++
++#define DUMP_ACPI_TABLES 0
++
++#if DUMP_ACPI_TABLES == 1
++
++static void dump_mem(u32 start, u32 end)
++{
++
++	u32 i;
++	print_debug("dump_mem:");
++	for (i = start; i < end; i++) {
++		if ((i & 0xf) == 0) {
++			printk(BIOS_DEBUG, "\n%08x:", i);
++		}
++		printk(BIOS_DEBUG, " %02x", (u8)*((u8 *)i));
++	}
++	print_debug("\n");
++}
++#endif
++
++extern const unsigned char AmlCode[];
++
++unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
++{
++	int lens;
++	msr_t msr;
++	char pscope[] = "\\_SB.PCI0";
++
++	lens = acpigen_write_scope(pscope);
++	msr = rdmsr(TOP_MEM);
++	lens += acpigen_write_name_dword("TOM1", msr.lo);
++	msr = rdmsr(TOP_MEM2);
++	/*
++	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
++	 * here.
++	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
++	 * slide 22ff.
++	 * Shift value right by 20 bit to make it fit into 32bit,
++	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
++	 */
++	lens += acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
++	acpigen_patch_len(lens - 1);
++	return (unsigned long) (acpigen_get_current());
++}
++
++unsigned long acpi_fill_mcfg(unsigned long current)
++{
++	/* Just a dummy */
++	return current;
++}
++
++unsigned long acpi_fill_madt(unsigned long current)
++{
++	/* create all subtables for processors */
++	current = acpi_create_madt_lapics(current);
++
++	/* Write SB800 IOAPIC, only one */
++	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
++			CONFIG_MAX_CPUS, IO_APIC_ADDR, 0);
++
++	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
++			current, 0, 0, 2, 0);
++	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
++			current, 0, 9, 9, 0xF);
++
++	/* 0: mean bus 0--->ISA */
++	/* 0: PIC 0 */
++	/* 2: APIC 2 */
++	/* 5 mean: 0101 --> Edige-triggered, Active high */
++
++	/* create all subtables for processors */
++	/* current = acpi_create_madt_lapic_nmis(current, 5, 1); */
++	/* 1: LINT1 connect to NMI */
++
++	return current;
++}
++
++unsigned long acpi_fill_hest(acpi_hest_t *hest)
++{
++	void *addr, *current;
++
++	/* Skip the HEST header. */
++	current = (void *)(hest + 1);
++
++	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
++	if (addr != NULL)
++		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
++
++	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
++	if (addr != NULL)
++		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
++
++	return (unsigned long)current;
++}
++
++unsigned long acpi_fill_slit(unsigned long current)
++{
++	// Not implemented
++	return current;
++}
++
++unsigned long acpi_fill_srat(unsigned long current)
++{
++	/* No NUMA, no SRAT */
++	return current;
++}
++
++unsigned long write_acpi_tables(unsigned long start)
++{
++	unsigned long current;
++	acpi_rsdp_t *rsdp;
++	acpi_rsdt_t *rsdt;
++	acpi_hpet_t *hpet;
++	acpi_madt_t *madt;
++	acpi_srat_t *srat;
++	acpi_slit_t *slit;
++	acpi_fadt_t *fadt;
++	acpi_facs_t *facs;
++	acpi_header_t *dsdt;
++	acpi_header_t *ssdt;
++	acpi_header_t *ssdt2;
++	acpi_header_t *alib;
++	acpi_hest_t *hest;
++
++	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
++
++	/* Align ACPI tables to 16 bytes */
++	start = ALIGN(start, 16);
++	current = start;
++
++	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
++
++	/* We need at least an RSDP and an RSDT Table */
++	rsdp = (acpi_rsdp_t *) current;
++	current += sizeof(acpi_rsdp_t);
++	rsdt = (acpi_rsdt_t *) current;
++	current += sizeof(acpi_rsdt_t);
++
++	/* clear all table memory */
++	memset((void *)start, 0, current - start);
++
++	acpi_write_rsdp(rsdp, rsdt, NULL);
++	acpi_write_rsdt(rsdt);
++
++	/* DSDT */
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * DSDT at %lx\n", current);
++	dsdt = (acpi_header_t *)current;
++	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
++	current += dsdt->length;
++	memcpy(dsdt, &AmlCode, dsdt->length);
++	printk(BIOS_DEBUG, "ACPI:  * DSDT @ %p Length %x\n",dsdt,dsdt->length);
++
++	/* FACS */ // it needs 64 bit alignment
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * FACS at %lx\n", current);
++	facs = (acpi_facs_t *) current;
++	current += sizeof(acpi_facs_t);
++	acpi_create_facs(facs);
++
++	/* FADT */
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * FADT at %lx\n", current);
++	fadt = (acpi_fadt_t *) current;
++	current += sizeof(acpi_fadt_t);
++
++	acpi_create_fadt(fadt, facs, dsdt);
++	acpi_add_table(rsdp, fadt);
++
++	/*
++	 * We explicitly add these tables later on:
++	 */
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * HPET at %lx\n", current);
++	hpet = (acpi_hpet_t *) current;
++	current += sizeof(acpi_hpet_t);
++	acpi_create_hpet(hpet);
++	acpi_add_table(rsdp, hpet);
++
++	/* If we want to use HPET Timers Linux wants an MADT */
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * MADT at %lx\n",current);
++	madt = (acpi_madt_t *) current;
++	acpi_create_madt(madt);
++	current += madt->header.length;
++	acpi_add_table(rsdp, madt);
++
++	/* HEST */
++	current = ALIGN(current, 8);
++	hest = (acpi_hest_t *)current;
++	acpi_write_hest((void *)current);
++	acpi_add_table(rsdp, (void *)current);
++	current += ((acpi_header_t *)current)->length;
++
++	/* SRAT */
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * SRAT at %lx\n", current);
++	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
++	if (srat != NULL) {
++		memcpy((void *)current, srat, srat->header.length);
++		srat = (acpi_srat_t *) current;
++		current += srat->header.length;
++		acpi_add_table(rsdp, srat);
++	}
++	else {
++		printk(BIOS_DEBUG, "  AGESA SRAT table NULL. Skipping.\n");
++	}
++
++	/* SLIT */
++	current = ALIGN(current, 8);
++	printk(BIOS_DEBUG, "ACPI:  * SLIT at %lx\n", current);
++	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
++	if (slit != NULL) {
++		memcpy((void *)current, slit, slit->header.length);
++		slit = (acpi_slit_t *) current;
++		current += slit->header.length;
++		acpi_add_table(rsdp, slit);
++	}
++	else {
++		printk(BIOS_DEBUG, "  AGESA SLIT table NULL. Skipping.\n");
++	}
++
++	/* SSDT */
++	current = ALIGN(current, 16);
++	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
++	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
++	if (alib != NULL) {
++		memcpy((void *)current, alib, alib->length);
++		alib = (acpi_header_t *) current;
++		current += alib->length;
++		acpi_add_table(rsdp, (void *)alib);
++	} else {
++		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
++	}
++
++	/* The DSDT needs additional work for the AGESA SSDT Pstate table */
++	/* Keep the comment for a while. */
++	current = ALIGN(current, 16);
++	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
++	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
++	if (ssdt != NULL) {
++		memcpy((void *)current, ssdt, ssdt->length);
++		ssdt = (acpi_header_t *) current;
++		current += ssdt->length;
++		acpi_add_table(rsdp,ssdt);
++	} else {
++		printk(BIOS_DEBUG, "  AGESA SSDT Pstate table NULL. Skipping.\n");
++	}
++
++	current = ALIGN(current, 16);
++	printk(BIOS_DEBUG, "ACPI:  * coreboot TOM SSDT2 at %lx\n", current);
++	ssdt2 = (acpi_header_t *) current;
++	acpi_create_ssdt_generator(ssdt2, ACPI_TABLE_CREATOR);
++	current += ssdt2->length;
++	acpi_add_table(rsdp,ssdt2);
++
++#if DUMP_ACPI_TABLES == 1
++	printk(BIOS_DEBUG, "rsdp\n");
++	dump_mem(rsdp, ((void *)rsdp) + sizeof(acpi_rsdp_t));
++
++	printk(BIOS_DEBUG, "rsdt\n");
++	dump_mem(rsdt, ((void *)rsdt) + sizeof(acpi_rsdt_t));
++
++	printk(BIOS_DEBUG, "madt\n");
++	dump_mem(madt, ((void *)madt) + madt->header.length);
++
++	printk(BIOS_DEBUG, "srat\n");
++	dump_mem(srat, ((void *)srat) + srat->header.length);
++
++	printk(BIOS_DEBUG, "slit\n");
++	dump_mem(slit, ((void *)slit) + slit->header.length);
++
++	printk(BIOS_DEBUG, "alib\n");
++	dump_mem(ssdt, ((void *)alib) + alib->length);
++
++	printk(BIOS_DEBUG, "ssdt\n");
++	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);
++
++	printk(BIOS_DEBUG, "ssdt2\n");
++	dump_mem(ssdt2, ((void *)ssdt2) + ssdt2->length);
++
++	printk(BIOS_DEBUG, "fadt\n");
++	dump_mem(fadt, ((void *)fadt) + fadt->header.length);
++
++	printk(BIOS_DEBUG, "hest\n");
++	dump_mem(hest, ((void *)hest) + hest->header.length);
++#endif
++
++	printk(BIOS_INFO, "ACPI: done.\n");
++	return current;
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/agesawrapper.c b/src/mainboard/gizmosphere/gizmo/agesawrapper.c
+new file mode 100755
+index 0000000..a269826
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/agesawrapper.c
+@@ -0,0 +1,720 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/*-----------------------------------------------------------------------------
++ *						M O D U L E S		U S E D
++ *-----------------------------------------------------------------------------
++ */
++
++#include <stdint.h>
++#include <string.h>
++#include "agesawrapper.h"
++#include "BiosCallOuts.h"
++#include "cpuRegisters.h"
++#include "cpuCacheInit.h"
++#include "cpuApicUtilities.h"
++#include "cpuEarlyInit.h"
++#include "cpuLateInit.h"
++#include "Dispatcher.h"
++#include "cpuCacheInit.h"
++#include "heapManager.h"
++#include "amdlib.h"
++#include "PlatformGnbPcieComplex.h"
++#include "Filecode.h"
++#include <arch/io.h>
++#include <cpu/amd/agesa/s3_resume.h>
++#include <cbmem.h>
++#include <arch/acpi.h>
++
++#define FILECODE UNASSIGNED_FILE_FILECODE
++
++/*------------------------------------------------------------------------------
++ *					D E F I N I T I O N S		A N D		M A C R O S
++ *------------------------------------------------------------------------------
++ */
++
++#define MMCONF_ENABLE 1
++
++/* ACPI table pointers returned by AmdInitLate */
++VOID *DmiTable		= NULL;
++VOID *AcpiPstate	= NULL;
++VOID *AcpiSrat		= NULL;
++VOID *AcpiSlit		= NULL;
++
++VOID *AcpiWheaMce	= NULL;
++VOID *AcpiWheaCmc	= NULL;
++VOID *AcpiAlib		= NULL;
++
++/*------------------------------------------------------------------------------
++ *				T Y P E D E F S		 A N D		 S T R U C T U R E S
++ *------------------------------------------------------------------------------
++ */
++
++/*------------------------------------------------------------------------------
++ *	P R O T O T Y P E S		 O F		 L O C A L		 F U N C T I O N S
++ *------------------------------------------------------------------------------
++ */
++
++/*------------------------------------------------------------------------------
++ *						E X P O R T E D		F U N C T I O N S
++ *------------------------------------------------------------------------------
++ */
++
++/*------------------------------------------------------------------------------
++ *						L O C A L		F U N C T I O N S
++ *------------------------------------------------------------------------------
++ */
++UINT32
++agesawrapper_amdinitcpuio (
++	VOID
++	)
++{
++	AGESA_STATUS		Status;
++	UINT64				MsrReg;
++	UINT32				PciData;
++	PCI_ADDR			PciAddress;
++	AMD_CONFIG_PARAMS	StdHeader;
++
++	/* Enable legacy video routing: D18F1xF4 VGA Enable */
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xF4);
++	PciData = 1;
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++
++	/* The platform BIOS needs to ensure the memory ranges of SB800 legacy
++	 * devices (TPM, HPET, BIOS RAM, Watchdog Timer, I/O APIC and ACPI) are
++	 * set to non-posted regions.
++	 */
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
++	PciData = 0x00FEDF00; // last address before processor local APIC at FEE00000
++	PciData |= 1 << 7;		// set NP (non-posted) bit
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
++	PciData = (0xFED00000 >> 8) | 3; // lowest NP address is HPET at FED00000
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++
++	/* Map the remaining PCI hole as posted MMIO */
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x8C);
++	PciData = 0x00FECF00; // last address before non-posted range
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++	LibAmdMsrRead (0xC001001A, &MsrReg, &StdHeader);
++	MsrReg = (MsrReg >> 8) | 3;
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x88);
++	PciData = (UINT32)MsrReg;
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++
++	/* Send all IO (0000-FFFF) to southbridge. */
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xC4);
++	PciData = 0x0000F000;
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xC0);
++	PciData = 0x00000003;
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++	Status = AGESA_SUCCESS;
++	return (UINT32)Status;
++}
++
++UINT32
++agesawrapper_amdinitmmio (
++	VOID
++	)
++{
++	AGESA_STATUS		Status;
++	UINT64				MsrReg;
++	UINT32				PciData;
++	PCI_ADDR			PciAddress;
++	AMD_CONFIG_PARAMS	StdHeader;
++
++	UINT8				BusRangeVal = 0;
++	UINT8				BusNum;
++	UINT8				Index;
++
++	/*
++	 Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
++	 Address MSR register.
++	*/
++
++	for (Index = 0; Index < 8; Index++) {
++		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
++		if (BusNum == 1) {
++			BusRangeVal = Index;
++			break;
++		}
++	}
++
++	MsrReg = (CONFIG_MMCONF_BASE_ADDRESS | (UINT64)(BusRangeVal << 2) | MMCONF_ENABLE);
++	LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
++
++	/*
++	 Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
++	*/
++	LibAmdMsrRead (0xC001001F, &MsrReg, &StdHeader);
++	MsrReg = MsrReg | 0x0000400000000000ull;
++	LibAmdMsrWrite (0xC001001F, &MsrReg, &StdHeader);
++
++	/* Set Ontario Link Data */
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE0);
++	PciData = 0x01308002;
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE4);
++	PciData = (AMD_APU_SSID<<0x10)|AMD_APU_SVID;
++	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
++
++	Status = AGESA_SUCCESS;
++	return (UINT32)Status;
++}
++
++UINT32
++agesawrapper_amdinitreset (
++	VOID
++	)
++{
++	AGESA_STATUS status;
++	AMD_INTERFACE_PARAMS AmdParamStruct;
++	AMD_RESET_PARAMS AmdResetParams;
++
++	LibAmdMemFill (&AmdParamStruct,
++					0,
++					sizeof (AMD_INTERFACE_PARAMS),
++					&(AmdParamStruct.StdHeader));
++
++	LibAmdMemFill (&AmdResetParams,
++					0,
++					sizeof (AMD_RESET_PARAMS),
++					&(AmdResetParams.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
++	AmdParamStruct.AllocationMethod = ByHost;
++	AmdParamStruct.NewStructSize = sizeof(AMD_RESET_PARAMS);
++	AmdParamStruct.NewStructPtr = &AmdResetParams;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = NULL;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++	AmdCreateStruct (&AmdParamStruct);
++	AmdResetParams.HtConfig.Depth = 0;
++
++	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
++	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
++	AmdReleaseStruct (&AmdParamStruct);
++	return (UINT32)status;
++}
++
++UINT32
++agesawrapper_amdinitearly (
++	VOID
++	)
++{
++	AGESA_STATUS status;
++	AMD_INTERFACE_PARAMS AmdParamStruct;
++	AMD_EARLY_PARAMS		 *AmdEarlyParamsPtr;
++
++	LibAmdMemFill (&AmdParamStruct,
++					0,
++					sizeof (AMD_INTERFACE_PARAMS),
++					&(AmdParamStruct.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
++	AmdParamStruct.AllocationMethod = PreMemHeap;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++	AmdCreateStruct (&AmdParamStruct);
++
++	AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
++	OemCustomizeInitEarly (AmdEarlyParamsPtr);
++
++	status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
++	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
++	AmdReleaseStruct (&AmdParamStruct);
++
++	return (UINT32)status;
++}
++
++UINT32 GetHeapBase(
++	AMD_CONFIG_PARAMS *StdHeader
++	)
++{
++	UINT32 heap;
++
++#if CONFIG_HAVE_ACPI_RESUME
++	/* Both romstage and ramstage has this S3 detect. */
++	if (acpi_get_sleep_type() == 3)
++		heap = (UINT32)cbmem_find(CBMEM_ID_RESUME_SCRATCH) + (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE); /* himem_heap_base + high_stack_size */
++	else
++#endif
++		heap = BIOS_HEAP_START_ADDRESS; /* low mem */
++
++	return heap;
++}
++
++UINT32
++agesawrapper_amdinitpost (
++	VOID
++	)
++{
++	AGESA_STATUS status;
++	UINT16					i;
++	UINT32					*HeadPtr;
++	AMD_INTERFACE_PARAMS	AmdParamStruct;
++	BIOS_HEAP_MANAGER		*BiosManagerPtr;
++
++	LibAmdMemFill (&AmdParamStruct,
++					0,
++					sizeof (AMD_INTERFACE_PARAMS),
++					&(AmdParamStruct.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
++	AmdParamStruct.AllocationMethod = PreMemHeap;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++
++	AmdCreateStruct (&AmdParamStruct);
++	status = AmdInitPost ((AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr);
++	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
++	AmdReleaseStruct (&AmdParamStruct);
++
++	/* Initialize heap space */
++	BiosManagerPtr = (BIOS_HEAP_MANAGER *)GetHeapBase(&AmdParamStruct.StdHeader);
++
++	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
++	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
++		*HeadPtr = 0x00000000;
++		HeadPtr++;
++	}
++	BiosManagerPtr->StartOfAllocatedNodes = 0;
++	BiosManagerPtr->StartOfFreedNodes = 0;
++
++	return (UINT32)status;
++}
++
++UINT32
++agesawrapper_amdinitenv (
++	VOID
++	)
++{
++	AGESA_STATUS status;
++	AMD_INTERFACE_PARAMS AmdParamStruct;
++	PCI_ADDR			 PciAddress;
++	UINT32				 PciValue;
++
++	LibAmdMemFill (&AmdParamStruct,
++					0,
++					sizeof (AMD_INTERFACE_PARAMS),
++					&(AmdParamStruct.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
++	AmdParamStruct.AllocationMethod = PostMemDram;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++	AmdCreateStruct (&AmdParamStruct);
++	status = AmdInitEnv ((AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr);
++	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
++	/* Initialize Subordinate Bus Number and Secondary Bus Number
++	 * In platform BIOS this address is allocated by PCI enumeration code
++		 Modify D1F0x18
++	 */
++	PciAddress.Address.Bus = 0;
++	PciAddress.Address.Device = 1;
++	PciAddress.Address.Function = 0;
++	PciAddress.Address.Register = 0x18;
++	/* Write to D1F0x18 */
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x00010100;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++
++	/* Initialize GMM Base Address for Legacy Bridge Mode
++	*	Modify B1D5F0x18
++	*/
++	PciAddress.Address.Bus = 1;
++	PciAddress.Address.Device = 5;
++	PciAddress.Address.Function = 0;
++	PciAddress.Address.Register = 0x18;
++
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x96000000;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++
++	/* Initialize FB Base Address for Legacy Bridge Mode
++	* Modify B1D5F0x10
++	*/
++	PciAddress.Address.Register = 0x10;
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x80000000;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++
++	/* Initialize GMM Base Address for Pcie Mode
++	*	Modify B0D1F0x18
++	*/
++	PciAddress.Address.Bus = 0;
++	PciAddress.Address.Device = 1;
++	PciAddress.Address.Function = 0;
++	PciAddress.Address.Register = 0x18;
++
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x96000000;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++
++	/* Initialize FB Base Address for Pcie Mode
++	*	Modify B0D1F0x10
++	*/
++	PciAddress.Address.Register = 0x10;
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x80000000;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++
++	/* Initialize MMIO Base and Limit Address
++	*	Modify B0D1F0x20
++	*/
++	PciAddress.Address.Bus = 0;
++	PciAddress.Address.Device = 1;
++	PciAddress.Address.Function = 0;
++	PciAddress.Address.Register = 0x20;
++
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x96009600;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++
++	/* Initialize MMIO Prefetchable Memory Limit and Base
++	*	Modify B0D1F0x24
++	*/
++	PciAddress.Address.Register = 0x24;
++	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	PciValue |= 0x8FF18001;
++	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
++	AmdReleaseStruct (&AmdParamStruct);
++
++	return (UINT32)status;
++}
++
++VOID *
++agesawrapper_getlateinitptr (
++	int pick
++	)
++{
++	switch (pick) {
++		case PICK_DMI:
++			return DmiTable;
++		case PICK_PSTATE:
++			return AcpiPstate;
++		case PICK_SRAT:
++			return AcpiSrat;
++		case PICK_SLIT:
++			return AcpiSlit;
++		case PICK_WHEA_MCE:
++			return AcpiWheaMce;
++		case PICK_WHEA_CMC:
++			return AcpiWheaCmc;
++		case PICK_ALIB:
++			return AcpiAlib;
++		default:
++			return NULL;
++	}
++}
++
++UINT32
++agesawrapper_amdinitmid (
++	VOID
++	)
++{
++	AGESA_STATUS status;
++	AMD_INTERFACE_PARAMS AmdParamStruct;
++
++	/* Enable MMIO on AMD CPU Address Map Controller */
++	agesawrapper_amdinitcpuio ();
++
++	LibAmdMemFill (&AmdParamStruct,
++					0,
++					sizeof (AMD_INTERFACE_PARAMS),
++					&(AmdParamStruct.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
++	AmdParamStruct.AllocationMethod = PostMemDram;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++
++	AmdCreateStruct (&AmdParamStruct);
++
++	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
++	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
++	AmdReleaseStruct (&AmdParamStruct);
++
++	return (UINT32)status;
++}
++
++UINT32
++agesawrapper_amdinitlate (
++	VOID
++	)
++{
++	AGESA_STATUS Status;
++	AMD_INTERFACE_PARAMS AmdParamStruct;
++	AMD_LATE_PARAMS * AmdLateParamsPtr;
++
++	LibAmdMemFill (&AmdParamStruct,
++		       0,
++		       sizeof (AMD_INTERFACE_PARAMS),
++		       &(AmdParamStruct.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
++	AmdParamStruct.AllocationMethod = PostMemDram;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++
++	AmdCreateStruct (&AmdParamStruct);
++	AmdLateParamsPtr = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
++
++	printk (BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32)AmdLateParamsPtr);
++
++	Status = AmdInitLate (AmdLateParamsPtr);
++	if (Status != AGESA_SUCCESS) {
++		agesawrapper_amdreadeventlog();
++		ASSERT(Status == AGESA_SUCCESS);
++	}
++
++	DmiTable    = AmdLateParamsPtr->DmiTable;
++	AcpiPstate  = AmdLateParamsPtr->AcpiPState;
++	AcpiSrat    = AmdLateParamsPtr->AcpiSrat;
++	AcpiSlit    = AmdLateParamsPtr->AcpiSlit;
++	AcpiWheaMce = AmdLateParamsPtr->AcpiWheaMce;
++	AcpiWheaCmc = AmdLateParamsPtr->AcpiWheaCmc;
++	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
++
++	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
++		"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
++		"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
++		 __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
++		 AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
++
++	/* Don't release the structure until coreboot has copied the ACPI tables.
++	 * AmdReleaseStruct (&AmdLateParams);
++	 */
++
++	return (UINT32)Status;
++}
++
++#if CONFIG_HAVE_ACPI_RESUME
++UINT32
++agesawrapper_amdinitresume (
++  VOID
++  )
++{
++	AGESA_STATUS status;
++	AMD_INTERFACE_PARAMS AmdParamStruct;
++	AMD_RESUME_PARAMS     *AmdResumeParamsPtr;
++	S3_DATA_TYPE            S3DataType;
++
++	LibAmdMemFill (&AmdParamStruct,
++		       0,
++		       sizeof (AMD_INTERFACE_PARAMS),
++		       &(AmdParamStruct.StdHeader));
++
++	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESUME;
++	AmdParamStruct.AllocationMethod = PreMemHeap;
++	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
++	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdParamStruct.StdHeader.Func = 0;
++	AmdParamStruct.StdHeader.ImageBasePtr = 0;
++	AmdCreateStruct (&AmdParamStruct);
++
++	AmdResumeParamsPtr = (AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr;
++
++	AmdResumeParamsPtr->S3DataBlock.NvStorageSize = 0;
++	AmdResumeParamsPtr->S3DataBlock.VolatileStorageSize = 0;
++	S3DataType = S3DataTypeNonVolatile;
++
++	OemAgesaGetS3Info (S3DataType,
++			   (u32 *) &AmdResumeParamsPtr->S3DataBlock.NvStorageSize,
++			   (void **) &AmdResumeParamsPtr->S3DataBlock.NvStorage);
++
++	status = AmdInitResume ((AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr);
++
++	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
++	AmdReleaseStruct (&AmdParamStruct);
++
++	return (UINT32)status;
++}
++
++UINT32
++agesawrapper_amds3laterestore (
++  VOID
++  )
++{
++	AGESA_STATUS Status;
++	AMD_INTERFACE_PARAMS    AmdInterfaceParams;
++	AMD_S3LATE_PARAMS       AmdS3LateParams;
++	AMD_S3LATE_PARAMS       *AmdS3LateParamsPtr;
++	S3_DATA_TYPE          S3DataType;
++
++	LibAmdMemFill (&AmdS3LateParams,
++		       0,
++		       sizeof (AMD_S3LATE_PARAMS),
++		       &(AmdS3LateParams.StdHeader));
++	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
++	AmdInterfaceParams.AllocationMethod = ByHost;
++	AmdInterfaceParams.AgesaFunctionName = AMD_S3LATE_RESTORE;
++	AmdInterfaceParams.NewStructPtr = &AmdS3LateParams;
++	AmdInterfaceParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdS3LateParamsPtr = &AmdS3LateParams;
++	AmdInterfaceParams.NewStructSize = sizeof (AMD_S3LATE_PARAMS);
++
++	AmdCreateStruct (&AmdInterfaceParams);
++
++	AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize = 0;
++	S3DataType = S3DataTypeVolatile;
++
++	OemAgesaGetS3Info (S3DataType,
++			   (u32 *) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize,
++			   (void **) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorage);
++
++	Status = AmdS3LateRestore (AmdS3LateParamsPtr);
++	if (Status != AGESA_SUCCESS) {
++		agesawrapper_amdreadeventlog();
++		ASSERT(Status == AGESA_SUCCESS);
++	}
++
++	return (UINT32)Status;
++}
++
++#ifndef __PRE_RAM__
++UINT32
++agesawrapper_amdS3Save (
++	VOID
++	)
++{
++	AGESA_STATUS Status;
++	AMD_S3SAVE_PARAMS *AmdS3SaveParamsPtr;
++	AMD_INTERFACE_PARAMS  AmdInterfaceParams;
++	S3_DATA_TYPE          S3DataType;
++
++	LibAmdMemFill (&AmdInterfaceParams,
++		       0,
++		       sizeof (AMD_INTERFACE_PARAMS),
++		       &(AmdInterfaceParams.StdHeader));
++
++	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
++	AmdInterfaceParams.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
++	AmdInterfaceParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	AmdInterfaceParams.AllocationMethod = PostMemDram;
++	AmdInterfaceParams.AgesaFunctionName = AMD_S3_SAVE;
++	AmdInterfaceParams.StdHeader.AltImageBasePtr = 0;
++	AmdInterfaceParams.StdHeader.Func = 0;
++	AmdCreateStruct(&AmdInterfaceParams);
++
++	AmdS3SaveParamsPtr = (AMD_S3SAVE_PARAMS *)AmdInterfaceParams.NewStructPtr;
++	AmdS3SaveParamsPtr->StdHeader = AmdInterfaceParams.StdHeader;
++
++	Status = AmdS3Save (AmdS3SaveParamsPtr);
++	if (Status != AGESA_SUCCESS) {
++		agesawrapper_amdreadeventlog();
++		ASSERT(Status == AGESA_SUCCESS);
++	}
++
++	S3DataType = S3DataTypeNonVolatile;
++
++	Status = OemAgesaSaveS3Info (
++		S3DataType,
++		AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
++		AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
++
++	if (AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize != 0) {
++		S3DataType = S3DataTypeVolatile;
++
++		Status = OemAgesaSaveS3Info (
++			S3DataType,
++			AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,
++			AmdS3SaveParamsPtr->S3DataBlock.VolatileStorage
++			);
++	}
++
++	OemAgesaSaveMtrr();
++	AmdReleaseStruct (&AmdInterfaceParams);
++
++	return (UINT32)Status;
++}
++#endif	/* #ifndef __PRE_RAM__ */
++#endif	/* CONFIG_HAVE_ACPI_RESUME */
++
++UINT32
++agesawrapper_amdlaterunaptask (
++	UINT32 Func,
++	UINT32 Data,
++	VOID *ConfigPtr
++	)
++{
++	AGESA_STATUS Status;
++	AP_EXE_PARAMS ApExeParams;
++
++	LibAmdMemFill (&ApExeParams,
++					0,
++					sizeof (AP_EXE_PARAMS),
++					&(ApExeParams.StdHeader));
++
++	ApExeParams.StdHeader.AltImageBasePtr = 0;
++	ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
++	ApExeParams.StdHeader.Func = 0;
++	ApExeParams.StdHeader.ImageBasePtr = 0;
++	ApExeParams.FunctionNumber = Func;
++	ApExeParams.RelatedDataBlock = ConfigPtr;
++
++	Status = AmdLateRunApTask (&ApExeParams);
++	if (Status != AGESA_SUCCESS) {
++		agesawrapper_amdreadeventlog();
++		ASSERT(Status == AGESA_SUCCESS);
++	}
++
++	return (UINT32)Status;
++}
++
++UINT32
++agesawrapper_amdreadeventlog (
++	VOID
++	)
++{
++	AGESA_STATUS Status;
++	EVENT_PARAMS AmdEventParams;
++
++	LibAmdMemFill (&AmdEventParams,
++					0,
++					sizeof (EVENT_PARAMS),
++					&(AmdEventParams.StdHeader));
++
++	AmdEventParams.StdHeader.AltImageBasePtr = 0;
++	AmdEventParams.StdHeader.CalloutPtr = NULL;
++	AmdEventParams.StdHeader.Func = 0;
++	AmdEventParams.StdHeader.ImageBasePtr = 0;
++	Status = AmdReadEventLog (&AmdEventParams);
++	while (AmdEventParams.EventClass != 0) {
++		printk(BIOS_DEBUG,"\nEventLog:	EventClass = %lx, EventInfo = %lx.\n",AmdEventParams.EventClass,AmdEventParams.EventInfo);
++		printk(BIOS_DEBUG,"	Param1 = %lx, Param2 = %lx.\n",AmdEventParams.DataParam1,AmdEventParams.DataParam2);
++		printk(BIOS_DEBUG,"	Param3 = %lx, Param4 = %lx.\n",AmdEventParams.DataParam3,AmdEventParams.DataParam4);
++		Status = AmdReadEventLog (&AmdEventParams);
++	}
++
++	return (UINT32)Status;
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/agesawrapper.h b/src/mainboard/gizmosphere/gizmo/agesawrapper.h
+new file mode 100755
+index 0000000..e4d8060
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/agesawrapper.h
+@@ -0,0 +1,96 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/*----------------------------------------------------------------------------------------
++ *						 M O D U L E S		U S E D
++ *----------------------------------------------------------------------------------------
++ */
++
++#ifndef _AGESAWRAPPER_H_
++#define _AGESAWRAPPER_H_
++
++#include <stdint.h>
++#include "Porting.h"
++#include "AGESA.h"
++
++/*----------------------------------------------------------------------------------------
++ *					 D E F I N I T I O N S		A N D		M A C R O S
++ *----------------------------------------------------------------------------------------
++ */
++/* Define AMD Ontario APPU SSID/SVID */
++#define AMD_APU_SVID		0x1022
++#define AMD_APU_SSID		0x1234
++#define PCIE_BASE_ADDRESS	 CONFIG_MMCONF_BASE_ADDRESS
++
++enum {
++	PICK_DMI,		/* DMI Interface */
++	PICK_PSTATE,	/* Acpi Pstate SSDT Table */
++	PICK_SRAT,		/* SRAT Table */
++	PICK_SLIT,		/* SLIT Table */
++	PICK_WHEA_MCE,	/* WHEA MCE table */
++	PICK_WHEA_CMC,	/* WHEA CMV table */
++	PICK_ALIB,		/* SACPI SSDT table with ALIB implementation */
++};
++
++/*----------------------------------------------------------------------------------------
++ *					T Y P E D E F S		 A N D		 S T R U C T U	R E S
++ *----------------------------------------------------------------------------------------
++ */
++
++typedef struct {
++	UINT32 CalloutName;
++	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
++} BIOS_CALLOUT_STRUCT;
++
++/*----------------------------------------------------------------------------------------
++ *		P R O T O T Y P E S		 O F		 L O C A L		 F U	N C T I O N S
++ *----------------------------------------------------------------------------------------
++ */
++
++/*----------------------------------------------------------------------------------------
++ *						E X P O R T E D		F U N C T I O N S
++ *----------------------------------------------------------------------------------------
++ */
++
++/*---------------------------------------------------------------------------------------
++ *						L O C A L		F U N C T I O N S
++ *---------------------------------------------------------------------------------------
++ */
++
++UINT32 agesawrapper_amdinitreset (void);
++UINT32 agesawrapper_amdinitearly (void);
++UINT32 agesawrapper_amdinitenv (void);
++UINT32 agesawrapper_amdinitlate (void);
++UINT32 agesawrapper_amdinitpost (void);
++UINT32 agesawrapper_amdinitmid (void);
++
++UINT32 agesawrapper_amdreadeventlog (void);
++
++UINT32 agesawrapper_amdinitcpuio (void);
++UINT32 agesawrapper_amdinitmmio (void);
++UINT32 agesawrapper_amdinitresume (void);
++UINT32 agesawrapper_amdS3Save (void);
++UINT32 agesawrapper_amds3laterestore (void);
++UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
++void *agesawrapper_getlateinitptr (int pick);
++
++UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
++
++#endif
+diff --git a/src/mainboard/gizmosphere/gizmo/buildOpts.c b/src/mainboard/gizmosphere/gizmo/buildOpts.c
+new file mode 100755
+index 0000000..ba9a350
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/buildOpts.c
+@@ -0,0 +1,470 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/**
++ * @file
++ *
++ * AMD User options selection for a Brazos platform solution system
++ *
++ * This file is placed in the user's platform directory and contains the
++ * build option selections desired for that platform.
++ *
++ * For Information about this file, see @ref platforminstall.
++ *
++ * @xrefitem bom "File Content Label" "Release Content"
++ * @e project:			AGESA
++ * @e sub-project:	Core
++ * @e \$Revision: 23714 $	 @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
++ */
++
++#include "Filecode.h"
++#define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
++
++
++/*	Select the cpu family.	*/
++#define INSTALL_FAMILY_10_SUPPORT FALSE
++#define INSTALL_FAMILY_12_SUPPORT FALSE
++#define INSTALL_FAMILY_14_SUPPORT TRUE
++#define INSTALL_FAMILY_15_SUPPORT FALSE
++
++/*	Select the cpu socket type.	*/
++#define INSTALL_G34_SOCKET_SUPPORT	FALSE
++#define INSTALL_C32_SOCKET_SUPPORT	FALSE
++#define INSTALL_S1G3_SOCKET_SUPPORT FALSE
++#define INSTALL_S1G4_SOCKET_SUPPORT FALSE
++#define INSTALL_ASB2_SOCKET_SUPPORT FALSE
++#define INSTALL_FS1_SOCKET_SUPPORT	FALSE
++#define INSTALL_FM1_SOCKET_SUPPORT	FALSE
++#define INSTALL_FP1_SOCKET_SUPPORT	FALSE
++#define INSTALL_FT1_SOCKET_SUPPORT	TRUE
++#define INSTALL_AM3_SOCKET_SUPPORT	FALSE
++
++/*
++ * Agesa optional capabilities selection.
++ * Uncomment and mark FALSE those features you wish to include in the build.
++ * Comment out or mark TRUE those features you want to REMOVE from the build.
++ */
++
++#define BLDOPT_REMOVE_FAMILY_10_SUPPORT			TRUE
++#define BLDOPT_REMOVE_FAMILY_12_SUPPORT			TRUE
++#define BLDOPT_REMOVE_FAMILY_14_SUPPORT			FALSE
++#define BLDOPT_REMOVE_FAMILY_15_SUPPORT			TRUE
++
++#define BLDOPT_REMOVE_AM3_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_ASB2_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_C32_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_FM1_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_FP1_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_FS1_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_FT1_SOCKET_SUPPORT		FALSE
++#define BLDOPT_REMOVE_G34_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_S1G3_SOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_S1G4_SOCKET_SUPPORT		TRUE
++
++#define BLDOPT_REMOVE_UDIMMS_SUPPORT			FALSE
++#define BLDOPT_REMOVE_RDIMMS_SUPPORT			TRUE
++#define BLDOPT_REMOVE_LRDIMMS_SUPPORT			FALSE
++#define BLDOPT_REMOVE_ECC_SUPPORT				FALSE
++//#define BLDOPT_REMOVE_DCT_INTERLEAVE			TRUE
++#define BLDOPT_REMOVE_BANK_INTERLEAVE			FALSE
++#define BLDOPT_REMOVE_NODE_INTERLEAVE			TRUE
++#define BLDOPT_REMOVE_PARALLEL_TRAINING			FALSE
++#define BLDOPT_REMOVE_DQS_TRAINING				FALSE
++#define BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT		TRUE
++#define BLDOPT_REMOVE_MULTISOCKET_SUPPORT		TRUE
++#define BLDOPT_REMOVE_ACPI_PSTATES				FALSE
++	#define BLDCFG_REMOVE_ACPI_PSTATES_PPC			FALSE
++	#define BLDCFG_REMOVE_ACPI_PSTATES_PCT			FALSE
++	#define BLDCFG_REMOVE_ACPI_PSTATES_PSD			FALSE
++	#define BLDCFG_REMOVE_ACPI_PSTATES_PSS			FALSE
++	#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS			FALSE
++	#define BLDCFG_FORCE_INDEPENDENT_PSD_OBJECT		FALSE
++#define BLDOPT_REMOVE_SRAT						FALSE
++#define BLDOPT_REMOVE_SLIT						FALSE
++#define BLDOPT_REMOVE_WHEA						FALSE
++#define BLDOPT_REMOVE_DMI						TRUE
++#define BLDOPT_REMOVE_HT_ASSIST					TRUE
++#define BLDOPT_REMOVE_ATM_MODE					TRUE
++//#define BLDOPT_REMOVE_MSG_BASED_C1E			TRUE
++//#define BLDOPT_REMOVE_LOW_POWER_STATE_FOR_PROCHOT	TRUE
++#define BLDOPT_REMOVE_MEM_RESTORE_SUPPORT		FALSE
++//#define BLDOPT_REMOVE_C6_STATE				TRUE
++#define BLDOPT_REMOVE_GFX_RECOVERY				TRUE
++#define BLDOPT_REMOVE_EARLY_SAMPLES				TRUE
++
++/*
++ * Agesa entry points used in this implementation.
++ */
++#define AGESA_ENTRY_INIT_RESET					TRUE
++#define AGESA_ENTRY_INIT_RECOVERY				FALSE
++#define AGESA_ENTRY_INIT_EARLY					TRUE
++#define AGESA_ENTRY_INIT_POST					TRUE
++#define AGESA_ENTRY_INIT_ENV					TRUE
++#define AGESA_ENTRY_INIT_MID					TRUE
++#define AGESA_ENTRY_INIT_LATE					TRUE
++#define AGESA_ENTRY_INIT_S3SAVE					TRUE
++#define AGESA_ENTRY_INIT_RESUME					TRUE
++#define AGESA_ENTRY_INIT_LATE_RESTORE				TRUE
++#define AGESA_ENTRY_INIT_GENERAL_SERVICES			TRUE
++
++#define BLDCFG_PCI_MMIO_BASE					CONFIG_MMCONF_BASE_ADDRESS
++#define BLDCFG_PCI_MMIO_SIZE					CONFIG_MMCONF_BUS_NUMBER
++
++#define BLDCFG_VRM_CURRENT_LIMIT				24000
++//#define BLDCFG_VRM_NB_CURRENT_LIMIT			0
++#define BLDCFG_VRM_LOW_POWER_THRESHOLD			24000
++#define BLDCFG_VRM_NB_LOW_POWER_THRESHOLD		1
++#define BLDCFG_VRM_SLEW_RATE					5000
++//#define BLDCFG_VRM_NB_SLEW_RATE				5000
++//#define BLDCFG_VRM_ADDITIONAL_DELAY			0
++//#define BLDCFG_VRM_NB_ADDITIONAL_DELAY		0
++#define BLDCFG_VRM_HIGH_SPEED_ENABLE			TRUE
++//#define BLDCFG_VRM_NB_HIGH_SPEED_ENABLE		FALSE
++#define BLDCFG_VRM_INRUSH_CURRENT_LIMIT			6000
++//#define BLDCFG_VRM_NB_INRUSH_CURRENT_LIMIT	0
++
++//#define BLDCFG_PROCESSOR_SCOPE_NAME0			'C'
++//#define BLDCFG_PROCESSOR_SCOPE_NAME1			'0'
++//#define BLDCFG_PROCESSOR_SCOPE_IN_SB			FALSE
++#define BLDCFG_PLAT_NUM_IO_APICS				3
++//#define BLDCFG_PLATFORM_C1E_MODE				C1eModeDisabled
++//#define BLDCFG_PLATFORM_C1E_OPDATA			0
++//#define BLDCFG_PLATFORM_C1E_MODE_OPDATA1		0
++//#define BLDCFG_PLATFORM_C1E_MODE_OPDATA2		0
++#define BLDCFG_PLATFORM_CSTATE_MODE				CStateModeC6
++#define BLDCFG_PLATFORM_CSTATE_OPDATA			0x840
++#define BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS	0x840
++//#define BLDCFG_PLATFORM_CPB_MODE				CpbModeAuto
++#define BLDCFG_CORE_LEVELING_MODE				CORE_LEVEL_LOWEST
++#define BLDCFG_AP_MTRR_SETTINGS_LIST			&OntarioApMtrrSettingsList
++#define BLDCFG_AMD_PLATFORM_TYPE				AMD_PLATFORM_MOBILE
++//#define BLDCFG_STARTING_BUSNUM				0
++//#define BLDCFG_MAXIMUM_BUSNUM					0xf8
++//#define BLDCFG_ALLOCATED_BUSNUMS				0x20
++//#define BLDCFG_PLATFORM_DEEMPHASIS_LIST		0
++//#define BLDCFG_BUID_SWAP_LIST					0
++//#define BLDCFG_HTDEVICE_CAPABILITIES_OVERRIDE_LIST	0
++//#define BLDCFG_HTFABRIC_LIMITS_LIST			0
++//#define BLDCFG_HTCHAIN_LIMITS_LIST			0
++//#define BLDCFG_BUS_NUMBERS_LIST				0
++//#define BLDCFG_IGNORE_LINK_LIST				0
++//#define BLDCFG_LINK_SKIP_REGANG_LIST			0
++//#define BLDCFG_ADDITIONAL_TOPOLOGIES_LIST		0
++//#define BLDCFG_USE_HT_ASSIST					TRUE
++//#define BLDCFG_USE_ATM_MODE					TRUE
++//#define BLDCFG_PLATFORM_CONTROL_FLOW_MODE		Nfcm
++#define BLDCFG_S3_LATE_RESTORE					TRUE
++//#define BLDCFG_USE_32_BYTE_REFRESH			FALSE
++//#define BLDCFG_USE_VARIABLE_MCT_ISOC_PRIORITY	FALSE
++//#define BLDCFG_PLATFORM_POWER_POLICY_MODE		Performance
++//#define BLDCFG_SET_HTCRC_SYNC_FLOOD			FALSE
++//#define BLDCFG_USE_UNIT_ID_CLUMPING			FALSE
++//#define BLDCFG_SYSTEM_PHYSICAL_SOCKET_MAP		0
++#define BLDCFG_CFG_GNB_HD_AUDIO					FALSE
++//#define BLDCFG_CFG_ABM_SUPPORT				FALSE
++//#define BLDCFG_CFG_DYNAMIC_REFRESH_RATE		0
++//#define BLDCFG_CFG_LCD_BACK_LIGHT_CONTROL		0
++//#define BLDCFG_MEM_INIT_PSTATE				0
++//#define BLDCFG_AMD_PSTATE_CAP_VALUE			0
++#define BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT		DDR1333_FREQUENCY
++#define BLDCFG_MEMORY_MODE_UNGANGED				TRUE
++//#define BLDCFG_MEMORY_QUAD_RANK_CAPABLE		TRUE
++//#define BLDCFG_MEMORY_QUADRANK_TYPE			QUADRANK_UNBUFFERED
++#define BLDCFG_MEMORY_SODIMM_CAPABLE			TRUE
++#define BLDCFG_MEMORY_LRDIMM_CAPABLE			FALSE
++#define BLDCFG_MEMORY_ENABLE_BANK_INTERLEAVING	TRUE
++#define BLDCFG_MEMORY_ENABLE_NODE_INTERLEAVING	FALSE
++#define BLDCFG_MEMORY_CHANNEL_INTERLEAVING		FALSE
++#define BLDCFG_MEMORY_POWER_DOWN				TRUE
++#define BLDCFG_POWER_DOWN_MODE					POWER_DOWN_BY_CHIP_SELECT
++//#define BLDCFG_ONLINE_SPARE					FALSE
++//#define BLDCFG_MEMORY_PARITY_ENABLE			FALSE
++#define BLDCFG_BANK_SWIZZLE						TRUE
++#define BLDCFG_TIMING_MODE_SELECT				TIMING_MODE_AUTO
++#define BLDCFG_MEMORY_CLOCK_SELECT				DDR1333_FREQUENCY
++#define BLDCFG_DQS_TRAINING_CONTROL				TRUE
++#define BLDCFG_IGNORE_SPD_CHECKSUM				FALSE
++#define BLDCFG_USE_BURST_MODE					FALSE
++#define BLDCFG_MEMORY_ALL_CLOCKS_ON				FALSE
++//#define BLDCFG_ENABLE_ECC_FEATURE				TRUE
++//#define BLDCFG_ECC_REDIRECTION				FALSE
++//#define BLDCFG_SCRUB_DRAM_RATE				0
++//#define BLDCFG_SCRUB_L2_RATE					0
++//#define BLDCFG_SCRUB_L3_RATE					0
++//#define BLDCFG_SCRUB_IC_RATE					0
++//#define BLDCFG_SCRUB_DC_RATE					0
++//#define BLDCFG_ECC_SYNC_FLOOD					0
++//#define BLDCFG_ECC_SYMBOL_SIZE				0
++//#define BLDCFG_1GB_ALIGN						FALSE
++#define BLDCFG_UMA_ALLOCATION_MODE				UMA_AUTO
++#define BLDCFG_UMA_ALLOCATION_SIZE				0
++#define BLDCFG_UMA_ABOVE4G_SUPPORT				FALSE
++#define BLDCFG_UMA_ALIGNMENT					NO_UMA_ALIGNED
++#define BLDCFG_HEAP_DRAM_ADDRESS				0xB0000
++#define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS	0xD0000000
++
++/*
++ * Agesa configuration values selection.
++ * Uncomment and specify the value for the configuration options
++ * needed by the system.
++ */
++#include "AGESA.h"
++#include "CommonReturns.h"
++
++/* The fixed MTRR values to be set after memory initialization. */
++CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
++{
++	{ AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000ull },
++	{ AMD_AP_MTRR_FIX4k_C0000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_C8000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_D0000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_D8000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_E0000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_E8000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_F0000, 0x1E1E1E1E1E1E1E1Eull },
++	{ AMD_AP_MTRR_FIX4k_F8000, 0x1E1E1E1E1E1E1E1Eull },
++	{ CPU_LIST_TERMINAL }
++};
++
++/*	Include the files that instantiate the configuration definitions.	*/
++
++#include "cpuRegisters.h"
++#include "cpuFamRegisters.h"
++#include "cpuFamilyTranslation.h"
++#include "AdvancedApi.h"
++#include "heapManager.h"
++#include "CreateStruct.h"
++#include "cpuFeatures.h"
++#include "Table.h"
++#include "cpuEarlyInit.h"
++#include "cpuLateInit.h"
++#include "GnbInterface.h"
++
++/*****************************************************************************
++ *	 Define the RELEASE VERSION string
++ *
++ * The Release Version string should identify the next planned release.
++ * When a branch is made in preparation for a release, the release manager
++ * should change/confirm that the branch version of this file contains the
++ * string matching the desired version for the release. The trunk version of
++ * the file should always contain a trailing 'X'. This will make sure that a
++ * development build from trunk will not be confused for a released version.
++ * The release manager will need to remove the trailing 'X' and update the
++ * version string as appropriate for the release. The trunk copy of this file
++ * should also be updated/incremented for the next expected version, + trailing 'X'
++ ****************************************************************************/
++// This is the delivery package title, "BrazosPI"
++// This string MUST be exactly 8 characters long
++#define AGESA_PACKAGE_STRING	{'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
++
++// This is the release version number of the AGESA component
++// This string MUST be exactly 12 characters long
++#define AGESA_VERSION_STRING	{'V', '1', '.', '1', '.', '0', '.', '3', ' ', ' ', ' ', ' '}
++
++/* MEMORY_BUS_SPEED */
++#define DDR400_FREQUENCY				200 ///< DDR 400
++#define DDR533_FREQUENCY				266 ///< DDR 533
++#define DDR667_FREQUENCY				333 ///< DDR 667
++#define DDR800_FREQUENCY				400 ///< DDR 800
++#define DDR1066_FREQUENCY				533 ///< DDR 1066
++#define DDR1333_FREQUENCY				667 ///< DDR 1333
++#define DDR1600_FREQUENCY				800 ///< DDR 1600
++#define DDR1866_FREQUENCY				933 ///< DDR 1866
++#define UNSUPPORTED_DDR_FREQUENCY		934 ///< Highest limit of DDR frequency
++
++/* QUANDRANK_TYPE*/
++#define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
++#define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
++
++/* USER_MEMORY_TIMING_MODE */
++#define TIMING_MODE_AUTO				0 ///< Use best rate possible
++#define TIMING_MODE_LIMITED				1 ///< Set user top limit
++#define TIMING_MODE_SPECIFIC			2 ///< Set user specified speed
++
++/* POWER_DOWN_MODE */
++#define POWER_DOWN_BY_CHANNEL			0 ///< Channel power down mode
++#define POWER_DOWN_BY_CHIP_SELECT		1 ///< Chip select power down mode
++
++// The following definitions specify the default values for various parameters in which there are
++// no clearly defined defaults to be used in the common file.	The values below are based on product
++// and BKDG content, please consult the AGESA Memory team for consultation.
++#define DFLT_SCRUB_DRAM_RATE			(0)
++#define DFLT_SCRUB_L2_RATE				(0)
++#define DFLT_SCRUB_L3_RATE				(0)
++#define DFLT_SCRUB_IC_RATE				(0)
++#define DFLT_SCRUB_DC_RATE				(0)
++#define DFLT_MEMORY_QUADRANK_TYPE		QUADRANK_UNBUFFERED
++#define DFLT_VRM_SLEW_RATE				(5000)
++
++// Instantiate all solution relevant data.
++#include "PlatformInstall.h"
++
++/*----------------------------------------------------------------------------------------
++ *						CUSTOMER OVERIDES MEMORY TABLE
++ *----------------------------------------------------------------------------------------
++ */
++
++/*
++ *	Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
++ *	(e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
++ *	is populated, AGESA will base its settings on the data from the table. Otherwise, it will
++ *	use its default conservative settings.
++ */
++CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
++	//
++	// The following macros are supported (use comma to separate macros):
++	//
++	// MEMCLK_DIS_MAP(SocketID, ChannelID, MemClkDisBit0CSMap,..., MemClkDisBit7CSMap)
++	//			The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
++	//			AGESA will base on this value to disable unused MemClk to save power.
++	//			Example:
++	//			BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
++	//					 Bit AM3/S1g3 pin name
++	//					 0	 M[B,A]_CLK_H/L[0]
++	//					 1	 M[B,A]_CLK_H/L[1]
++	//					 2	 M[B,A]_CLK_H/L[2]
++	//					 3	 M[B,A]_CLK_H/L[3]
++	//					 4	 M[B,A]_CLK_H/L[4]
++	//					 5	 M[B,A]_CLK_H/L[5]
++	//					 6	 M[B,A]_CLK_H/L[6]
++	//					 7	 M[B,A]_CLK_H/L[7]
++	//			And platform has the following routing:
++	//					 CS0	 M[B,A]_CLK_H/L[4]
++	//					 CS1	 M[B,A]_CLK_H/L[2]
++	//					 CS2	 M[B,A]_CLK_H/L[3]
++	//					 CS3	 M[B,A]_CLK_H/L[5]
++	//			Then platform can specify the following macro:
++	//			MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
++	//
++	// CKE_TRI_MAP(SocketID, ChannelID, CKETriBit0CSMap, CKETriBit1CSMap)
++	//			The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
++	//			AGESA will base on this value to tristate unused CKE to save power.
++	//
++	// ODT_TRI_MAP(SocketID, ChannelID, ODTTriBit0CSMap,..., ODTTriBit3CSMap)
++	//			The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
++	//			AGESA will base on this value to tristate unused ODT pins to save power.
++	//
++	// CS_TRI_MAP(SocketID, ChannelID, CSTriBit0CSMap,..., CSTriBit7CSMap)
++	//			The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
++	//			AGESA will base on this value to tristate unused Chip select to save power.
++	//
++	// NUMBER_OF_DIMMS_SUPPORTED(SocketID, ChannelID, NumberOfDimmSlotsPerChannel)
++	//			Specifies the number of DIMM slots per channel.
++	//
++	// NUMBER_OF_CHIP_SELECTS_SUPPORTED(SocketID, ChannelID, NumberOfChipSelectsPerChannel)
++	//			Specifies the number of Chip selects per channel.
++	//
++	// NUMBER_OF_CHANNELS_SUPPORTED(SocketID, NumberOfChannelsPerSocket)
++	//			Specifies the number of channels per socket.
++	//
++	// OVERRIDE_DDR_BUS_SPEED(SocketID, ChannelID, USER_MEMORY_TIMING_MODE, MEMORY_BUS_SPEED)
++	//			Specifies DDR bus speed of channel ChannelID on socket SocketID.
++	//
++	// DRAM_TECHNOLOGY(SocketID, TECHNOLOGY_TYPE)
++	//			Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
++	//
++	// WRITE_LEVELING_SEED(SocketID, ChannelID, Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed, Byte4Seed, Byte5Seed,
++	//			Byte6Seed, Byte7Seed, ByteEccSeed)
++	//			Specifies the write leveling seed for a channel of a socket.
++	//
++
++	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, TWO_DIMM),
++	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, ONE_DIMM),
++
++	// Gizmos soldered down memory uses memory CLK0 and CLK1 on CS0
++	MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
++
++	// Gizmos soldered down memory requires different seeds
++#define WLSEED 0x08
++#define RXSEED 0x40
++	WRITE_LEVELING_SEED(ANY_SOCKET, ANY_CHANNEL, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED, WLSEED),
++	HW_RXEN_SEED( ANY_SOCKET, ANY_CHANNEL, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED, RXSEED),
++
++	PSO_END
++};
++
++/*
++ * These tables are optional and may be used to adjust memory timing settings
++ */
++#include "mm.h"
++#include "mn.h"
++
++//DA Customer table
++CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
++{
++ // Hardcoded Memory Training Values
++
++ // The following macro should be used to override training values for your platform
++ //
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNodes, MTDcts, MTDIMMs, BFRdDqsDly, MTOverride, 0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20),
++ //
++ //	 NOTE:
++ //	 The following training hardcode values are example values that were taken from a tilapia motherboard
++ //	 with a particular DIMM configuration.	To hardcode your own values, uncomment the appropriate line in
++ //	 the table and replace the byte lane values with your own.
++ //
++ //	 ------------------ BYTE LANES ----------------------
++ //	BL0	 BL1	 BL2	 BL3	 BL4	 BL5	 BL6	 Bl7	 ECC
++ // Write Data Timing
++ // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM0, BFWrDatDly, MTOverride, 0x1D, 0x20, 0x26, 0x2B, 0x37, 0x3A, 0x3e, 0x3F, 0x30),// DCT0, DIMM0
++ // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM1, BFWrDatDly, MTOverride, 0x1D, 0x00, 0x06, 0x0B, 0x17, 0x1A, 0x1E, 0x1F, 0x10),// DCT0, DIMM1
++ // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct1, MTDIMM0, BFWrDatDly, MTOverride, 0x18, 0x1D, 0x27, 0x2B, 0x3B, 0x3B, 0x3E, 0x3E, 0x30),// DCT1, DIMM0
++ // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct1, MTDIMM1, BFWrDatDly, MTOverride, 0x18, 0x1D, 0x1C, 0x0B, 0x17, 0x1A, 0x1D, 0x1C, 0x10),// DCT1, DIMM1
++
++ // DQS Receiver Enable
++ // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct0, MTDIMM0, BFRcvEnDly, MTOverride, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),// DCT0, DIMM0
++ // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct0, MTDIMM1, BFRcvEnDly, MTOverride, 0x7C, 0x7D, 0x7E, 0x81, 0x88, 0x8F, 0x96, 0x9F, 0x84),// DCT0, DIMM1
++ // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct1, MTDIMM0, BFRcvEnDly, MTOverride, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),// DCT1, DIMM0
++ // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct1, MTDIMM1, BFRcvEnDly, MTOverride, 0x1C, 0x1D, 0x1E, 0x01, 0x08, 0x0F, 0x16, 0x1F, 0x04),// DCT1, DIMM1
++
++ // Write DQS Delays
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM0, BFWrDqsDly, MTOverride, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),// DCT0, DIMM0
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM1, BFWrDqsDly, MTOverride, 0x06, 0x0D, 0x12, 0x1A, 0x25, 0x28, 0x2C, 0x2C, 0x44),// DCT0, DIMM1
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM0, BFWrDqsDly, MTOverride, 0x07, 0x0E, 0x14, 0x1B, 0x24, 0x29, 0x2B, 0x2C, 0x1F),// DCT1, DIMM0
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM1, BFWrDqsDly, MTOverride, 0x07, 0x0C, 0x14, 0x19, 0x25, 0x28, 0x2B, 0x2B, 0x1A),// DCT1, DIMM1
++
++ // Read DQS Delays
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM0, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x0E, 0x10),// DCT0, DIMM0
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM1, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT0, DIMM1
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM0, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT1, DIMM0
++ // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM1, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT1, DIMM1
++ //--------------------------------------------------------------------------------------------------------------------------------------------------
++ // TABLE END
++	NBACCESS (MTEnd, 0,	0, 0, 0, 0),			// End of Table
++};
++CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);
++
++/* ***************************************************************************
++ *	 Optional User code to be included into the AGESA build
++ *		These may be 32-bit call-out routines...
++ */
++//AGESA_STATUS
++//AgesaReadSpd (
++//	IN				UINTN								 FcnData,
++//	IN OUT		AGESA_READ_SPD_PARAMS *ReadSpd
++//	)
++//{
++//	/* platform code to read an SPD...	*/
++//	return Status;
++//}
++
++
+diff --git a/src/mainboard/gizmosphere/gizmo/cmos.layout b/src/mainboard/gizmosphere/gizmo/cmos.layout
+new file mode 100755
+index 0000000..54ec400
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/cmos.layout
+@@ -0,0 +1,119 @@
++#*****************************************************************************
++#
++#  This file is part of the coreboot project.
++#
++#  Copyright (C) 2011 Advanced Micro Devices, Inc.
++#  Copyright (C) 2013 Sage Electronic Engineering, LLC
++#
++#  This program is free software; you can redistribute it and/or modify
++#  it under the terms of the GNU General Public License as published by
++#  the Free Software Foundation; version 2 of the License.
++#
++#  This program is distributed in the hope that it will be useful,
++#  but WITHOUT ANY WARRANTY; without even the implied warranty of
++#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++#  GNU General Public License for more details.
++#
++#  You should have received a copy of the GNU General Public License
++#  along with this program; if not, write to the Free Software
++#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++#*****************************************************************************
++
++entries
++
++#start-bit length  config config-ID    name
++#0            8       r       0        seconds
++#8            8       r       0        alarm_seconds
++#16           8       r       0        minutes
++#24           8       r       0        alarm_minutes
++#32           8       r       0        hours
++#40           8       r       0        alarm_hours
++#48           8       r       0        day_of_week
++#56           8       r       0        day_of_month
++#64           8       r       0        month
++#72           8       r       0        year
++#80           4       r       0        rate_select
++#84           3       r       0        REF_Clock
++#87           1       r       0        UIP
++#88           1       r       0        auto_switch_DST
++#89           1       r       0        24_hour_mode
++#90           1       r       0        binary_values_enable
++#91           1       r       0        square-wave_out_enable
++#92           1       r       0        update_finished_enable
++#93           1       r       0        alarm_interrupt_enable
++#94           1       r       0        periodic_interrupt_enable
++#95           1       r       0        disable_clock_updates
++#96         288       r       0        temporary_filler
++0          384       r       0        reserved_memory
++384          1       e       4        boot_option
++385          1       e       4        last_boot
++386          1       e       1        ECC_memory
++388          4       r       0        reboot_bits
++392          3       e       5        baud_rate
++395          1       e       1        hw_scrubber
++396          1       e       1        interleave_chip_selects
++397          2       e       8        max_mem_clock
++399          1       e       2        multi_core
++400          1       e       1        power_on_after_fail
++412          4       e       6        debug_level
++416          4       e       7        boot_first
++420          4       e       7        boot_second
++424          4       e       7        boot_third
++428          4       h       0        boot_index
++432          8       h       0        boot_countdown
++440          4       e       9        slow_cpu
++444          1       e       1        nmi
++445          1       e       1        iommu
++728        256       h       0        user_data
++984         16       h       0        check_sum
++# Reserve the extended AMD configuration registers
++1000        24       r       0        amd_reserved
++
++
++
++enumerations
++
++#ID value   text
++1     0     Disable
++1     1     Enable
++2     0     Enable
++2     1     Disable
++4     0     Fallback
++4     1     Normal
++5     0     115200
++5     1     57600
++5     2     38400
++5     3     19200
++5     4     9600
++5     5     4800
++5     6     2400
++5     7     1200
++6     6     Notice
++6     7     Info
++6     8     Debug
++6     9     Spew
++7     0     Network
++7     1     HDD
++7     2     Floppy
++7     8     Fallback_Network
++7     9     Fallback_HDD
++7     10    Fallback_Floppy
++#7     3     ROM
++8     0     400Mhz
++8     1     333Mhz
++8     2     266Mhz
++8     3     200Mhz
++9     0     off
++9     1     87.5%
++9     2     75.0%
++9     3     62.5%
++9     4     50.0%
++9     5     37.5%
++9     6     25.0%
++9     7     12.5%
++
++checksums
++
++checksum 392 983 984
++
++
+diff --git a/src/mainboard/gizmosphere/gizmo/devicetree.cb b/src/mainboard/gizmosphere/gizmo/devicetree.cb
+new file mode 100755
+index 0000000..301f79a
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/devicetree.cb
+@@ -0,0 +1,69 @@
++#
++# This file is part of the coreboot project.
++#
++# Copyright (C) 2011 Advanced Micro Devices, Inc.
++# Copyright (C) 2013 Sage Electronic Engineering, LLC
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; version 2 of the License.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++#
++chip northbridge/amd/agesa/family14/root_complex
++	device cpu_cluster 0 on
++			chip cpu/amd/agesa/family14
++			  device lapic 0 on end
++			end
++	end
++	device domain 0 on
++		subsystemid 0x1022 0x1510 inherit
++			chip northbridge/amd/agesa/family14 # CPU side of HT root complex
++			chip northbridge/amd/agesa/family14 # PCI side of HT root complex
++				device pci 0.0 on end # Root Complex
++				device pci 1.0 on end # Internal Graphics P2P bridge 0x9804
++				device pci 4.0 off end # PCIE P2P bridge 0x9604
++				device pci 5.0 on end # PCIE P2P bridge 0x9605
++				device pci 6.0 off end # PCIE P2P bridge 0x9606
++				device pci 7.0 off end # PCIE P2P bridge 0x9607
++				device pci 8.0 off end # NB/SB Link P2P bridge
++			end # agesa northbridge
++
++			chip southbridge/amd/cimx/sb800 # it is under NB/SB Link, but on the same pri bus
++				device pci 11.0 on end # SATA
++				device pci 12.0 on end # USB
++				device pci 12.1 on end # USB
++				device pci 12.2 on end # USB
++				device pci 13.0 on end # USB
++				device pci 13.1 on end # USB
++				device pci 13.2 on end # USB
++				device pci 14.0 on end # SM
++				device pci 14.1 on end # IDE	0x439c
++				device pci 14.2 on end # HDA	0x4383
++				device pci 14.3 on end # LPC	0x439d
++				device pci 14.4 on end # PCIB 0x4384, NOTE: this device must always be enabled or removed
++				device pci 14.5 off end # USB 2
++				device pci 15.0 on end # PCIe PortA # PCIe x4 slot off of high speed edge connector
++				device pci 16.0 off end # OHCI USB3
++				device pci 16.2 off end # EHCI USB3
++				register "gpp_configuration" = "0" #4:0:0:0
++				register "boot_switch_sata_ide" = "0" # 0: boot from SATA. 1: IDE
++			end	#southbridge/amd/cimx/sb800
++			device pci 18.0 on end
++			device pci 18.1 on end
++			device pci 18.2 on end
++			device pci 18.3 on end
++			device pci 18.4 on end
++			device pci 18.5 on end
++			device pci 18.6 on end
++			device pci 18.7 on end
++		end #chip northbridge/amd/agesa/family14 # CPU side of HT root complex
++	end #domain
++end #northbridge/amd/agesa/family14/root_complex
+diff --git a/src/mainboard/gizmosphere/gizmo/dsdt.asl b/src/mainboard/gizmosphere/gizmo/dsdt.asl
+new file mode 100755
+index 0000000..4e203cd
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/dsdt.asl
+@@ -0,0 +1,64 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++/* DefinitionBlock Statement */
++DefinitionBlock (
++	"DSDT.AML",	/* Output filename */
++	"DSDT",		/* Signature */
++	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
++	"GIZSPH",	/* OEMID */
++	"COREBOOT",	/* TABLE ID */
++	0x00010001	/* OEM Revision */
++	)
++{	/* Start of ASL file */
++	/* #include <arch/x86/acpi/debug.asl> */	/* Include global debug methods if needed */
++
++	#include "acpi/mainboard.asl"
++
++	#include <cpu/amd/agesa/family14/acpi/cpu.asl>
++
++	#include "acpi/routing.asl"
++
++	Scope(\_SB) {
++		/* global utility methods expected within the \_SB scope */
++		#include <arch/x86/acpi/globutil.asl>
++
++		Device(PCI0) {
++
++			/* Describe the AMD Northbridge */
++			#include <northbridge/amd/agesa/family14/acpi/northbridge.asl>
++
++			/* Describe the AMD Fusion Controller Hub Southbridge */
++			#include <southbridge/amd/cimx/sb800/acpi/fch.asl>
++
++		}
++	}   /* End Scope(_SB)  */
++
++	/* Contains the supported sleep states for this chipset */
++	#include <southbridge/amd/cimx/sb800/acpi/sleepstates.asl>
++
++	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
++	#include "acpi/sleep.asl"
++
++	#include "acpi/gpe.asl"
++	#include <southbridge/amd/cimx/sb800/acpi/smbus.asl>
++	#include "acpi/thermal.asl"
++}
++/* End of ASL file */
+diff --git a/src/mainboard/gizmosphere/gizmo/get_bus_conf.c b/src/mainboard/gizmosphere/gizmo/get_bus_conf.c
+new file mode 100755
+index 0000000..89118aa
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/get_bus_conf.c
+@@ -0,0 +1,147 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include <console/console.h>
++#include <device/pci.h>
++#include <device/pci_ids.h>
++#include <string.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <cpu/amd/amdfam14.h>
++#include "agesawrapper.h"
++#if CONFIG_AMD_SB_CIMX
++#include <sb_cimx.h>
++#endif
++
++
++/* Global variables for MB layouts and these will be shared by irqtable mptable
++* and acpi_tables busnum is default.
++*/
++u8 bus_isa;
++u8 bus_sb800[6];
++u32 apicid_sb800;
++
++/*
++* Here you only need to set value in pci1234 for HT-IO that could be installed or not
++* You may need to preset pci1234 for HTIO board,
++* please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
++*/
++u32 pci1234x[] = {
++	0x0000ff0,
++};
++
++u32 bus_type[256];
++u32 sbdn_sb800;
++
++static u32 get_bus_conf_done = 0;
++
++#if CONFIG_HAVE_ACPI_RESUME
++extern u8 acpi_slp_type;
++#endif
++
++void get_bus_conf(void)
++{
++	u32 apicid_base;
++	u32 status;
++
++	device_t dev;
++	int i, j;
++
++	if (get_bus_conf_done == 1)
++		return;	 /* do it only once */
++
++	get_bus_conf_done = 1;
++
++/*
++ * This is the call to AmdInitLate.	It is really in the wrong place, conceptually,
++ * but functionally within the coreboot model, this is the best place to make the
++ * call.	The logically correct place to call AmdInitLate is after PCI scan is done,
++ * after the decision about S3 resume is made, and before the system tables are
++ * written into RAM.	The routine that is responsible for writing the tables is
++ * "write_tables", called near the end of "hardwaremain".	There is no platform
++ * specific entry point between the S3 resume decision point and the call to
++ * "write_tables", and the next platform specific entry points are the calls to
++ * the ACPI table write functions.	The first of ose would seem to be the right
++ * place, but other table write functions, e.g. the PIRQ table write function, are
++ * called before the ACPI tables are written.	This routine is called at the beginning
++ * of each of the write functions called prior to the ACPI write functions, so this
++ * becomes the best place for this call.
++ */
++#if CONFIG_HAVE_ACPI_RESUME
++	if (acpi_slp_type != 3) {
++		status = agesawrapper_amdinitlate();
++		if(status)
++			printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
++		status = agesawrapper_amdS3Save();
++		if(status)
++			printk(BIOS_DEBUG, "agesawrapper_amds3save failed: %x \n", status);
++	}
++#else
++	status = agesawrapper_amdinitlate();
++	if(status)
++		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
++#endif
++	sbdn_sb800 = 0;
++
++	memset(bus_sb800, 0, sizeof(bus_sb800));
++
++	for (i = 0; i < 256; i++) {
++		bus_type[i] = 0; /* default ISA bus. */
++	}
++
++	bus_type[0] = 1;	/* pci */
++
++//	bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
++	bus_sb800[0] = (pci1234x[0] >> 16) & 0xff;
++
++	/* sb800 */
++	dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, 4));
++
++	if (dev) {
++		bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
++
++		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
++		bus_isa++;
++		for (j = bus_sb800[1]; j < bus_isa; j++)
++			bus_type[j] = 1;
++	}
++
++	for (i = 0; i < 4; i++) {
++		dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, i));
++		if (dev) {
++			bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
++			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
++			bus_isa++;
++		}
++	}
++
++	for (j = bus_sb800[2]; j < bus_isa; j++)
++		bus_type[j] = 1;
++
++
++	/* I/O APICs:    APIC ID Version State   Address */
++	bus_isa = 10;
++	apicid_base = CONFIG_MAX_CPUS;
++	apicid_sb800 = apicid_base;
++
++#if CONFIG_AMD_SB_CIMX
++	sb_Late_Post();
++#endif
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/irq_tables.c b/src/mainboard/gizmosphere/gizmo/irq_tables.c
+new file mode 100755
+index 0000000..dd62ed8
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/irq_tables.c
+@@ -0,0 +1,123 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++
++#include <console/console.h>
++#include <device/pci.h>
++#include <string.h>
++#include <stdint.h>
++#include <arch/pirq_routing.h>
++#include <cpu/amd/amdfam14.h>
++
++
++static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
++			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
++			    u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
++			    u8 slot, u8 rfu)
++{
++	pirq_info->bus = bus;
++	pirq_info->devfn = devfn;
++	pirq_info->irq[0].link = link0;
++	pirq_info->irq[0].bitmap = bitmap0;
++	pirq_info->irq[1].link = link1;
++	pirq_info->irq[1].bitmap = bitmap1;
++	pirq_info->irq[2].link = link2;
++	pirq_info->irq[2].bitmap = bitmap2;
++	pirq_info->irq[3].link = link3;
++	pirq_info->irq[3].bitmap = bitmap3;
++	pirq_info->slot = slot;
++	pirq_info->rfu = rfu;
++}
++extern u8 bus_isa;
++extern u8 bus_sb800[6];
++extern unsigned long sbdn_sb800;
++
++unsigned long write_pirq_routing_table(unsigned long addr)
++{
++
++	struct irq_routing_table *pirq;
++	struct irq_info *pirq_info;
++	u32 slot_num;
++	u8 *v;
++
++	u8 sum = 0;
++	int i;
++
++
++	get_bus_conf();		/* it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c */
++
++
++	/* Align the table to be 16 byte aligned. */
++	addr += 15;
++	addr &= ~15;
++
++	/* This table must be between 0xf0000 & 0x100000 */
++	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
++
++	pirq = (void *)(addr);
++	v = (u8 *) (addr);
++
++	pirq->signature = PIRQ_SIGNATURE;
++	pirq->version = PIRQ_VERSION;
++
++	pirq->rtr_bus = bus_sb800[0];
++	pirq->rtr_devfn = ((sbdn_sb800 + 0x14) << 3) | 4;
++
++	pirq->exclusive_irqs = 0;
++
++	pirq->rtr_vendor = 0x1002;
++	pirq->rtr_device = 0x4384;
++
++	pirq->miniport_data = 0;
++
++	memset(pirq->rfu, 0, sizeof(pirq->rfu));
++
++	pirq_info = (void *)(&pirq->checksum + 1);
++	slot_num = 0;
++
++
++	/* pci bridge */
++	write_pirq_info(pirq_info, bus_sb800[0], ((sbdn_sb800 + 0x14) << 3) | 4,
++			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
++			0);
++	pirq_info++;
++
++
++
++	slot_num++;
++
++
++
++	pirq->size = 32 + 16 * slot_num;
++
++	for (i = 0; i < pirq->size; i++)
++		sum += v[i];
++
++	sum = pirq->checksum - sum;
++
++	if (sum != pirq->checksum) {
++		pirq->checksum = sum;
++	}
++
++	printk(BIOS_INFO, "write_pirq_routing_table done.\n");
++
++	return (unsigned long)pirq_info;
++
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/mainboard.c b/src/mainboard/gizmosphere/gizmo/mainboard.c
+new file mode 100755
+index 0000000..e24b016
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/mainboard.c
+@@ -0,0 +1,105 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include <console/console.h>
++#include <device/device.h>
++#include <device/pci.h>
++#include <arch/io.h>
++#include <cpu/x86/msr.h>
++#include <device/pci_def.h>
++#include <southbridge/amd/sb800/sb800.h>
++#include <arch/acpi.h>
++#include "BiosCallOuts.h"
++#include <cpu/amd/agesa/s3_resume.h>
++#include <cpu/amd/mtrr.h>
++#include "SBPLATFORM.h"
++#include <delay.h>
++
++void set_pcie_reset(void);
++void set_pcie_dereset(void);
++
++/**
++ * TODO
++ * SB CIMx callback
++ */
++void set_pcie_reset(void)
++{
++}
++
++/**
++ * TODO
++ * mainboard specific SB CIMx callback
++ */
++void set_pcie_dereset(void)
++{
++}
++
++
++/**********************************************
++ * Enable the dedicated functions of the board.
++ **********************************************/
++static void mainboard_enable(device_t dev)
++{
++	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
++
++/*
++ * The mainboard is the first place that we get control in ramstage. Check
++ * for S3 resume and call the appropriate AGESA/CIMx resume functions.
++ */
++#if CONFIG_HAVE_ACPI_RESUME
++	acpi_slp_type = acpi_get_sleep_type();
++#endif
++
++	/* enable GPP CLK0 thru CLK1 */
++	/* disable GPP CLK2 thru SLT_GFX_CLK */
++	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
++	*(misc_mem_clk_cntrl + 0) = 0xFF;
++	*(misc_mem_clk_cntrl + 1) = 0x00;
++	*(misc_mem_clk_cntrl + 2) = 0x00;
++	*(misc_mem_clk_cntrl + 3) = 0x00;
++	*(misc_mem_clk_cntrl + 4) = 0x00;
++
++	/*
++	 * Force the onboard SATA port to GEN2 speed.
++	 * The offboard SATA port can remain at GEN3.
++	 */
++	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGDA, AccWidthUint8, 0xFB, 0x04);
++}
++
++void mainboard_final( void *chip_info );
++void mainboard_final( void *chip_info )
++{
++	device_t ahci_dev;
++	u32 ABAR;
++	u8 *memptr;
++
++	ahci_dev = dev_find_slot(0, PCI_DEVFN(0x11, 0));
++	ABAR = pci_read_config32(ahci_dev, 0x24);
++	ABAR &= 0xFFFFFC00;
++	memptr = (u8 *) (ABAR + 0x100 + 0x80 + 0x2C); /* we're on the 2nd port */
++	*memptr = 0x21; /* force to GEN2 and start re-negotiate */
++	mdelay (1);
++	*memptr = 0x20;
++}
++
++struct chip_operations mainboard_ops = {
++	.enable_dev = mainboard_enable,
++	.final = mainboard_final,
++};
+diff --git a/src/mainboard/gizmosphere/gizmo/mptable.c b/src/mainboard/gizmosphere/gizmo/mptable.c
+new file mode 100755
+index 0000000..6dfd11d
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/mptable.c
+@@ -0,0 +1,161 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++
++#include <console/console.h>
++#include <arch/smp/mpspec.h>
++#include <device/pci.h>
++#include <arch/io.h>
++#include <string.h>
++#include <stdint.h>
++#include <cpu/amd/amdfam14.h>
++#include <SBPLATFORM.h>
++
++extern u8 bus_sb800[6];
++
++extern u32 apicid_sb800;
++
++extern u32 bus_type[256];
++extern u32 sbdn_sb800;
++
++u8 intr_data[] = {
++	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17, /* INTA# - INTH# */
++	[0x08] = 0x00,0x00,0x00,0x00,0x1F,0x1F,0x1F,0x1F, /* Misc-nil,0,1,2, INT from Serial irq */
++	[0x10] = 0x09,0x1F,0x1F,0x10,0x1F,0x12,0x1F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x12,0x11,0x12,0x11,0x12,0x11,0x12,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x11,0x13,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x10,0x11,0x12,0x13
++};
++
++static void *smp_write_config_table(void *v)
++{
++	struct mp_config_table *mc;
++	int bus_isa;
++
++	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
++
++	mptable_init(mc, LOCAL_APIC_ADDR);
++	memcpy(mc->mpc_oem, "AMD	 ", 8);
++
++	smp_write_processors(mc);
++
++	get_bus_conf();
++
++	mptable_write_buses(mc, NULL, &bus_isa);
++
++	/* I/O APICs:	 APIC ID Version State	 Address */
++
++	u32 dword;
++	u8 byte;
++
++	ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
++	dword &= 0xFFFFFFF0;
++	smp_write_ioapic(mc, apicid_sb800, 0x21, dword);
++
++	for (byte = 0x0; byte < sizeof(intr_data); byte ++) {
++		outb(byte | 0x80, 0xC00);
++		outb(intr_data[byte], 0xC01);
++	}
++
++	/* I/O Ints:	Type	Polarity	Trigger	 Bus ID	 IRQ	APIC ID PIN# */
++#define IO_LOCAL_INT(type, intr, apicid, pin) \
++	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
++
++	mptable_add_isa_interrupts(mc, bus_isa, apicid_sb800, 0);
++
++	/* PCI interrupts are level triggered, and are
++	 * associated with a specific bus/device/function tuple.
++	 */
++#if !CONFIG_GENERATE_ACPI_TABLES
++#define PCI_INT(bus, dev, fn, pin) \
++		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sb800, (pin))
++#else
++#define PCI_INT(bus, dev, fn, pin)
++#endif
++
++	/* APU Internal Graphic Device*/
++	PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
++	PCI_INT(0x0, 0x01, 0x1, intr_data[0x03]);
++
++	//PCI_INT(0x0, 0x14, 0x1, 0x11); /* IDE. */
++	PCI_INT(0x0, 0x14, 0x0, 0x10);
++	/* Southbridge HD Audio: */
++	PCI_INT(0x0, 0x14, 0x2, 0x12);
++
++	PCI_INT(0x0, 0x12, 0x0, intr_data[0x30]); /* USB */
++	PCI_INT(0x0, 0x12, 0x1, intr_data[0x31]);
++	PCI_INT(0x0, 0x13, 0x0, intr_data[0x32]);
++	PCI_INT(0x0, 0x13, 0x1, intr_data[0x33]);
++	PCI_INT(0x0, 0x16, 0x0, intr_data[0x34]);
++	PCI_INT(0x0, 0x16, 0x1, intr_data[0x35]);
++
++	/* sata */
++	PCI_INT(0x0, 0x11, 0x0, intr_data[0x41]);
++
++	/* on board NIC & Slot PCIE.	*/
++
++	/* PCI slots */
++	/* PCI_SLOT 0. */
++	PCI_INT(bus_sb800[1], 0x5, 0x0, 0x14);
++	PCI_INT(bus_sb800[1], 0x5, 0x1, 0x15);
++	PCI_INT(bus_sb800[1], 0x5, 0x2, 0x16);
++	PCI_INT(bus_sb800[1], 0x5, 0x3, 0x17);
++
++	/* PCI_SLOT 1. */
++	PCI_INT(bus_sb800[1], 0x6, 0x0, 0x15);
++	PCI_INT(bus_sb800[1], 0x6, 0x1, 0x16);
++	PCI_INT(bus_sb800[1], 0x6, 0x2, 0x17);
++	PCI_INT(bus_sb800[1], 0x6, 0x3, 0x14);
++
++	/* PCI_SLOT 2. */
++	PCI_INT(bus_sb800[1], 0x7, 0x0, 0x16);
++	PCI_INT(bus_sb800[1], 0x7, 0x1, 0x17);
++	PCI_INT(bus_sb800[1], 0x7, 0x2, 0x14);
++	PCI_INT(bus_sb800[1], 0x7, 0x3, 0x15);
++
++	PCI_INT(bus_sb800[2], 0x0, 0x0, 0x12);
++	PCI_INT(bus_sb800[2], 0x0, 0x1, 0x13);
++	PCI_INT(bus_sb800[2], 0x0, 0x2, 0x14);
++
++	/* PCIe PortA */
++	PCI_INT(0x0, 0x15, 0x0, 0x10);
++	/* PCIe PortB */
++	PCI_INT(0x0, 0x15, 0x1, 0x11);
++	/* PCIe PortC */
++	PCI_INT(0x0, 0x15, 0x2, 0x12);
++	/* PCIe PortD */
++	PCI_INT(0x0, 0x15, 0x3, 0x13);
++
++	/*Local Ints:	 Type	Polarity	Trigger	 Bus ID	 IRQ	APIC ID PIN# */
++	IO_LOCAL_INT(mp_ExtINT, 0x0, MP_APIC_ALL, 0x0);
++	IO_LOCAL_INT(mp_NMI, 0x0, MP_APIC_ALL, 0x1);
++	/* There is no extension information... */
++
++	/* Compute the checksums */
++	return mptable_finalize(mc);
++}
++
++unsigned long write_smp_table(unsigned long addr)
++{
++	void *v;
++	v = smp_write_floating_table(addr, 0);
++	return (unsigned long)smp_write_config_table(v);
++}
+diff --git a/src/mainboard/gizmosphere/gizmo/platform_cfg.h b/src/mainboard/gizmosphere/gizmo/platform_cfg.h
+new file mode 100755
+index 0000000..b99b7cb
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/platform_cfg.h
+@@ -0,0 +1,279 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++
++#ifndef _PLATFORM_CFG_H_
++#define _PLATFORM_CFG_H_
++
++/* Gizmo has no legacy P/S2 controller */
++#define LEGACY_FREE		1
++
++/**
++ * @def BIOS_SIZE_1M
++ * @def BIOS_SIZE_2M
++ * @def BIOS_SIZE_4M
++ * @def BIOS_SIZE_8M
++ */
++#define BIOS_SIZE_1M			0
++#define BIOS_SIZE_2M			1
++#define BIOS_SIZE_4M			3
++#define BIOS_SIZE_8M			7
++
++/* In SB800, default ROM size is 1M Bytes, if your platform ROM
++ * bigger than 1M you have to set the ROM size outside CIMx module and
++ * before AGESA module get call.
++ */
++#ifndef BIOS_SIZE
++#if CONFIG_COREBOOT_ROMSIZE_KB_1024
++  #define BIOS_SIZE BIOS_SIZE_1M
++#elif CONFIG_COREBOOT_ROMSIZE_KB_2048 == 1
++  #define BIOS_SIZE BIOS_SIZE_2M
++#elif CONFIG_COREBOOT_ROMSIZE_KB_4096 == 1
++  #define BIOS_SIZE BIOS_SIZE_4M
++#elif CONFIG_COREBOOT_ROMSIZE_KB_8192 == 1
++  #define BIOS_SIZE BIOS_SIZE_8M
++#endif
++#endif
++
++/**
++ * @def SPREAD_SPECTRUM
++ * @brief
++ *  0 - Disable Spread Spectrum function
++ *  1 - Enable  Spread Spectrum function
++ */
++#define SPREAD_SPECTRUM			0
++
++/**
++ * @def SB_HPET_TIMER
++ * @brief
++ *  0 - Disable hpet
++ *  1 - Enable  hpet
++ */
++#define HPET_TIMER			1
++
++/**
++ * @def USB_CONFIG
++ * @brief bit[0-6] used to control USB
++ *   0 - Disable
++ *   1 - Enable
++ *  Usb Ohci1 Controller (Bus 0 Dev 18 Func0) is define at BIT0
++ *  Usb Ehci1 Controller (Bus 0 Dev 18 Func2) is define at BIT1
++ *  Usb Ohci2 Controller (Bus 0 Dev 19 Func0) is define at BIT2
++ *  Usb Ehci2 Controller (Bus 0 Dev 19 Func2) is define at BIT3
++ *  Usb Ohci3 Controller (Bus 0 Dev 22 Func0) is define at BIT4
++ *  Usb Ehci3 Controller (Bus 0 Dev 22 Func2) is define at BIT5
++ *  Usb Ohci4 Controller (Bus 0 Dev 20 Func5) is define at BIT6
++ */
++#define USB_CONFIG		0x7F
++
++/**
++ * @def PCI_CLOCK_CTRL
++ * @brief bit[0-4] used for PCI Slots Clock Control,
++ *   0 - disable
++ *   1 - enable
++ *  PCI SLOT 0 define at BIT0
++ *  PCI SLOT 1 define at BIT1
++ *  PCI SLOT 2 define at BIT2
++ *  PCI SLOT 3 define at BIT3
++ *  PCI SLOT 4 define at BIT4
++ */
++#define PCI_CLOCK_CTRL			0x00 /* PCI clocks aren't used on Gizmo */
++
++/**
++ * @def SATA_CONTROLLER
++ * @brief INCHIP Sata Controller
++ */
++#define SATA_CONTROLLER		CIMX_OPTION_ENABLED
++
++/**
++ * @def SATA_MODE
++ * @brief INCHIP Sata Controller Mode
++ *   NOTE: DO NOT ALLOW SATA & IDE use same mode
++ */
++#define SATA_MODE			CONFIG_SB800_SATA_MODE
++
++/**
++ * @brief INCHIP Sata IDE Controller Mode
++ */
++#define IDE_LEGACY_MODE			0
++#define IDE_NATIVE_MODE			1
++
++/**
++ * @def SATA_IDE_MODE
++ * @brief INCHIP Sata IDE Controller Mode
++ *   NOTE: DO NOT ALLOW SATA & IDE use same mode
++ */
++#define SATA_IDE_MODE			IDE_LEGACY_MODE
++
++/**
++ * @def EXTERNAL_CLOCK
++ * @brief 00/10: Reference clock from crystal oscillator via
++ *  PAD_XTALI and PAD_XTALO
++ *
++ * @def INTERNAL_CLOCK
++ * @brief 01/11: Reference clock from internal clock through
++ *  CP_PLL_REFCLK_P and CP_PLL_REFCLK_N via RDL
++ */
++#define EXTERNAL_CLOCK		0x00
++#define INTERNAL_CLOCK		0x01
++
++/* NOTE: inagua have to using internal clock,
++ * otherwise can not detect sata drive
++ */
++#define SATA_CLOCK_SOURCE	INTERNAL_CLOCK
++
++/**
++ * @def SATA_PORT_MULT_CAP_RESERVED
++ * @brief 1 ON, 0 0FF
++ */
++#define SATA_PORT_MULT_CAP_RESERVED	1
++
++
++/**
++ * @def   AZALIA_AUTO
++ * @brief Detect Azalia controller automatically.
++ *
++ * @def   AZALIA_DISABLE
++ * @brief Disable Azalia controller.
++
++ * @def   AZALIA_ENABLE
++ * @brief Enable Azalia controller.
++ */
++#define AZALIA_AUTO			0
++#define AZALIA_DISABLE			1
++#define AZALIA_ENABLE			2
++
++/**
++ * @brief INCHIP HDA controller
++ */
++#define AZALIA_CONTROLLER		AZALIA_AUTO
++
++/**
++ * @def AZALIA_PIN_CONFIG
++ * @brief
++ *  0 - disable
++ *  1 - enable
++ */
++#define AZALIA_PIN_CONFIG		1
++
++/**
++ * @def AZALIA_SDIN_PIN
++ * @brief
++ *  SDIN0 is define at BIT0 & BIT1
++ *   00 - GPIO PIN
++ *   01 - Reserved
++ *   10 - As a Azalia SDIN pin
++ *  SDIN1 is define at BIT2 & BIT3
++ *  SDIN2 is define at BIT4 & BIT5
++ *  SDIN3 is define at BIT6 & BIT7
++ */
++//#define AZALIA_SDIN_PIN		0xAA
++#define AZALIA_SDIN_PIN			0x2A
++
++/**
++ * @def GPP_CONTROLLER
++ */
++#define GPP_CONTROLLER			CIMX_OPTION_ENABLED
++
++/**
++ * @def GPP_CFGMODE
++ * @brief GPP Link Configuration
++ * four possible configuration:
++ *  GPP_CFGMODE_X4000
++ *  GPP_CFGMODE_X2200
++ *  GPP_CFGMODE_X2110
++ *  GPP_CFGMODE_X1111
++ */
++#define GPP_CFGMODE			GPP_CFGMODE_X4000
++
++/**
++ * @def NB_SB_GEN2
++ *    0  - Disable
++ *    1  - Enable
++ */
++#define NB_SB_GEN2			TRUE
++
++/**
++ * @def SB_GEN2
++ *    0  - Disable
++ *    1  - Enable
++ */
++#define SB_GPP_GEN2			TRUE
++
++/**
++ * @def SB_GPP_UNHIDE_PORTS
++ *    TRUE   - ports visible always, even port empty
++ *    FALSE  - ports invisible if port empty
++ */
++#define SB_GPP_UNHIDE_PORTS		TRUE
++
++/**
++ * @def   GEC_CONFIG
++ *    0  - Enable
++ *    1  - Disable
++ */
++#define GEC_CONFIG			0
++
++const static CODECENTRY gizmo_codec_alc272[] =
++{
++	/* NID, PinConfig */
++	{0x11, 0x411111F0},	/* S/PDIF-OUT2 unused */
++	{0x12, 0x411111F0},	/* DMIC-1/2 unused */
++	{0x13, 0x411111F0},	/* DMIC-3/4 unused */
++	{0x14, 0x411111F0},	/* LOUT-1 unused */
++	{0x15, 0x21000100},	/* LOUT2 - to Explorer */
++	{0x17, 0x411111F0},	/* MONO-OUT unused */
++	{0x18, 0x01A15010},	/* MIC1 */
++	{0x19, 0x411111F0},	/* MIC2 unused */
++	{0x1A, 0x01013010},	/* LINE1 */
++	{0x1B, 0x21800101},	/* LINE2 from Explorer */
++	{0x1D, 0x40100000},	/* PCBEEP */
++	{0x1E, 0x411111F0},	/* S/PDIF-OUT1 unused */
++	{0x21, 0x01214010},	/* HPOUT */
++	{0xff, 0xffffffff}	/* end of table */
++};
++
++static const CODECTBLLIST codec_tablelist[] =
++{
++	{0x010ec0272, (CODECENTRY*)&gizmo_codec_alc272[0]},
++	{0x0FFFFFFFFUL, (CODECENTRY*)0x0FFFFFFFFUL}
++};
++
++/**
++ * @def AZALIA_OEM_VERB_TABLE
++ *  Mainboard specific codec verb table list
++ */
++#define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
++
++/* set up an ACPI preferred power management profile */
++/*  from acpi.h
++ *	PM_UNSPECIFIED          = 0,
++ *	PM_DESKTOP              = 1,
++ *	PM_MOBILE               = 2,
++ *	PM_WORKSTATION          = 3,
++ *	PM_ENTERPRISE_SERVER    = 4,
++ *	PM_SOHO_SERVER          = 5,
++ *	PM_APPLIANCE_PC         = 6,
++ *	PM_PERFORMANCE_SERVER   = 7,
++ *	PM_TABLET               = 8
++ */
++#define FADT_PM_PROFILE 1
++
++#endif
+diff --git a/src/mainboard/gizmosphere/gizmo/romstage.c b/src/mainboard/gizmosphere/gizmo/romstage.c
+new file mode 100755
+index 0000000..05699cc
+--- /dev/null
++++ b/src/mainboard/gizmosphere/gizmo/romstage.c
+@@ -0,0 +1,194 @@
++/*
++ * This file is part of the coreboot project.
++ *
++ * Copyright (C) 2011 Advanced Micro Devices, Inc.
++ * Copyright (C) 2013 Sage Electronic Engineering, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include <stdint.h>
++#include <string.h>
++#include <device/pci_def.h>
++#include <device/pci_ids.h>
++#include <arch/io.h>
++#include <arch/stages.h>
++#include <device/pnp_def.h>
++#include <arch/cpu.h>
++#include <cpu/x86/lapic.h>
++#include <console/console.h>
++#include <console/loglevel.h>
++#include "agesawrapper.h"
++#include "cpu/x86/bist.h"
++#include "drivers/pc80/i8254.c"
++#include "drivers/pc80/i8259.c"
++#include <cpu/x86/cache.h>
++#include <sb_cimx.h>
++#include "SBPLATFORM.h"
++#include "cbmem.h"
++#include "cpu/amd/mtrr.h"
++#include "cpu/amd/agesa/s3_resume.h"
++
++#define MSR_MTRR_VARIABLE_BASE6   0x020C
++#define MSR_MTRR_VARIABLE_MASK6   0x020D
++#define MSR_PSTATE_CONTROL        0xC0010062
++
++void disable_cache_as_ram(void); /* cache_as_ram.inc */
++void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
++
++void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
++{
++	u32 val;
++	msr_t msr;
++
++#if CONFIG_HAVE_ACPI_RESUME
++	void *resume_backup_memory;
++#endif
++
++	/*
++	 * All cores: allow caching of flash chip code and data
++	 * (there are no cache-as-ram reliability concerns with family 14h)
++	 */
++	msr.lo = ((0x0100000000ull - CONFIG_ROM_SIZE) | 5) & 0xFFFFFFFF;
++	msr.hi = ((0x0100000000ull - CONFIG_ROM_SIZE) | 5) >> 32;
++	wrmsr (MSR_MTRR_VARIABLE_BASE6, msr);
++
++	msr.lo = ((0x1000000000ull - CONFIG_ROM_SIZE) | 0x800) & 0xFFFFFFFF;
++	msr.hi = ((0x1000000000ull - CONFIG_ROM_SIZE) | 0x800) >> 32;
++	wrmsr (MSR_MTRR_VARIABLE_MASK6, msr);
++
++	/* All cores: set pstate 0 (1600 MHz) early to save a few ms of boot time */
++	msr.lo = 0;
++	msr.hi = 0;
++	wrmsr (MSR_PSTATE_CONTROL, msr);
++
++	if (!cpu_init_detectedx && boot_cpu()) {
++		post_code(0x30);
++		sb_Poweron_Init();
++
++		post_code(0x31);
++
++		console_init();
++	}
++
++	/* Halt if there was a built in self test failure */
++	post_code(0x34);
++	report_bist_failure(bist);
++
++	/* Load MPB */
++	val = cpuid_eax(1);
++	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
++	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
++
++	post_code(0x35);
++	printk(BIOS_DEBUG, "agesawrapper_amdinitmmio ");
++	val = agesawrapper_amdinitmmio();
++	if (val)
++		printk(BIOS_DEBUG, "error level: %x \n", val);
++	else
++		printk(BIOS_DEBUG, "passed.\n");
++
++	post_code(0x37);
++	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");
++	val = agesawrapper_amdinitreset();
++	if (val)
++		printk(BIOS_DEBUG, "error level: %x \n", val);
++	else
++		printk(BIOS_DEBUG, "passed.\n");
++
++	post_code(0x39);
++	printk(BIOS_DEBUG, "agesawrapper_amdinitearly ");
++	val = agesawrapper_amdinitearly ();
++	if (val)
++		printk(BIOS_DEBUG, "error level: %x \n", val);
++	else
++		printk(BIOS_DEBUG, "passed.\n");
++
++#if CONFIG_HAVE_ACPI_RESUME
++	if (!acpi_is_wakeup_early()) { /* Check for S3 resume */
++#endif
++		post_code(0x40);
++		printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
++		val = agesawrapper_amdinitpost ();
++		if (val)
++			printk(BIOS_DEBUG, "error level: %x \n", val);
++		else
++			printk(BIOS_DEBUG, "passed.\n");
++
++		post_code(0x42);
++		printk(BIOS_DEBUG, "agesawrapper_amdinitenv ");
++		val = agesawrapper_amdinitenv ();
++		if (val)
++			printk(BIOS_DEBUG, "error level: %x \n", val);
++		else
++			printk(BIOS_DEBUG, "passed.\n");
++
++#if CONFIG_HAVE_ACPI_RESUME
++	} else { 			/* S3 detect */
++		printk(BIOS_INFO, "S3 detected\n");
++
++		post_code(0x60);
++		printk(BIOS_DEBUG, "agesawrapper_amdinitresume ");
++		val = agesawrapper_amdinitresume();
++		if (val)
++			printk(BIOS_DEBUG, "error level: %x \n", val);
++		else
++			printk(BIOS_DEBUG, "passed.\n");
++
++		printk(BIOS_DEBUG, "agesawrapper_amds3laterestore ");
++		val = agesawrapper_amds3laterestore ();
++		if (val)
++			printk(BIOS_DEBUG, "error level: %x \n", val);
++		else
++			printk(BIOS_DEBUG, "passed.\n");
++
++		post_code(0x61);
++		printk(BIOS_DEBUG, "Find resume memory location\n");
++		resume_backup_memory = backup_resume();
++
++		post_code(0x62);
++		printk(BIOS_DEBUG, "Move CAR stack.\n");
++		move_stack_high_mem();
++		printk(BIOS_DEBUG, "stack moved to: 0x%x\n", (u32) (resume_backup_memory + HIGH_MEMORY_SAVE));
++
++		post_code(0x63);
++		disable_cache_as_ram();
++		printk(BIOS_DEBUG, "CAR disabled.\n");
++		set_resume_cache();
++
++		/*
++		 * Copy the system memory that is in the ramstage area to the
++		 * reserved area.
++		 */
++		if (resume_backup_memory)
++			memcpy(resume_backup_memory, (void *)(CONFIG_RAMBASE), HIGH_MEMORY_SAVE);
++
++		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
++	}
++#endif
++
++	/* Initialize i8259 pic */
++	post_code(0x43);
++	setup_i8259 ();
++
++	/* Initialize i8254 timers */
++	post_code(0x44);
++	setup_i8254 ();
++
++	post_code(0x50);
++	copy_and_run();
++	printk(BIOS_ERR, "Error: copy_and_run() returned!\n");
++
++	post_code(0x54);	/* Should never see this post code. */
++}

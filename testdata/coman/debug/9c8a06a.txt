@@ -1,0 +1,2139 @@
+commit 9c8a06a
+diff --git a/documentation/RFC/config.tex b/documentation/RFC/config.tex
+index 1190c8d..652e7bc 100644
+--- a/documentation/RFC/config.tex
++++ b/documentation/RFC/config.tex
+@@ -1,276 +1,300 @@
+ 		New config language for LinuxBIOS
+ 
+ \begin{abstract}
+ We describe the new configuration language for LinuxBIOS.
+ \end{abstract}
+ 
+ \section{Scope}
+ This document defines the new configuration language for LinuxBIOS.
+ 
+ \section{Goals}
+ The goals of the new language are these: 
+ \begin{itemize}
+ \item Simplified Makefiles so people can see what is set
+ \item Move from the regular-expression-based language to something
+ a bit more comprehensible and flexible
+ \item make the specification easier for people to use and understand
+ \item allow unique register-set-specifiers for each chip
++\item allow generic register-set-specifiers for each chip
++\item generate static initialization code, as needed, for the 
++specifiers. 
+ \end{itemize}
+ 
+ \section{Language}
+ Here is the new language. It is very similar to the old one, differing
+ in only a few respects. It borrows heavily from Greg Watson's suggestions. 
+ 
+ I am presenting it in a pseudo-BNF in the hopes it will be easier. Things 
+ in '' are keywords; things in ``'' are strings in the actual text. 
+ \begin{verbatim}
+ #exprs are composed of factor or factor + factor etc.
+ expr ::= factor ( ``+'' factor | ``-'' factor | )*
+ #factors are term or term * term or term / term or ...
+ factor ::=  term ( ``*'' term | ``/'' term | ... )*
+ # 
+ unary-op ::= ``!'' ID
+ # term is a number, hexnumber, ID, unary-op, or a full-blown expression
+ term ::= NUM | XNUM | ID | unary-op | ``(`` expr ``)''
+ 
+ # Option command. Can be an expression or quote-string.
+ # Options are used in the config tool itself (in expressions and 'if')
+ # and are also passed to the C compiler when building linuxbios.
+ # It is an error to have two option commands in a file. 
+ # It is an error to have an option command after the ID has been used
+ #   in an expression (i.e. 'set after used' is an error)
+ option ::= 'option' ID '=' (``value'' | term)
+ 
+ # Default command. The ID is set to this value if no option command
+ # is scanned. 
+ # Multiple defaults for an ID will produce warning, but not errors. 
+ # It is OK to scan a default command after use of an ID.
+ # Options always over-ride defaults.
+ default ::= 'default' ID '=' (``value'' | term)
+ 
+ # the mainboard, southbridge, northbridge commands
+ # cause sourcing of Config.lb files as in the old config tool
+ # as parts are sourced, a device tree is built. The structure 
+ # of the tree is determined by the structure of the components
+ # as they are specified. To attach a superio to a southbridge, for
+ # example, one would do this:
+ # southbridge acer/5432 
+ #   superio NSC/123 
+ #   end 
+ # end
+ # the tool generates static initializers for this hierarchy.
+ 
+ # add C code to the current component (motherboard, etc. )
+ # to initialise the component-INDEPENDENT structure members
+ init ::= 'init' ``CODE''
+ 
+ # add C code to the current component (motherboard, etc. )
+ # to initialise the component-DEPENDENT structure members
+ register ::= 'register' ``CODE''
+ 
+ 
+ # mainboard command
+ # statements in this block will set variables controlling the mainboard,
+ # and will also place components (northbridge etc.) in the device tree
+ # under this mainboard
+ mainboard ::= 'mainboard' PATH (statements)* 'end'
+ 
+ # standard linuxbios commands
+ southbridge ::= 'southbridge' PATH (statemnts)* 'end'			
+ northbridge ::= 'northbridge' PATH (statemnts)* 'end'			
+ superio ::= 'superio PATH (statemnts)* 'end'			
+ cpu ::= 'cpu' PATH (statemnts)* 'end'			
+ arch ::= 'arch' PATH (statemnts)* 'end'			
+ 
+ # files for building linuxbios
+ # include a file in crt0.S 
+ mainboardinit ::= 'mainboardinit' PATH 
+ 
+ # object file 
+ object ::= 'object' PATH
+ # driver objects are just built into the image in a different way
+ driver ::= 'driver' PATH
+ 
+ # Use the Config.lb file in the PATH
+ dir ::= 'dir' PATH
+ 
+ # add a file to the set of ldscript files
+ ldscript ::= 'ldscript' PATH
+ 
+ # dependencies or actions for the makerule command
+ dep ::= 'dep' ``dependency-string''
+ act ::= 'act' ``actions''
+ depsacts ::= (dep | act)*
+ # set up a makerule
+ #
+ makerule ::= 'makerule' PATH depsacts
+ 
+ #defines for use in makefiles only
+ # note usable in the config tool, not passed to cc
+ makedefine ::= 'makedefine' ``RAWTEXT''
+ 
+ # add an action to an existing make rule
+ addaction ::= 'addaction' PATH ``ACTION''
+ 
+ # statements
+ statement ::= 
+ 		  option
+ 		| default
+         	| cpu
+         	| arch
+ 		| northbridge
+ 		| southbridge
+ 		| superio
+ 		| object
+ 		| driver
+ 		| mainboardinit
+ 		| makerule
+ 		| makedefine
+ 		| addaction
+ 		| init
+ 		| register
+ 		| iif
+ 		| dir
+ 		| ldscript
+ 
+ statements ::= (statement)*
+ 
+ # target directory specification
+ target ::= 'target' PATH
+ 
+ # and the whole thing
+ board ::= target (option)* mainboard
+ 
+ \end{verbatim}
+ 
++\subsubsection{Command definitions}
++\subsubsubsection{option}
++\subsubsubsection{default}
++\subsubsubsection{cpu}
++\subsubsubsection{arch}
++\subsubsubsection{northbridge}
++\subsubsubsection{southbridge}
++\subsubsubsection{superio}
++\subsubsubsection{object}
++\subsubsubsection{driver}
++\subsubsubsection{mainboardinit}
++\subsubsubsection{makerule}
++\subsubsubsection{makedefine}
++\subsubsubsection{addaction}
++\subsubsubsection{init}
++\subsubsubsection{register}
++\subsubsubsection{iif}
++\subsubsubsection{dir}
++\subsubsubsection{ldscript}
++
++
+ A sample file:
+ 
+ \begin{verbatim}
+ target x
+ 
+ # over-ride the default rom size in the mainboard file
+ option ROM_SIZE=0x100000
+ mainboard amd/solo
+ end
+ 
+ \end{verbatim}
+ 
+ Sample mainboard file
+ \begin{verbatim}
+ #
+ ###
+ ### Set all of the defaults for an x86 architecture
+ ###
+ arch i386 end
+ cpu k8 end
+ #
+ option DEBUG=1
+ default USE_FALLBACK_IMAGE=1
+ option A=(1+2)
+ option B=0xa
+ #
+ ###
+ ### Build our 16 bit and 32 bit linuxBIOS entry code
+ ###
+ mainboardinit cpu/i386/entry16.inc
+ mainboardinit cpu/i386/entry32.inc
+ ldscript cpu/i386/entry16.lds
+ ldscript cpu/i386/entry32.lds
+ #
+ ###
+ ### Build our reset vector (This is where linuxBIOS is entered)
+ ###
+ if USE_FALLBACK_IMAGE 
+   mainboardinit cpu/i386/reset16.inc 
+   ldscript cpu/i386/reset16.lds 
+ end
+ 
+ if USE_NORMAL_IMAGE
+   mainboardinit cpu/i386/reset32.inc 
+   ldscript cpu/i386/reset32.lds 
+ end
+ .
+ .
+ .
+ if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
+ #
+ ###
+ ### Romcc output
+ ###
+ #makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
+ #makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
+ #mainboardinit ./failover.inc
+ makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+ makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
+ mainboardinit ./auto.inc
+ #
+ ###
+ ### Setup RAM
+ ###
+ mainboardinit ram/ramtest.inc
+ mainboardinit southbridge/amd/amd8111/smbus.inc
+ mainboardinit sdram/generic_dump_spd.inc
+ #
+ ###
+ ### Include the secondary Configuration files 
+ ###
+ northbridge amd/amdk8
+ end
+ southbridge amd/amd8111
+ end
+ #mainboardinit arch/i386/smp/secondary.inc
+ superio NSC/pc87360
+ 	register "com1={1} com2={0} floppy=1 lpt=1 keyboard=1"
+ end
+ dir /pc80
+ ##dir /src/superio/winbond/w83627hf
+ cpu p5 end
+ cpu p6 end
+ cpu k7 end
+ cpu k8 end
+ #
+ ###
+ ### Build the objects we have code for in this directory.
+ ###
+ ##object mainboard.o
+ driver mainboard.o
+ object static_devices.o
+ if HAVE_MP_TABLE object mptable.o end
+ if HAVE_PIRQ_TABLE object irq_tables.o end
+ ### Location of the DIMM EEPROMS on the SMBUS
+ ### This is fixed into a narrow range by the DIMM package standard.
+ ###
+ option SMBUS_MEM_DEVICE_START=(0xa << 3)
+ option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +1)
+ option SMBUS_MEM_DEVICE_INC=1
+ #
+ ### The linuxBIOS bootloader.
+ ###
+ option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+ option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+ #
+ 
+ \end{verbatim}
+ 
+ I've found the output of the new tool to be easier to
+ handle. Makefile.settings looks like this, for example:
+ \begin{verbatim}
+ TOP:=/home/rminnich/src/yapps2/freebios2
+ TARGET_DIR:=x
+ export MAINBOARD:=/home/rminnich/src/yapps2/freebios2/src/mainboard/amd/solo
+ export ARCH:=i386
+ export _RAMBASE:=0x4000
+ export ROM_IMAGE_SIZE:=65535
+ export PAYLOAD_SIZE:=131073
+ export MAX_CPUS:=1
+ export HEAP_SIZE:=8192
+ export STACK_SIZE:=8192
+ export MEMORY_HOLE:=0
+ export LINUXBIOS_VERSION:=1.1.0
+ export CC:=$(CROSS_COMPILE)gcc
+ 
+ \end{verbatim}
+ 
+ In other words, instead of expressions, we see the values. It's easier to 
+ deal with. 
+ 
+diff --git a/src/mainboard/arima/hdama/Config.lb b/src/mainboard/arima/hdama/Config.lb
+new file mode 100644
+index 0000000..2f871ea
+--- /dev/null
++++ b/src/mainboard/arima/hdama/Config.lb
+@@ -0,0 +1,133 @@
++#
++#
++###
++### Set all of the defaults for an x86 architecture
++###
++#
++#
++###
++### Build the objects we have code for in this directory.
++###
++##object mainboard.o
++driver mainboard.o
++object static_devices.o
++if HAVE_MP_TABLE object mptable.o end
++if HAVE_PIRQ_TABLE object irq_tables.o end
++#
++arch i386 end
++cpu k8 end
++#
++option DEBUG=1
++default USE_FALLBACK_IMAGE=1
++option A=(1+2)
++option B=0xa
++#
++###
++### Build our 16 bit and 32 bit linuxBIOS entry code
++###
++mainboardinit cpu/i386/entry16.inc
++mainboardinit cpu/i386/entry32.inc
++ldscript /cpu/i386/entry16.lds
++ldscript /cpu/i386/entry32.lds
++#
++###
++### Build our reset vector (This is where linuxBIOS is entered)
++###
++if USE_FALLBACK_IMAGE 
++  mainboardinit cpu/i386/reset16.inc 
++  ldscript /cpu/i386/reset16.lds 
++end
++
++if USE_NORMAL_IMAGE
++  mainboardinit cpu/i386/reset32.inc 
++  ldscript /cpu/i386/reset32.lds 
++end
++#
++#### Should this be in the northbridge code?
++#mainboardinit archi386/lib/cpu_reset.inc
++#
++###
++### Include an id string (For safe flashing)
++###
++mainboardinit arch/i386/lib/id.inc
++ldscript /arch/i386/lib/id.lds
++#
++####
++#### This is the early phase of linuxBIOS startup 
++#### Things are delicate and we test to see if we should
++#### failover to another image.
++####
++option MAX_REBOOT_CNT=2
++##ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
++#
++###
++### Setup our mtrrs
++###
++mainboardinit cpu/k8/earlymtrr.inc
++#
++#
++###
++### Only the bootstrap cpu makes it here.
++### Failover if we need to 
++###
++#
++if USE_FALLBACK_IMAGE
++  mainboardinit southbridge/amd/amd8111/cmos_boot_failover.inc 
++end
++#
++####
++#### O.k. We aren't just an intermediary anymore!
++####
++#
++###
++### When debugging disable the watchdog timer
++###
++##option MAXIMUM_CONSOLE_LOGLEVEL=7
++#default MAXIMUM_CONSOLE_LOGLEVEL=7
++#option DISABLE_WATCHDOG= (MAXIMUM_CONSOLE_LOGLEVEL >= 8) 
++#if DISABLE_WATCHDOG
++#  mainboardinit southbridgeamd/amd8111/disable_watchdog.inc 
++#end
++#
++###
++### Setup the serial port
++###
++#mainboardinit superiowinbond/w83627hf/setup_serial.inc
++mainboardinit pc80/serial.inc
++mainboardinit arch/i386/lib/console.inc
++if USE_FALLBACK_IMAGE mainboardinit archi386/lib/noop_failover.inc  end
++#
++###
++### Romcc output
++###
++#makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
++#makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
++#mainboardinit .failover.inc
++makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
++makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
++mainboardinit ./auto.inc
++#
++###
++### Setup RAM
++###
++mainboardinit ram/ramtest.inc
++mainboardinit southbridge/amd/amd8111/smbus.inc
++mainboardinit sdram/generic_dump_spd.inc
++#
++###
++### Include the secondary Configuration files 
++###
++northbridge amd/amdk8
++end
++southbridge amd/amd8111
++end
++#mainboardinit archi386/smp/secondary.inc
++superio NSC/pc87360
++	register "com1={1} com2={0} floppy=1 lpt=1 keyboard=1"
++end
++dir /pc80
++##dir /src/superio/winbond/w83627hf
++cpu p5 end
++cpu p6 end
++cpu k7 end
++cpu k8 end
+diff --git a/src/mainboard/arima/hdama/auto.c b/src/mainboard/arima/hdama/auto.c
+new file mode 100644
+index 0000000..61cf7cd
+--- /dev/null
++++ b/src/mainboard/arima/hdama/auto.c
+@@ -0,0 +1,1125 @@
++#define ASSEMBLY 1
++#include "arch/romcc_io.h"
++#include "pc80/serial.c"
++#include "arch/i386/lib/console.c"
++#include "ram/ramtest.c"
++
++
++#define MEMORY_512MB  0  /* SuSE Solo configuration */
++#define MEMORY_1024MB 1  /* LNXI Solo configuration */
++
++
++
++static void sdram_set_registers(void)
++{
++	static const unsigned int register_values[] = {
++	/* Routing Table Node i 
++	 * F0:0x40 i = 0, 
++	 * F0:0x44 i = 1,
++	 * F0:0x48 i = 2, 
++	 * F0:0x4c i = 3,
++	 * F0:0x50 i = 4, 
++	 * F0:0x54 i = 5,
++	 * F0:0x58 i = 6, 
++	 * F0:0x5c i = 7
++	 * [ 0: 3] Request Route
++	 *     [0] Route to this node
++	 *     [1] Route to Link 0
++	 *     [2] Route to Link 1
++	 *     [3] Route to Link 2
++	 * [11: 8] Response Route
++	 *     [0] Route to this node
++	 *     [1] Route to Link 0
++	 *     [2] Route to Link 1
++	 *     [3] Route to Link 2
++	 * [19:16] Broadcast route
++	 *     [0] Route to this node
++	 *     [1] Route to Link 0
++	 *     [2] Route to Link 1
++	 *     [3] Route to Link 2
++	 */
++	0xc040, 0xfff0f0f0, 0x00010101,
++	0xc044, 0xfff0f0f0, 0x00010101,
++	0xc048, 0xfff0f0f0, 0x00010101,
++	0xc04c, 0xfff0f0f0, 0x00010101,
++	0xc050, 0xfff0f0f0, 0x00010101,
++	0xc054, 0xfff0f0f0, 0x00010101,
++	0xc058, 0xfff0f0f0, 0x00010101,
++	0xc05c, 0xfff0f0f0, 0x00010101,
++
++	/* Hypetransport Transaction Control Register 
++	 * F0:0x68
++	 * [ 0: 0] Disable read byte probe
++	 *         0 = Probes issues
++	 *         1 = Probes not issued
++	 * [ 1: 1] Disable Read Doubleword probe
++	 *         0 = Probes issued
++	 *         1 = Probes not issued
++	 * [ 2: 2] Disable write byte probes
++	 *         0 = Probes issued
++	 *         1 = Probes not issued
++	 * [ 3: 3] Disalbe Write Doubleword Probes
++	 *         0 = Probes issued
++	 *         1 = Probes not issued.
++	 * [ 4: 4] Disable Memroy Controller Target Start
++	 *         0 = TgtStart packets are generated
++	 *         1 = TgtStart packets are not generated.
++	 * [ 5: 5] CPU1 Enable
++	 *         0 = Second CPU disabled or not present
++	 *         1 = Second CPU enabled.
++	 * [ 6: 6] CPU Request PassPW
++	 *         0 = CPU requests do not pass posted writes
++	 *         1 = CPU requests pass posted writes.
++	 * [ 7: 7] CPU read Respons PassPW
++	 *         0 = CPU Responses do not pass posted writes
++	 *         1 = CPU responses pass posted writes.
++	 * [ 8: 8] Disable Probe Memory Cancel
++	 *         0 = Probes may generate MemCancels
++	 *         1 = Probes may not generate MemCancels
++	 * [ 9: 9] Disable Remote Probe Memory Cancel.
++	 *         0 = Probes hitting dirty blocks generate memory cancel packets
++	 *         1 = Only probed caches on the same node as the memory controller
++	 *              generate cancel packets.
++	 * [10:10] Disable Fill Probe
++	 *         0 = Probes issued for cache fills
++	 *         1 = Probes not issued for cache fills.
++	 * [11:11] Response PassPw
++	 *         0 = Downstream response PassPW based on original request
++	 *         1 = Downstream response PassPW set to 1
++	 * [12:12] Change ISOC to Ordered
++	 *         0 = Bit 1 of coherent HT RdSz/WrSz command used for iosynchronous prioritization
++	 *         1 = Bit 1 of coherent HT RdSz/WrSz command used for ordering.
++	 * [14:13] Buffer Release Priority select 
++	 *         00 = 64
++	 *         01 = 16
++	 *         10 = 8
++	 *         11 = 2
++	 * [15:15] Limit Coherent HT Configuration Space Range
++	 *         0 = No coherent HT configuration space restrictions
++	 *         1 = Limit coherent HT configuration space based on node count
++	 * [16:16] Local Interrupt Conversion Enable.
++	 *         0 = ExtInt/NMI interrups unaffected.
++	 *         1 = ExtInt/NMI broadcat interrupts converted to LINT0/1
++	 * [17:17] APIC Extended Broadcast Enable.
++	 *         0 = APIC broadcast is 0F
++	 *         1 = APIC broadcast is FF
++	 * [18:18] APIC Extended ID Enable
++	 *         0 = APIC ID is 4 bits.
++	 *         1 = APIC ID is 8 bits.
++	 * [19:19] APIC Extended Spurious Vector Enable
++	 *         0 = Lower 4 bits of spurious vector are read-only 1111
++	 *         1 = Lower 4 bits of spurious vecotr are writeable.
++	 * [20:20] Sequence ID Source Node Enable
++	 *         0 = Normal operation
++	 *         1 = Keep SeqID on routed packets for debugging.
++	 * [22:21] Downstream non-posted request limit
++	 *         00 = No limit
++	 *         01 = Limited to 1
++	 *         10 = Limited to 4
++	 *         11 = Limited to 8
++	 * [23:23] RESERVED
++	 * [25:24] Medium-Priority Bypass Count
++	 *         - Maximum # of times a medium priority access can pass a low
++	 *           priority access before Medium-Priority mode is disabled for one access.
++	 * [27:26] High-Priority Bypass Count
++	 *         - Maximum # of times a high prioirty access can pass a medium or low
++	 *           priority access before High-prioirty mode is disabled for one access.
++	 * [28:28] Enable High Priority CPU Reads
++	 *         0 = Cpu reads are medium prioirty
++	 *         1 = Cpu reads are high prioirty
++	 * [29:29] Disable Low Priority Writes
++	 *         0 = Non-isochronous writes are low priority
++	 *         1 = Non-isochronous writes are medium prioirty
++	 * [30:30] Disable High Priority Isochronous writes
++	 *         0 = Isochronous writes are high priority
++	 *         1 = Isochronous writes are medium priority
++	 * [31:31] Disable Medium Priority Isochronous writes
++	 *         0 = Isochronous writes are medium are high
++	 *         1 = With bit 30 set makes Isochrouns writes low priority.
++	 */
++	0xc068, 0x00800000, 0x0f00840f,
++	/* HT Initialization Control Register
++	 * F0:0x68
++	 * [ 0: 0] Routing Table Disable
++	 *         0 = Packets are routed according to routing tables
++	 *         1 = Packets are routed according to the default link field
++	 * [ 1: 1] Request Disable (BSP should clear this)
++	 *         0 = Request packets may be generated
++	 *         1 = Request packets may not be generated.
++	 * [ 3: 2] Default Link (Read-only)
++	 *         00 = LDT0
++	 *         01 = LDT1
++	 *         10 = LDT2
++	 *         11 = CPU on same node
++	 * [ 4: 4] Cold Reset
++	 *         - Scratch bit cleared by a cold reset
++	 * [ 5: 5] BIOS Reset Detect
++	 *         - Scratch bit cleared by a cold reset
++	 * [ 6: 6] INIT Detect
++	 *         - Scratch bit cleared by a warm or cold reset not by an INIT
++	 *
++	 */
++	0xc06C, 0xffffff8c, 0x00000000,
++	/* LDTi Capabilities Registers
++	 * F0:0x80 i = 0,
++	 * F0:0xA0 i = 1,
++	 * F0:0xC0 i = 2,
++	 */
++	/* LDTi Link Control Registrs
++	 * F0:0x84 i = 0,
++	 * F0:0xA4 i = 1,
++	 * F0:0xC4 i = 2,
++	 * [ 1: 1] CRC Flood Enable
++	 *         0 = Do not generate sync packets on CRC error
++	 *         1 = Generate sync packets on CRC error
++	 * [ 2: 2] CRC Start Test (Read-Only)
++	 * [ 3: 3] CRC Force Frame Error
++	 *         0 = Do not generate bad CRC
++	 *         1 = Generate bad CRC
++	 * [ 4: 4] Link Failure
++	 *         0 = No link failure detected
++	 *         1 = Link failure detected
++	 * [ 5: 5] Initialization Complete
++	 *         0 = Initialization not complete
++	 *         1 = Initialization complete
++	 * [ 6: 6] Receiver off
++	 *         0 = Recevier on
++	 *         1 = Receiver off
++	 * [ 7: 7] Transmitter Off
++	 *         0 = Transmitter on
++	 *         1 = Transmitter off
++	 * [ 9: 8] CRC_Error
++	 *         00 = No error
++	 *         [0] = 1 Error on byte lane 0
++	 *         [1] = 1 Error on byte lane 1
++	 * [12:12] Isochrnous Enable  (Read-Only)
++	 * [13:13] HT Stop Tristate Enable
++	 *         0 = Driven during an LDTSTOP_L
++	 *         1 = Tristated during and LDTSTOP_L
++	 * [14:14] Extended CTL Time 
++	 *         0 = CTL is asserted for 16 bit times during link initialization
++	 *         1 = CTL is asserted for 50us during link initialization
++	 * [18:16] Max Link Width In (Read-Only?)
++	 *         000 = 8 bit link
++	 *         001 = 16bit link
++	 * [19:19] Doubleword Flow Control in (Read-Only)
++	 *         0 = This link does not support doubleword flow control
++	 *         1 = This link supports doubleword flow control
++	 * [22:20] Max Link Width Out (Read-Only?)
++	 *         000 = 8 bit link
++	 *         001 = 16bit link
++	 * [23:23] Doubleworld Flow Control out (Read-Only)
++	 *         0 = This link does not support doubleword flow control
++	 *         1 = This link supports doubleworkd flow control
++	 * [26:24] Link Width In
++	 *         000 = Use 8 bits
++	 *         001 = Use 16 bits
++	 *         010 = reserved
++	 *         011 = Use 32 bits
++	 *         100 = Use 2 bits
++	 *         101 = Use 4 bits
++	 *         110 = reserved
++	 *         111 = Link physically not connected
++	 * [27:27] Doubleword Flow Control In Enable
++	 *         0 = Doubleword flow control disabled
++	 *         1 = Doubleword flow control enabled (Not currently supported)
++	 * [30:28] Link Width Out
++	 *         000 = Use 8 bits
++	 *         001 = Use 16 bits
++	 *         010 = reserved
++	 *         011 = Use 32 bits
++	 *         100 = Use 2 bits
++	 *         101 = Use 4 bits
++	 *         110 = reserved
++	 *         111 = Link physically not connected
++	 * [31:31] Doubleworld Flow Control Out Enable
++	 *         0 = Doubleworld flow control disabled
++	 *         1 = Doubleword flow control enabled (Not currently supported)
++	 */
++	0xc084, 0x00009c05, 0x11110020,
++	/* LDTi Frequency/Revision Registers
++	 * F0:0x88 i = 0,
++	 * F0:0xA8 i = 1,
++	 * F0:0xC8 i = 2,
++	 * [ 4: 0] Minor Revision
++	 *         Contains the HT Minor revision
++	 * [ 7: 5] Major Revision
++	 *         Contains the HT Major revision
++	 * [11: 8] Link Frequency  (Takes effect the next time the link is reconnected)
++	 *         0000 = 200Mhz
++	 *         0001 = reserved
++	 *         0010 = 400Mhz
++	 *         0011 = reserved
++	 *         0100 = 600Mhz
++	 *         0101 = 800Mhz
++	 *         0110 = 1000Mhz
++	 *         0111 = reserved
++	 *         1000 = reserved
++	 *         1001 = reserved
++	 *         1010 = reserved
++	 *         1011 = reserved
++	 *         1100 = reserved
++	 *         1101 = reserved
++	 *         1110 = reserved
++	 *         1111 = 100 Mhz
++	 * [15:12] Error (Not currently Implemented)
++	 * [31:16] Indicates the frequency capabilities of the link
++	 *         [16] = 1 encoding 0000 of freq supported
++	 *         [17] = 1 encoding 0001 of freq supported
++	 *         [18] = 1 encoding 0010 of freq supported
++	 *         [19] = 1 encoding 0011 of freq supported
++	 *         [20] = 1 encoding 0100 of freq supported
++	 *         [21] = 1 encoding 0101 of freq supported
++	 *         [22] = 1 encoding 0110 of freq supported
++	 *         [23] = 1 encoding 0111 of freq supported
++	 *         [24] = 1 encoding 1000 of freq supported
++	 *         [25] = 1 encoding 1001 of freq supported
++	 *         [26] = 1 encoding 1010 of freq supported
++	 *         [27] = 1 encoding 1011 of freq supported
++	 *         [28] = 1 encoding 1100 of freq supported
++	 *         [29] = 1 encoding 1101 of freq supported
++	 *         [30] = 1 encoding 1110 of freq supported
++	 *         [31] = 1 encoding 1111 of freq supported
++	 */
++	0xC088, 0xfffff0ff, 0x00000200,
++	/* LDTi Feature Capability
++	 * F0:0x8C i = 0,
++	 * F0:0xAC i = 1,
++	 * F0:0xCC i = 2,
++	 */
++	/* LDTi Buffer Count Registers
++	 * F0:0x90 i = 0,
++	 * F0:0xB0 i = 1,
++	 * F0:0xD0 i = 2,
++	 */
++	/* LDTi Bus Number Registers
++	 * F0:0x94 i = 0,
++	 * F0:0xB4 i = 1,
++	 * F0:0xD4 i = 2,
++	 * For NonCoherent HT specifies the bus number downstream (behind the host bridge)
++	 * [ 0: 7] Primary Bus Number
++	 * [15: 8] Secondary Bus Number
++	 * [23:15] Subordiante Bus Number
++	 * [31:24] reserved
++	 */
++	0xC094, 0xff000000, 0x00ff0000,
++	/* LDTi Type Registers
++	 * F0:0x98 i = 0,
++	 * F0:0xB8 i = 1,
++	 * F0:0xD8 i = 2,
++	 */
++	/* Careful set limit registers before base registers which contain the enables */
++	/* DRAM Limit i Registers
++	 * F1:0x44 i = 0
++	 * F1:0x4C i = 1
++	 * F1:0x54 i = 2
++	 * F1:0x5C i = 3
++	 * F1:0x64 i = 4
++	 * F1:0x6C i = 5
++	 * F1:0x74 i = 6
++	 * F1:0x7C i = 7
++	 * [ 2: 0] Destination Node ID
++	 *         000 = Node 0
++	 *         001 = Node 1
++	 *         010 = Node 2
++	 *         011 = Node 3
++	 *         100 = Node 4
++	 *         101 = Node 5
++	 *         110 = Node 6
++	 *         111 = Node 7
++	 * [ 7: 3] Reserved
++	 * [10: 8] Interleave select
++	 *         specifies the values of A[14:12] to use with interleave enable.
++	 * [15:11] Reserved
++	 * [31:16] DRAM Limit Address i Bits 39-24
++	 *         This field defines the upper address bits of a 40 bit  address
++	 *         that define the end of the DRAM region.
++	 */
++#if MEMORY_1024MB
++	0xC144, 0x0000f8f8, 0x003f0000,
++#endif
++#if MEMORY_512MB
++	0xC144, 0x0000f8f8, 0x001f0000,
++#endif
++	0xC14C, 0x0000f8f8, 0x00000001,
++	0xC154, 0x0000f8f8, 0x00000002,
++	0xC15C, 0x0000f8f8, 0x00000003,
++	0xC164, 0x0000f8f8, 0x00000004,
++	0xC16C, 0x0000f8f8, 0x00000005,
++	0xC174, 0x0000f8f8, 0x00000006,
++	0xC17C, 0x0000f8f8, 0x00000007,
++	/* DRAM Base i Registers
++	 * F1:0x40 i = 0
++	 * F1:0x48 i = 1
++	 * F1:0x50 i = 2
++	 * F1:0x58 i = 3
++	 * F1:0x60 i = 4
++	 * F1:0x68 i = 5
++	 * F1:0x70 i = 6
++	 * F1:0x78 i = 7
++	 * [ 0: 0] Read Enable
++	 *         0 = Reads Disabled
++	 *         1 = Reads Enabled
++	 * [ 1: 1] Write Enable
++	 *         0 = Writes Disabled
++	 *         1 = Writes Enabled
++	 * [ 7: 2] Reserved
++	 * [10: 8] Interleave Enable
++	 *         000 = No interleave
++	 *         001 = Interleave on A[12] (2 nodes)
++	 *         010 = reserved
++	 *         011 = Interleave on A[12] and A[14] (4 nodes)
++	 *         100 = reserved
++	 *         101 = reserved
++	 *         110 = reserved
++	 *         111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
++	 * [15:11] Reserved
++	 * [13:16] DRAM Base Address i Bits 39-24
++	 *         This field defines the upper address bits of a 40-bit address
++	 *         that define the start of the DRAM region.
++	 */
++	0xC140, 0x0000f8fc, 0x00000003,
++#if MEMORY_1024MB
++	0xC148, 0x0000f8fc, 0x00400000,
++	0xC150, 0x0000f8fc, 0x00400000,
++	0xC158, 0x0000f8fc, 0x00400000,
++	0xC160, 0x0000f8fc, 0x00400000,
++	0xC168, 0x0000f8fc, 0x00400000,
++	0xC170, 0x0000f8fc, 0x00400000,
++	0xC178, 0x0000f8fc, 0x00400000,
++#endif
++#if MEMORY_512MB
++	0xC148, 0x0000f8fc, 0x00200000,
++	0xC150, 0x0000f8fc, 0x00200000,
++	0xC158, 0x0000f8fc, 0x00200000,
++	0xC160, 0x0000f8fc, 0x00200000,
++	0xC168, 0x0000f8fc, 0x00200000,
++	0xC170, 0x0000f8fc, 0x00200000,
++	0xC178, 0x0000f8fc, 0x00200000,
++#endif
++
++	/* Memory-Mapped I/O Limit i Registers
++	 * F1:0x84 i = 0
++	 * F1:0x8C i = 1
++	 * F1:0x94 i = 2
++	 * F1:0x9C i = 3
++	 * F1:0xA4 i = 4
++	 * F1:0xAC i = 5
++	 * F1:0xB4 i = 6
++	 * F1:0xBC i = 7
++	 * [ 2: 0] Destination Node ID
++	 *         000 = Node 0
++	 *         001 = Node 1
++	 *         010 = Node 2
++	 *         011 = Node 3
++	 *         100 = Node 4
++	 *         101 = Node 5
++	 *         110 = Node 6
++	 *         111 = Node 7
++	 * [ 3: 3] Reserved
++	 * [ 5: 4] Destination Link ID
++	 *         00 = Link 0
++	 *         01 = Link 1
++	 *         10 = Link 2
++	 *         11 = Reserved
++	 * [ 6: 6] Reserved
++	 * [ 7: 7] Non-Posted
++	 *         0 = CPU writes may be posted
++	 *         1 = CPU writes must be non-posted
++	 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
++	 *         This field defines the upp adddress bits of a 40-bit address that
++	 *         defines the end of a memory-mapped I/O region n
++	 */
++	0xC184, 0x00000048, 0x00e1ff00,
++	0xC18C, 0x00000048, 0x00dfff00,
++	0xC194, 0x00000048, 0x00e3ff00,
++	0xC19C, 0x00000048, 0x00000000,
++	0xC1A4, 0x00000048, 0x00000000,
++	0xC1AC, 0x00000048, 0x00000000,
++	0xC1B4, 0x00000048, 0x00000b00,
++	0xC1BC, 0x00000048, 0x00fe0b00,
++
++	/* Memory-Mapped I/O Base i Registers
++	 * F1:0x80 i = 0
++	 * F1:0x88 i = 1
++	 * F1:0x90 i = 2
++	 * F1:0x98 i = 3
++	 * F1:0xA0 i = 4
++	 * F1:0xA8 i = 5
++	 * F1:0xB0 i = 6
++	 * F1:0xB8 i = 7
++	 * [ 0: 0] Read Enable
++	 *         0 = Reads disabled
++	 *         1 = Reads Enabled
++	 * [ 1: 1] Write Enable
++	 *         0 = Writes disabled
++	 *         1 = Writes Enabled
++	 * [ 2: 2] Cpu Disable
++	 *         0 = Cpu can use this I/O range
++	 *         1 = Cpu requests do not use this I/O range
++	 * [ 3: 3] Lock
++	 *         0 = base/limit registers i are read/write
++	 *         1 = base/limit registers i are read-only
++	 * [ 7: 4] Reserved
++	 * [31: 8] Memory-Mapped I/O Base Address i (39-16)
++	 *         This field defines the upper address bits of a 40bit address 
++	 *         that defines the start of memory-mapped I/O region i
++	 */
++	0xC180, 0x000000f0, 0x00e00003,
++	0xC188, 0x000000f0, 0x00d80003,
++	0xC190, 0x000000f0, 0x00e20003,
++	0xC198, 0x000000f0, 0x00000000,
++	0xC1A0, 0x000000f0, 0x00000000,
++	0xC1A8, 0x000000f0, 0x00000000,
++	0xC1B0, 0x000000f0, 0x00000a03,
++#if MEMORY_1024MB
++	0xC1B8, 0x000000f0, 0x00400003,
++#endif
++#if MEMORY_512MB
++	0xC1B8, 0x000000f0, 0x00200003,
++#endif
++
++	/* PCI I/O Limit i Registers
++	 * F1:0xC4 i = 0
++	 * F1:0xCC i = 1
++	 * F1:0xD4 i = 2
++	 * F1:0xDC i = 3
++	 * [ 2: 0] Destination Node ID
++	 *         000 = Node 0
++	 *         001 = Node 1
++	 *         010 = Node 2
++	 *         011 = Node 3
++	 *         100 = Node 4
++	 *         101 = Node 5
++	 *         110 = Node 6
++	 *         111 = Node 7
++	 * [ 3: 3] Reserved
++	 * [ 5: 4] Destination Link ID
++	 *         00 = Link 0
++	 *         01 = Link 1
++	 *         10 = Link 2
++	 *         11 = reserved
++	 * [11: 6] Reserved
++	 * [24:12] PCI I/O Limit Address i
++	 *         This field defines the end of PCI I/O region n
++	 * [31:25] Reserved
++	 */
++	0xC1C4, 0xFE000FC8, 0x0000d000,
++	0xC1CC, 0xFE000FC8, 0x000ff000,
++	0xC1D4, 0xFE000FC8, 0x00000000,
++	0xC1DC, 0xFE000FC8, 0x00000000,
++
++	/* PCI I/O Base i Registers
++	 * F1:0xC0 i = 0
++	 * F1:0xC8 i = 1
++	 * F1:0xD0 i = 2
++	 * F1:0xD8 i = 3
++	 * [ 0: 0] Read Enable
++	 *         0 = Reads Disabled
++	 *         1 = Reads Enabled
++	 * [ 1: 1] Write Enable
++	 *         0 = Writes Disabled
++	 *         1 = Writes Enabled
++	 * [ 3: 2] Reserved
++	 * [ 4: 4] VGA Enable
++	 *         0 = VGA matches Disabled
++	 *         1 = matches all address < 64K and where A[9:0] is in the 
++	 *             range 3B0-3BB or 3C0-3DF independen of the base & limit registers
++	 * [ 5: 5] ISA Enable
++	 *         0 = ISA matches Disabled
++	 *         1 = Blocks address < 64K and in the last 768 bytes of eack 1K block
++	 *             from matching agains this base/limit pair
++	 * [11: 6] Reserved
++	 * [24:12] PCI I/O Base i
++	 *         This field defines the start of PCI I/O region n 
++	 * [31:25] Reserved
++	 */
++	0xC1C0, 0xFE000FCC, 0x0000d003,
++	0xC1C8, 0xFE000FCC, 0x00001013,
++	0xC1D0, 0xFE000FCC, 0x00000000,
++	0xC1D8, 0xFE000FCC, 0x00000000,
++
++	/* Config Base and Limit i Registers
++	 * F1:0xE0 i = 0
++	 * F1:0xE4 i = 1
++	 * F1:0xE8 i = 2
++	 * F1:0xEC i = 3
++	 * [ 0: 0] Read Enable
++	 *         0 = Reads Disabled
++	 *         1 = Reads Enabled
++	 * [ 1: 1] Write Enable
++	 *         0 = Writes Disabled
++	 *         1 = Writes Enabled
++	 * [ 2: 2] Device Number Compare Enable
++	 *         0 = The ranges are based on bus number
++	 *         1 = The ranges are ranges of devices on bus 0
++	 * [ 3: 3] Reserved
++	 * [ 6: 4] Destination Node
++	 *         000 = Node 0
++	 *         001 = Node 1
++	 *         010 = Node 2
++	 *         011 = Node 3
++	 *         100 = Node 4
++	 *         101 = Node 5
++	 *         110 = Node 6
++	 *         111 = Node 7
++	 * [ 7: 7] Reserved
++	 * [ 9: 8] Destination Link
++	 *         00 = Link 0
++	 *         01 = Link 1
++	 *         10 = Link 2
++	 *         11 - Reserved
++	 * [15:10] Reserved
++	 * [23:16] Bus Number Base i
++	 *         This field defines the lowest bus number in configuration region i
++	 * [31:24] Bus Number Limit i
++	 *         This field defines the highest bus number in configuration regin i
++	 */
++	0xC1E0, 0x0000FC88, 0xff000003,
++	0xC1E4, 0x0000FC88, 0x00000000,
++	0xC1E8, 0x0000FC88, 0x00000000,
++	0xC1EC, 0x0000FC88, 0x00000000,
++
++	/* DRAM CS Base Address i Registers
++	 * F2:0x40 i = 0
++	 * F2:0x44 i = 1
++	 * F2:0x48 i = 2
++	 * F2:0x4C i = 3
++	 * F2:0x50 i = 4
++	 * F2:0x54 i = 5
++	 * F2:0x58 i = 6
++	 * F2:0x5C i = 7
++	 * [ 0: 0] Chip-Select Bank Enable
++	 *         0 = Bank Disabled
++	 *         1 = Bank Enabled
++	 * [ 8: 1] Reserved
++	 * [15: 9] Base Address (19-13)
++	 *         An optimization used when all DIMM are the same size...
++	 * [20:16] Reserved
++	 * [31:21] Base Address (35-25)
++	 *         This field defines the top 11 addresses bit of a 40-bit
++	 *         address that define the memory address space.  These
++	 *         bits decode 32-MByte blocks of memory.
++	 */
++	0xC240, 0x001f01fe, 0x00000001,
++#if MEMORY_1024MB
++	0xC244, 0x001f01fe, 0x01000001,
++	0xC248, 0x001f01fe, 0x02000001,
++	0xC24C, 0x001f01fe, 0x03000001,
++#endif
++#if MEMORY_512MB
++	0xC244, 0x001f01fe, 0x00800001,
++	0xC248, 0x001f01fe, 0x01000001,
++	0xC24C, 0x001f01fe, 0x01800001,
++#endif
++	0xC250, 0x001f01fe, 0x00000000,
++	0xC254, 0x001f01fe, 0x00000000,
++	0xC258, 0x001f01fe, 0x00000000,
++	0xC25C, 0x001f01fe, 0x00000000,
++	/* DRAM CS Mask Address i Registers
++	 * F2:0x60 i = 0
++	 * F2:0x64 i = 1
++	 * F2:0x68 i = 2
++	 * F2:0x6C i = 3
++	 * F2:0x70 i = 4
++	 * F2:0x74 i = 5
++	 * F2:0x78 i = 6
++	 * F2:0x7C i = 7
++	 * Select bits to exclude from comparison with the DRAM Base address register.
++	 * [ 8: 0] Reserved
++	 * [15: 9] Address Mask (19-13)
++	 *         Address to be excluded from the optimized case
++	 * [20:16] Reserved
++	 * [29:21] Address Mask (33-25)
++	 *         The bits with an address mask of 1 are excluded from address comparison
++	 * [31:30] Reserved
++	 * 
++	 */
++#if MEMORY_1024MB
++	0xC260, 0xC01f01ff, 0x00e0fe00,
++	0xC264, 0xC01f01ff, 0x00e0fe00,
++	0xC268, 0xC01f01ff, 0x00e0fe00,
++	0xC26C, 0xC01f01ff, 0x00e0fe00,
++#endif
++#if MEMORY_512MB
++	0xC260, 0xC01f01ff, 0x0060fe00,
++	0xC264, 0xC01f01ff, 0x0060fe00,
++	0xC268, 0xC01f01ff, 0x0060fe00,
++	0xC26C, 0xC01f01ff, 0x0060fe00,
++#endif
++	0xC270, 0xC01f01ff, 0x00000000,
++	0xC274, 0xC01f01ff, 0x00000000,
++	0xC278, 0xC01f01ff, 0x00000000,
++	0xC27C, 0xC01f01ff, 0x00000000,
++	/* DRAM Bank Address Mapping Register
++	 * F2:0x80
++	 * Specify the memory module size
++	 * [ 2: 0] CS1/0 
++	 * [ 6: 4] CS3/2
++	 * [10: 8] CS5/4
++	 * [14:12] CS7/6
++	 *         000 = 32Mbyte  (Rows = 12 & Col =  8)
++	 *         001 = 64Mbyte  (Rows = 12 & Col =  9)
++	 *         010 = 128Mbyte (Rows = 13 & Col =  9)|(Rows = 12 & Col = 10)
++	 *         011 = 256Mbyte (Rows = 13 & Col = 10)|(Rows = 12 & Col = 11)
++	 *         100 = 512Mbyte (Rows = 13 & Col = 11)|(Rows = 14 & Col = 10)
++	 *         101 = 1Gbyte   (Rows = 14 & Col = 11)|(Rows = 13 & Col = 12)
++	 *         110 = 2Gbyte   (Rows = 14 & Col = 12)
++	 *         111 = reserved 
++	 * [ 3: 3] Reserved
++	 * [ 7: 7] Reserved
++	 * [11:11] Reserved
++	 * [31:15]
++	 */
++#if MEMORY_1024MB
++	0xC280, 0xffff8888, 0x00000033,
++#endif
++#if MEMORY_512MB
++	0xC280, 0xffff8888, 0x00000022,
++#endif
++	/* DRAM Timing Low Register
++	 * F2:0x88
++	 * [ 2: 0] Tcl (Cas# Latency, Cas# to read-data-valid)
++	 *         000 = reserved
++	 *         001 = CL 2
++	 *         010 = CL 3
++	 *         011 = reserved
++	 *         100 = reserved
++	 *         101 = CL 2.5
++	 *         110 = reserved
++	 *         111 = reserved
++	 * [ 3: 3] Reserved
++	 * [ 7: 4] Trc (Row Cycle Time, Ras#-active to Ras#-active/bank auto refresh)
++	 *         0000 =  7 bus clocks
++	 *         0001 =  8 bus clocks
++	 *         ...
++	 *         1110 = 21 bus clocks
++	 *         1111 = 22 bus clocks
++	 * [11: 8] Trfc (Row refresh Cycle time, Auto-refresh-active to RAS#-active or RAS#auto-refresh)
++	 *         0000 = 9 bus clocks
++	 *         0010 = 10 bus clocks
++	 *         ....
++	 *         1110 = 23 bus clocks
++	 *         1111 = 24 bus clocks
++	 * [14:12] Trcd (Ras#-active to Case#-read/write Delay)
++	 *         000 = reserved
++	 *         001 = reserved
++	 *         010 = 2 bus clocks
++	 *         011 = 3 bus clocks
++	 *         100 = 4 bus clocks
++	 *         101 = 5 bus clocks
++	 *         110 = 6 bus clocks
++	 *         111 = reserved
++	 * [15:15] Reserved
++	 * [18:16] Trrd (Ras# to Ras# Delay)
++	 *         000 = reserved
++	 *         001 = reserved
++	 *         010 = 2 bus clocks
++	 *         011 = 3 bus clocks
++	 *         100 = 4 bus clocks
++	 *         101 = reserved
++	 *         110 = reserved
++	 *         111 = reserved
++	 * [19:19] Reserved
++	 * [23:20] Tras (Minmum Ras# Active Time)
++	 *         0000 to 0100 = reserved
++	 *         0101 = 5 bus clocks
++	 *         ...
++	 *         1111 = 15 bus clocks
++	 * [26:24] Trp (Row Precharge Time)
++	 *         000 = reserved
++	 *         001 = reserved
++	 *         010 = 2 bus clocks
++	 *         011 = 3 bus clocks
++	 *         100 = 4 bus clocks
++	 *         101 = 5 bus clocks
++	 *         110 = 6 bus clocks
++	 *         111 = reserved
++	 * [27:27] Reserved
++	 * [28:28] Twr (Write Recovery Time)
++	 *         0 = 2 bus clocks
++	 *         1 = 3 bus clocks
++	 * [31:29] Reserved
++	 */
++	0xC288, 0xe8088008, 0x03623125,
++	/* DRAM Timing High Register
++	 * F2:0x8C
++	 * [ 0: 0] Twtr (Write to Read Delay)
++	 *         0 = 1 bus Clocks
++	 *         1 = 2 bus Clocks
++	 * [ 3: 1] Reserved
++	 * [ 6: 4] Trwf (Read to Write Delay)
++	 *         000 = 1 bus clocks
++	 *         001 = 2 bus clocks
++	 *         010 = 3 bus clocks
++	 *         011 = 4 bus clocks
++	 *         100 = 5 bus clocks
++	 *         101 = 6 bus clocks
++	 *         110 = reserved
++	 *         111 = reserved
++	 * [ 7: 7] Reserved
++	 * [12: 8] Tref (Refresh Rate)
++	 *         00000 = 100Mhz 4K rows
++	 *         00001 = 133Mhz 4K rows
++	 *         00010 = 166Mhz 4K rows
++	 *         01000 = 100Mhz 8K/16K rows
++	 *         01001 = 133Mhz 8K/16K rows
++	 *         01010 = 166Mhz 8K/16K rows
++	 * [19:13] Reserved
++	 * [22:20] Twcl (Write CAS Latency)
++	 *         000 = 1 Mem clock after CAS# (Unbuffered Dimms)
++	 *         001 = 2 Mem clocks after CAS# (Registered Dimms)
++	 * [31:23] Reserved
++	 */
++#if MEMORY_1024MB
++	0xC28c, 0xff8fe08e, 0x00000930,
++#endif
++#if MEMORY_512MB
++	0xC28c, 0xff8fe08e, 0x00000130,
++#endif
++
++	/* DRAM Config Low Register
++	 * F2:0x90
++	 * [ 0: 0] DLL Disable
++	 *         0 = Enabled
++	 *         1 = Disabled
++	 * [ 1: 1] D_DRV
++	 *         0 = Normal Drive
++	 *         1 = Weak Drive
++	 * [ 2: 2] QFC_EN
++	 *         0 = Disabled
++	 *         1 = Enabled
++	 * [ 3: 3] Disable DQS Hystersis  (FIXME handle this one carefully)
++	 *         0 = Enable DQS input filter 
++	 *         1 = Disable DQS input filtering 
++	 * [ 7: 4] Reserved
++	 * [ 8: 8] DRAM_Init
++	 *         0 = Initialization done or not yet started.
++	 *         1 = Initiate DRAM intialization sequence
++	 * [ 9: 9] SO-Dimm Enable
++	 *         0 = Do nothing
++	 *         1 = SO-Dimms present
++	 * [10:10] DramEnable
++	 *         0 = DRAM not enabled
++	 *         1 = DRAM initialized and enabled
++	 * [11:11] Memory Clear Status
++	 *         0 = Memory Clear function has not completed
++	 *         1 = Memory Clear function has completed
++	 * [12:12] Exit Self-Refresh
++	 *         0 = Exit from self-refresh done or not yet started
++	 *         1 = DRAM exiting from self refresh
++	 * [13:13] Self-Refresh Status
++	 *         0 = Normal Operation
++	 *         1 = Self-refresh mode active
++	 * [15:14] Read/Write Queue Bypass Count
++	 *         00 = 2
++	 *         01 = 4
++	 *         10 = 8
++	 *         11 = 16
++	 * [16:16] 128-bit/64-Bit
++	 *         0 = 64bit Interface to DRAM
++	 *         1 = 128bit Interface to DRAM
++	 * [17:17] DIMM ECC Enable
++	 *         0 = Some DIMMs do not have ECC
++	 *         1 = ALL DIMMS have ECC bits
++	 * [18:18] UnBuffered DIMMs
++	 *         0 = Buffered DIMMS
++	 *         1 = Unbuffered DIMMS
++	 * [19:19] Enable 32-Byte Granularity
++	 *         0 = Optimize for 64byte bursts
++	 *         1 = Optimize for 32byte bursts
++	 * [20:20] DIMM 0 is x4
++	 * [21:21] DIMM 1 is x4
++	 * [22:22] DIMM 2 is x4
++	 * [23:23] DIMM 3 is x4
++	 *         0 = DIMM is not x4
++	 *         1 = x4 DIMM present
++	 * [24:24] Disable DRAM Receivers
++	 *         0 = Receivers enabled
++	 *         1 = Receivers disabled
++	 * [27:25] Bypass Max
++	 *         000 = Arbiters chois is always respected
++	 *         001 = Oldest entry in DCQ can be bypassed 1 time
++	 *         010 = Oldest entry in DCQ can be bypassed 2 times
++	 *         011 = Oldest entry in DCQ can be bypassed 3 times
++	 *         100 = Oldest entry in DCQ can be bypassed 4 times
++	 *         101 = Oldest entry in DCQ can be bypassed 5 times
++	 *         110 = Oldest entry in DCQ can be bypassed 6 times
++	 *         111 = Oldest entry in DCQ can be bypassed 7 times
++	 * [31:28] Reserved
++	 */
++	0xC290, 0xf0000000, 
++	(4 << 25)|(0 << 24)| 
++	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)| 
++	(1 << 19)|(1 << 18)|(0 << 17)|(0 << 16)| 
++	(2 << 14)|(0 << 13)|(0 << 12)| 
++	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)| 
++	(0 << 3) |(0 << 1) |(0 << 0),
++	/* DRAM Config High Register
++	 * F2:0x94
++	 * [ 0: 3] Maximum Asynchronous Latency
++	 *         0000 = 0 ns
++	 *         ...
++	 *         1111 = 15 ns
++	 * [ 7: 4] Reserved
++	 * [11: 8] Read Preamble
++	 *         0000 = 2.0 ns
++	 *         0001 = 2.5 ns
++	 *         0010 = 3.0 ns
++	 *         0011 = 3.5 ns
++	 *         0100 = 4.0 ns
++	 *         0101 = 4.5 ns
++	 *         0110 = 5.0 ns
++	 *         0111 = 5.5 ns
++	 *         1000 = 6.0 ns
++	 *         1001 = 6.5 ns
++	 *         1010 = 7.0 ns
++	 *         1011 = 7.5 ns
++	 *         1100 = 8.0 ns
++	 *         1101 = 8.5 ns
++	 *         1110 = 9.0 ns
++	 *         1111 = 9.5 ns
++	 * [15:12] Reserved
++	 * [18:16] Idle Cycle Limit
++	 *         000 = 0 cycles
++	 *         001 = 4 cycles
++	 *         010 = 8 cycles
++	 *         011 = 16 cycles
++	 *         100 = 32 cycles
++	 *         101 = 64 cycles
++	 *         110 = 128 cycles
++	 *         111 = 256 cycles
++	 * [19:19] Dynamic Idle Cycle Center Enable
++	 *         0 = Use Idle Cycle Limit
++	 *         1 = Generate a dynamic Idle cycle limit
++	 * [22:20] DRAM MEMCLK Frequency
++	 *         000 = 100Mhz
++	 *         001 = reserved
++	 *         010 = 133Mhz
++	 *         011 = reserved
++	 *         100 = reserved
++	 *         101 = 166Mhz
++	 *         110 = reserved
++	 *         111 = reserved
++	 * [24:23] Reserved
++	 * [25:25] Memory Clock Ratio Valid (FIXME carefully enable memclk)
++	 *         0 = Disable MemClks
++	 *         1 = Enable MemClks
++	 * [26:26] Memory Clock 0 Enable
++	 *         0 = Disabled
++	 *         1 = Enabled
++	 * [27:27] Memory Clock 1 Enable
++	 *         0 = Disabled
++	 *         1 = Enabled
++	 * [28:28] Memory Clock 2 Enable
++	 *         0 = Disabled
++	 *         1 = Enabled
++	 * [29:29] Memory Clock 3 Enable
++	 *         0 = Disabled
++	 *         1 = Enabled
++	 * [31:30] Reserved
++	 */
++#if MEMORY_1024MB
++	0xC294, 0xc180f0f0, 0x0e2b0a05,
++#endif
++#if MEMORY_512MB
++	0xC294, 0xc180f0f0, 0x0e2b0a06,
++#endif
++	/* DRAM Delay Line Register
++	 * F2:0x98
++	 * Adjust the skew of the input DQS strobe relative to DATA
++	 * [15: 0] Reserved
++	 * [23:16] Delay Line Adjust
++	 *         Adjusts the DLL derived PDL delay by one or more delay stages
++	 *         in either the faster or slower direction.
++	 * [24:24} Adjust Slower
++	 *         0 = Do Nothing
++	 *         1 = Adj is used to increase the PDL delay
++	 * [25:25] Adjust Faster
++	 *         0 = Do Nothing
++	 *         1 = Adj is used to decrease the PDL delay
++	 * [31:26] Reserved
++	 */
++	0xC298, 0xfc00ffff, 0x00000000,
++	/* DRAM Scrub Control Register
++	 * F3:0x58
++	 * [ 4: 0] DRAM Scrube Rate
++	 * [ 7: 5] reserved
++	 * [12: 8] L2 Scrub Rate
++	 * [15:13] reserved
++	 * [20:16] Dcache Scrub
++	 * [31:21] reserved
++	 *         Scrub Rates
++	 *         00000 = Do not scrub
++	 *         00001 =  40.00 ns
++	 *         00010 =  80.00 ns
++	 *         00011 = 160.00 ns
++	 *         00100 = 320.00 ns
++	 *         00101 = 640.00 ns
++	 *         00110 =   1.28 us
++	 *         00111 =   2.56 us
++	 *         01000 =   5.12 us
++	 *         01001 =  10.20 us
++	 *         01011 =  41.00 us
++	 *         01100 =  81.90 us
++	 *         01101 = 163.80 us
++	 *         01110 = 327.70 us
++	 *         01111 = 655.40 us
++	 *         10000 =   1.31 ms
++	 *         10001 =   2.62 ms
++	 *         10010 =   5.24 ms
++	 *         10011 =  10.49 ms
++	 *         10100 =  20.97 ms
++	 *         10101 =  42.00 ms
++	 *         10110 =  84.00 ms
++	 *         All Others = Reserved
++	 */
++	0xC358, 0xffe0e0e0, 0x00000000,
++	/* DRAM Scrub Address Low Register
++	 * F3:0x5C
++	 * [ 0: 0] DRAM Scrubber Redirect Enable
++	 *         0 = Do nothing
++	 *         1 = Scrubber Corrects errors found in normal operation
++	 * [ 5: 1] Reserved
++	 * [31: 6] DRAM Scrub Address 31-6
++	 */
++	0xC35C, 0x0000003e, 0x00000000,
++	/* DRAM Scrub Address High Register
++	 * F3:0x60
++	 * [ 7: 0] DRAM Scrubb Address 39-32
++	 * [31: 8] Reserved
++	 */
++	0xC360, 0xffffff00, 0x00000000,
++	};
++	int i;
++	int max;
++	print_debug("setting up northbridge registers\r\n");
++	max = sizeof(register_values)/sizeof(register_values[0]);
++	for(i = 0; i < max; i += 3) {
++		unsigned long reg;
++#if 0
++		print_debug_hex32(register_values[i]);
++		print_debug(" <-");
++		print_debug_hex32(register_values[i+2]);
++		print_debug("\r\n");
++#endif
++		reg = pcibios_read_config_dword(
++			0, register_values[i] >> 8, register_values[i] & 0xff);
++		reg &= register_values[i+1];
++		reg |= register_values[i+2] & ~register_values[i+1];
++		pcibios_write_config_dword(
++			0, register_values[i] >> 8, register_values[i] & 0xff, reg);
++	}
++	print_debug("setting up northbridge registers done. hurray!\r\n");
++}
++
++#define PCI_DEVFN(slot,func)	((((slot) & 0x1f) << 3) | ((func) & 0x07))
++
++#define DRAM_CONFIG_LOW 0x90
++#define  DCL_DLL_Disable   (1<<0)
++#define  DCL_D_DRV         (1<<1)
++#define  DCL_QFC_EN        (1<<2)
++#define  DCL_DisDqsHys     (1<<3)
++#define  DCL_DramInit      (1<<8)
++#define  DCL_DramEnable    (1<<10)
++#define  DCL_MemClrStatus  (1<<11)
++#define  DCL_DimmEcEn      (1<<17)
++
++static void sdram_set_spd_registers(void) 
++{
++	unsigned long dcl;
++	dcl = pcibios_read_config_dword(0, PCI_DEVFN(0x18,2), DRAM_CONFIG_LOW);
++	/* Until I know what is going on disable ECC support */
++	dcl &= ~DCL_DimmEcEn;
++	pcibios_write_config_dword(0, PCI_DEVFN(0x18,2), DRAM_CONFIG_LOW, dcl);
++}
++
++#define TIMEOUT_LOOPS 300000
++static void sdram_enable(void)
++{
++	unsigned long dcl;
++
++	/* Toggle DisDqsHys to get it working */
++	dcl = pcibios_read_config_dword(0, PCI_DEVFN(0x18,2), DRAM_CONFIG_LOW);
++	print_debug("dcl: ");
++	print_debug_hex32(dcl);
++	print_debug("\r\n");
++	dcl |= DCL_DisDqsHys;
++	pcibios_write_config_dword(0, PCI_DEVFN(0x18, 2), DRAM_CONFIG_LOW, dcl);
++	dcl &= ~DCL_DisDqsHys;
++	dcl &= ~DCL_DLL_Disable;
++	dcl &= ~DCL_D_DRV;
++	dcl &= ~DCL_QFC_EN;
++	dcl |= DCL_DramInit;
++	pcibios_write_config_dword(0, PCI_DEVFN(0x18, 2), DRAM_CONFIG_LOW, dcl);
++	
++	print_debug("Initializing memory: ");
++	int loops = 0;
++	do {
++		dcl = pcibios_read_config_dword(0, PCI_DEVFN(0x18, 2), DRAM_CONFIG_LOW);
++		loops += 1;
++		if ((loops & 1023) == 0) {
++			print_debug(" ");
++			print_debug_hex32(loops);
++		}
++	} while(((dcl & DCL_DramInit) != 0) && (loops < TIMEOUT_LOOPS));
++	if (loops >= TIMEOUT_LOOPS) {
++		print_debug(" failed\r\n");
++	} else {
++		print_debug(" done\r\n");
++	}
++
++#if 0
++	print_debug("Clearing memory: ");
++	loops = 0;
++	do {
++		dcl = pcibios_read_config_dword(0, PCI_DEVFN(0x18, 2), DRAM_CONFIG_LOW);
++		loops += 1;
++		if ((loops & 1023) == 0) {
++			print_debug(" ");
++			print_debug_hex32(loops);
++		}
++	} while(((dcl & DCL_MemClrStatus) == 0) && (loops < TIMEOUT_LOOPS));
++	if (loops >= TIMEOUT_LOOPS) {
++		print_debug("failed\r\n");
++	} else {
++		print_debug("done\r\n");
++	}
++#endif
++}
++
++static void sdram_first_normal_reference(void) {}
++static void sdram_enable_refresh(void) {}
++static void sdram_special_finishup(void) {}
++
++static int sdram_enabled(void)
++{
++	unsigned long dcl;
++	int enabled;
++	dcl = pcibios_read_config_dword(0, PCI_DEVFN(0x18, 2), DRAM_CONFIG_LOW);
++	enabled = !!(dcl & DCL_DramEnable);
++	if (enabled) {
++		print_debug("DRAM already enabled.");
++	}
++	return enabled;
++}
++
++
++#include "sdram/generic_sdram.c"
++
++static void main(void)
++{
++	uart_init();
++	console_init();
++	if (!sdram_enabled()) {
++		sdram_initialize();
++#if 0
++		ram_fill(  0x00100000, 0x00180000);
++		ram_verify(0x00100000, 0x00180000);
++#endif
++#if 1
++		ram_fill(  0x00000000, 0x00001000);
++		ram_verify(0x00000000, 0x00001000);
++#endif
++	}
++}
+diff --git a/src/mainboard/arima/hdama/cmos.layout b/src/mainboard/arima/hdama/cmos.layout
+new file mode 100644
+index 0000000..5ba4c03
+--- /dev/null
++++ b/src/mainboard/arima/hdama/cmos.layout
+@@ -0,0 +1,74 @@
++entries
++
++#start-bit length  config config-ID    name
++#0            8       r       0        seconds
++#8            8       r       0        alarm_seconds
++#16           8       r       0        minutes
++#24           8       r       0        alarm_minutes
++#32           8       r       0        hours
++#40           8       r       0        alarm_hours
++#48           8       r       0        day_of_week
++#56           8       r       0        day_of_month
++#64           8       r       0        month
++#72           8       r       0        year
++#80           4       r       0        rate_select
++#84           3       r       0        REF_Clock
++#87           1       r       0        UIP
++#88           1       r       0        auto_switch_DST
++#89           1       r       0        24_hour_mode
++#90           1       r       0        binary_values_enable
++#91           1       r       0        square-wave_out_enable
++#92           1       r       0        update_finished_enable
++#93           1       r       0        alarm_interrupt_enable
++#94           1       r       0        periodic_interrupt_enable
++#95           1       r       0        disable_clock_updates
++#96         288       r       0        temporary_filler
++0          384       r       0        reserved_memory
++384          1       e       4        boot_option
++385          1       e       4        last_boot
++386          1       e       1        ECC_memory
++388          4       r       0        reboot_bits
++392          3       e       5        baud_rate
++400          1       e       1        power_on_after_fail
++412          4       e       6        debug_level
++416          4       e       7        boot_first
++420          4       e       7        boot_second
++424          4       e       7        boot_third
++428          4       h       0        boot_index
++432	     8       h       0        boot_countdown
++1008         16      h       0        check_sum
++
++enumerations
++
++#ID value   text
++1     0     Disable
++1     1     Enable
++2     0     Enable
++2     1     Disable
++4     0     Fallback
++4     1     Normal
++5     0     115200
++5     1     57600
++5     2     38400
++5     3     19200
++5     4     9600
++5     5     4800
++5     6     2400
++5     7     1200
++6     6     Notice
++6     7     Info
++6     8     Debug
++6     9     Spew
++7     0     Network
++7     1     HDD
++7     2     Floppy
++7     8     Fallback_Network
++7     9     Fallback_HDD
++7     10    Fallback_Floppy
++#7     3     ROM
++
++checksums
++
++checksum 392 1007 1008
++
++
+diff --git a/src/mainboard/arima/hdama/irq_tables.c b/src/mainboard/arima/hdama/irq_tables.c
+new file mode 100644
+index 0000000..286905c
+--- /dev/null
++++ b/src/mainboard/arima/hdama/irq_tables.c
+@@ -0,0 +1,31 @@
++/* This file was generated by getpir.c, do not modify! 
++   (but if you do, please run checkpir on it to verify)
++   Contains the IRQ Routing Table dumped directly from your memory , wich BIOS sets up
++
++   Documentation at : http://www.microsoft.com/hwdev/busbios/PCIIRQ.HTM
++*/
++
++#include <arch/pirq_routing.h>
++
++const struct irq_routing_table intel_irq_routing_table = {
++	PIRQ_SIGNATURE, /* u32 signature */
++	PIRQ_VERSION,   /* u16 version   */
++	32+16*7,        /* there can be total 7 devices on the bus */
++	0,              /* Where the interrupt router lies (bus) */
++	(5<<3)|3,       /* Where the interrupt router lies (dev) */
++	0xc20,          /* IRQs devoted exclusively to PCI usage */
++	0x1022,         /* Vendor */
++	0x746b,         /* Device */
++	0,              /* Crap (miniport) */
++	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
++	0xdf,           /*  u8 checksum , mod 256 checksum must give zero */
++	{  /* bus, devfn,     {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  */
++	    {0x02, (5<<3)|0, {{0x02, 0xdeb8}, {0x03, 0xdeb8}, {0x04, 0xdeb8}, {0x01, 0xdeb8}}, 0x02, 0x00},
++	    {0x02, (6<<3)|0, {{0x03, 0xdeb8}, {0x04, 0xdeb8}, {0x01, 0xdeb8}, {0x02, 0xdeb8}}, 0x03, 0x00},
++	    {0x02, (7<<3)|0, {{0x04, 0xdeb8}, {0x01, 0xdeb8}, {0x02, 0xdeb8}, {0x03, 0xdeb8}}, 0x04, 0x00},
++	    {0x02, (1<<3)|1, {{0x01, 0xdeb8}, {0x01, 0xdeb8}, {0x01, 0xdeb8}, {0x01, 0xdeb8}}, 0x00, 0x00},
++	    {0x00, (5<<3)|1, {{0x01, 0xdeb8}, {0x02, 0xdeb8}, {0x03, 0xdeb8}, {0x04, 0xdeb8}}, 0x00, 0x00},
++	    {0x00, (2<<3)|0, {{0x01, 0xdeb8}, {0x02, 0xdeb8}, {0x03, 0xdeb8}, {0x04, 0xdeb8}}, 0x00, 0x00},
++	    {0xff, 0xff,     {{0xff, 0xffff}, {0xff, 0xffff}, {0xff, 0xffff}, {0xff, 0xffff}}, 0xff, 0xff},
++	}
++};
+diff --git a/src/mainboard/arima/hdama/mainboard.c b/src/mainboard/arima/hdama/mainboard.c
+new file mode 100644
+index 0000000..6578ef6
+--- /dev/null
++++ b/src/mainboard/arima/hdama/mainboard.c
+@@ -0,0 +1,137 @@
++#include <console/console.h>
++#include <device/device.h>
++#include <device/pci.h>
++#include <device/pci_ids.h>
++#include <device/pci_ops.h>
++
++
++unsigned long initial_apicid[MAX_CPUS] =
++{
++	0
++};
++
++void
++mainboard_fixup(void)
++{
++}
++
++void
++final_mainboard_fixup(void)
++{
++#if 0
++//	void final_southbridge_fixup(void);
++//	void final_superio_fixup(void);
++
++	printk_info("AMD Solo initializing...");
++
++//	final_southbridge_fixup();
++
++//#ifndef USE_NEW_SUPERIO_INTERFACE
++//final_superio_fixup();
++//#endif
++#endif
++}
++
++struct ioapicreg {
++	unsigned int reg;
++	unsigned int value_low, value_high;
++};
++static struct ioapicreg ioapicregvalues[] = {
++#define ALL		(0xff << 24)
++#define NONE		(0)
++#define DISABLED	(1 << 16)
++#define ENABLED		(0 << 16)
++#define TRIGGER_EDGE	(0 << 15)
++#define TRIGGER_LEVEL	(1 << 15)
++#define POLARITY_HIGH	(0 << 13)
++#define POLARITY_LOW	(1 << 13)
++#define PHYSICAL_DEST	(0 << 11)
++#define LOGICAL_DEST	(1 << 11)
++#define ExtINT		(7 << 8)
++#define NMI		(4 << 8)
++#define SMI		(2 << 8)
++#define INT		(1 << 8)
++	/* mask, trigger, polarity, destination, delivery, vector */
++	{0x00, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT | 0, 0},
++	{0x01, DISABLED, NONE},
++	{0x02, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | INT | 0,  0},
++	{0x03, DISABLED, NONE},
++	{0x04, DISABLED, NONE},
++	{0x05, DISABLED, NONE},
++	{0x06, DISABLED, NONE},
++	{0x07, DISABLED, NONE},
++	{0x08, DISABLED, NONE},
++	{0x09, DISABLED, NONE},
++	{0x0a, DISABLED, NONE},
++	{0x0b, DISABLED, NONE},
++	{0x0c, DISABLED, NONE},
++	{0x0d, DISABLED, NONE},
++	{0x0e, DISABLED, NONE},
++	{0x0f, DISABLED, NONE},
++	{0x10, DISABLED, NONE},
++	{0x11, DISABLED, NONE},
++	{0x12, DISABLED, NONE},
++	{0x13, DISABLED, NONE},
++	{0x14, DISABLED, NONE},
++	{0x14, DISABLED, NONE},
++	{0x15, DISABLED, NONE},
++	{0x16, DISABLED, NONE},
++	{0x17, DISABLED, NONE},
++	{0x18, DISABLED, NONE},
++	{0x19, DISABLED, NONE},
++	{0x20, DISABLED, NONE},
++	{0x21, DISABLED, NONE},
++	{0x22, DISABLED, NONE},
++	{0x23, DISABLED, NONE},
++};
++
++static void setup_ioapic(void)
++{
++	int i;
++	unsigned long value_low, value_high;
++	unsigned long ioapic_base = 0xfec00000;
++	volatile unsigned long *l;
++	struct ioapicreg *a = ioapicregvalues;
++
++	l = (unsigned long *) ioapic_base;
++	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
++	     i++, a++) {
++		l[0] = (a->reg * 2) + 0x10;
++		l[4] = a->value_low;
++		value_low = l[4];
++		l[0] = (a->reg *2) + 0x11;
++		l[4] = a->value_high;
++		value_high = l[4];
++		if ((i==0) && (value_low == 0xffffffff)) {
++			printk_warning("IO APIC not responding.\n");
++			return;
++		}
++		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
++			a->reg, a->value_low, a->value_high);
++	}
++}
++
++static void lpc_init(struct device *dev)
++{
++	uint8_t byte;
++	printk_debug("lpc_init\n");
++#if 0
++	pci_read_config_byte(dev, 0x4B, &byte);
++	byte |= 1;
++	pci_write_config_byte(dev, 0x4B, byte);
++	setup_ioapic();
++#endif
++}
++
++static struct device_operations lpc_ops  = {
++	.read_resources = pci_dev_read_resources,
++	.set_resources  = pci_dev_set_resources,
++	.init = lpc_init,
++	.scan_bus = 0,
++};
++
++static struct pci_driver lpc_driver __pci_driver = {
++	.ops    = &lpc_ops,
++	.vendor = PCI_VENDOR_ID_AMD,
++	.device = 0x7468,
++};
+diff --git a/src/mainboard/arima/hdama/mptable.c b/src/mainboard/arima/hdama/mptable.c
+new file mode 100644
+index 0000000..656b790
+--- /dev/null
++++ b/src/mainboard/arima/hdama/mptable.c
+@@ -0,0 +1,118 @@
++#include <console/console.h>
++#include <arch/smp/mpspec.h>
++#include <device/pci.h>
++#include <string.h>
++#include <stdint.h>
++
++void *smp_write_config_table(void *v, unsigned long * processor_map)
++{
++	static const char sig[4] = "PCMP";
++	static const char oem[8] = "LNXI    ";
++	static const char productid[12] = "P4DPR       ";
++	struct mp_config_table *mc;
++
++	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
++	memset(mc, 0, sizeof(*mc));
++
++	memcpy(mc->mpc_signature, sig, sizeof(sig));
++	mc->mpc_length = sizeof(*mc); /* initially just the header */
++	mc->mpc_spec = 0x04;
++	mc->mpc_checksum = 0; /* not yet computed */
++	memcpy(mc->mpc_oem, oem, sizeof(oem));
++	memcpy(mc->mpc_productid, productid, sizeof(productid));
++	mc->mpc_oemptr = 0;
++	mc->mpc_oemsize = 0;
++	mc->mpc_entry_count = 0; /* No entries yet... */
++	mc->mpc_lapic = LAPIC_ADDR;
++	mc->mpe_length = 0;
++	mc->mpe_checksum = 0;
++	mc->reserved = 0;
++
++	smp_write_processors(mc, processor_map);
++
++	smp_write_bus(mc, 0, "PCI   ");
++	smp_write_bus(mc, 1, "PCI   ");
++	smp_write_bus(mc, 2, "PCI   ");
++	smp_write_bus(mc, 3, "ISA   ");
++
++	smp_write_ioapic(mc, 2, 0x11, 0xfec00000);
++
++	/* ISA backward compatibility interrupts  */
++	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x00, 0x02, 0x00);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x01, 0x02, 0x01);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x00, 0x02, 0x02);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x03, 0x02, 0x03);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x04, 0x02, 0x04);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
++		0x03, 0x05, 0x02, 0x05);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x06, 0x02, 0x06);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x07, 0x02, 0x07);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
++		0x03, 0x08, 0x02, 0x08);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x09, 0x02, 0x09);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
++		0x03, 0x0a, 0x02, 0x0a);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
++		0x03, 0x0b, 0x02, 0x0b);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x0c, 0x02, 0x0c);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x0d, 0x02, 0x0d);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x0e, 0x02, 0x0e);
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x0f, 0x02, 0x0f);
++
++	/* Standard local interrupt assignments */
++	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x03, 0x00, MP_APIC_ALL, 0x00);
++	smp_write_lintsrc(mc, mp_NMI,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x00, 0x00, MP_APIC_ALL, 0x01);
++
++
++	/* 8111 DevB.3 */
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x00, (5<<2)|3, 0x02, 0x13);
++
++	/* AGP Slot */
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x01, (0<<2)|0, 0x02, 0x10);
++
++	/* PCI Slot 1 */
++	/* PCI Slot 2 */
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x02, (5 <<2)|0, 0x02, 0x11);
++	/* PCI Slot 3 */
++	/* PCI Slot 4 */
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x02, (7<<2)|0, 0x02, 0x13);
++
++	/* AMR Slot */
++	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
++		0x02, (1<<2)|0, 0x02, 0x10);
++
++	/* There is no extension information... */
++
++	/* Compute the checksums */
++	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
++	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
++	printk_debug("Wrote the mp table end at: %p - %p\n",
++		mc, smp_next_mpe_entry(mc));
++	return smp_next_mpe_entry(mc);
++}
++
++unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map)
++{
++	void *v;
++	v = smp_write_floating_table(addr);
++	return (unsigned long)smp_write_config_table(v, processor_map);
++}
++
+diff --git a/targets/arima/hdama/Config.lb b/targets/arima/hdama/Config.lb
+new file mode 100644
+index 0000000..02c9561
+--- /dev/null
++++ b/targets/arima/hdama/Config.lb
+@@ -0,0 +1,173 @@
++# Sample config file for Motorola Sandpoint X3 Demo Board with
++# the Arima HDAMA
++# This will make a target directory of ./hdama
++
++loadoptions
++
++target ./hdama
++
++uses CONFIG_COMPRESS
++uses CONFIG_IOAPIC
++uses CONFIG_ROM_STREAM
++uses CONFIG_ROM_STREAM_START
++uses ENABLE_FIXED_AND_VARIABLE_MTRRS
++uses FINAL_MAINBOARD_FIXUP
++uses HAVE_FALLBACK_BOOT
++uses HAVE_PIRQ_TABLE
++uses HEAP_SIZE
++uses IRQ_SLOT_COUNT
++uses MAINBOARD_PART_NUMBER
++uses MAINBOARD_VENDOR
++uses MAX_CPUS
++uses MEMORY_HOLE
++uses PAYLOAD_SIZE
++uses _RAMBASE
++uses _ROMBASE
++uses ROM_IMAGE_SIZE
++uses ROM_SECTION_OFFSET
++uses ROM_SECTION_SIZE
++uses ROM_SIZE
++uses SIO_BASE
++uses SIO_SYSTEM_CLK_INPUT
++uses STACK_SIZE
++uses USE_ELF_BOOT
++uses USE_FALLBACK_IMAGE
++uses USE_OPTION_TABLE
++
++### Customize our winbond superio chip for this motherboard
++###
++option SIO_BASE=0x2e
++option SIO_SYSTEM_CLK_INPUT=0
++#
++###
++### Build code for the fallback boot
++###
++option HAVE_FALLBACK_BOOT=1
++#
++###
++### Build code to export a programmable irq routing table
++###
++option HAVE_PIRQ_TABLE=1
++option IRQ_SLOT_COUNT=7
++#
++###
++### Build code for SMP support
++### Only worry about 2 micro processors
++###
++##option CONFIG_SMP=1
++option MAX_CPUS=1
++#
++###
++### Build code to setup a generic IOAPIC
++###
++option CONFIG_IOAPIC=1
++#
++###
++### MEMORY_HOLE instructs earlymtrr.inc to
++### enable caching from 0-640KB and to disable 
++### caching from 640KB-1MB using fixed MTRRs 
++###
++### Enabling this option breaks SMP because secondary
++### CPU identification depends on only variable MTRRs
++### being enabled.
++###
++option MEMORY_HOLE=0
++#
++###
++### Enable both fixed and variable MTRRS
++### When we setup MTRRs in mtrr.c  
++###
++### We must setup the fixed mtrrs or we confuse SMP secondary
++### processor identification
++###
++option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
++#
++###
++### Clean up the motherboard id strings
++###
++option MAINBOARD_PART_NUMBER="Solo7"
++option MAINBOARD_VENDOR="AMD"
++#
++###
++### Call the final_mainboard_fixup function
++###
++option FINAL_MAINBOARD_FIXUP=1
++option USE_FALLBACK_IMAGE=0
++
++###
++### Only use the option table in a normal image
++###
++option USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
++#
++###
++### Compute the location and size of where this firmware image
++### (linuxBIOS plus bootloader) will live in the boot rom chip.
++###
++if USE_FALLBACK_IMAGE 
++  option ROM_SECTION_SIZE  = FALLBACK_SIZE
++  option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
++end
++if USE_NORMAL_IMAGE
++  option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
++  option ROM_SECTION_OFFSET= 0
++end
++#
++###
++### Compute the start location and size size of
++### The linuxBIOS bootloader.
++###
++option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
++option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
++option CONFIG_ROM_STREAM     = 1
++#
++###
++### Compute where this copy of linuxBIOS will start in the boot rom
++###
++option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
++#
++###
++### Compute a range of ROM that can cached to speed up linuxBIOS,
++### execution speed.
++###
++##expr XIP_ROM_SIZE = 65536
++##expr XIP_ROM_BASE = _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE
++##option XIP_ROM_SIZE=65536
++##option XIP_ROM_BASE=0xffff0000
++#
++## XIP_ROM_SIZE && XIP_ROM_BASE values that work.
++##option XIP_ROM_SIZE=0x8000
++##option XIP_ROM_BASE=0xffff8000
++
++## We don't use compressed image
++option CONFIG_COMPRESS=0
++
++option USE_ELF_BOOT=1
++
++option ROM_SIZE=524288
++
++## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
++option ROM_IMAGE_SIZE=49152
++
++## LinuxBIOS C code runs at this location in RAM
++option _RAMBASE=0x00100000
++
++##
++## Use a 64K stack
++##
++option STACK_SIZE=0x10000
++
++##
++## Use a 64K heap
++##
++option HEAP_SIZE=0x10000
++
++## Compute the location and size of where this firmware image
++## (linuxBIOS plus bootloader) will live in the boot rom chip.
++##       
++option ROM_SECTION_SIZE=ROM_SIZE
++option ROM_SECTION_OFFSET=0
++
++# Arima hdama
++mainboard arima/hdama
++	makedefine CFLAGS += -g
++end

@@ -1,0 +1,1091 @@
+commit e73fda8
+diff --git a/debian/Config.h-deb b/debian/Config.h-deb
+new file mode 100644
+index 0000000..10264d6
+--- /dev/null
++++ b/debian/Config.h-deb
+@@ -0,0 +1,339 @@
++/* vi: set sw=4 ts=4: */
++// This file defines the feature set to be compiled into busybox.
++// When you turn things off here, they won't be compiled in at all.
++//
++//// This file is parsed by sed. You MUST use single line comments.
++//   i.e.  //#define BB_BLAH
++//
++//
++// BusyBox Applications
++#define BB_AR
++#define BB_BASENAME
++#define BB_CAT
++#define BB_CHMOD_CHOWN_CHGRP
++#define BB_CHROOT
++#define BB_CHVT
++#define BB_CLEAR
++#define BB_CMP
++#define BB_CP_MV
++#define BB_CUT
++#define BB_DATE
++#define BB_DC
++#define BB_DD
++#define BB_DEALLOCVT
++#define BB_DF
++#define BB_DIRNAME
++#define BB_DMESG
++#define BB_DOS2UNIX
++#define BB_DUTMP
++#define BB_DU
++#define BB_DUMPKMAP
++#define BB_ECHO
++#define BB_EXPR
++#define BB_FBSET
++#define BB_FDFLUSH
++#define BB_FIND
++#define BB_FREE
++#define BB_FREERAMDISK
++#define BB_FSCK_MINIX
++#define BB_GETOPT
++#define BB_GREP
++#define BB_GUNZIP
++#define BB_GZIP
++#define BB_HALT
++#define BB_HEAD
++#define BB_HOSTID
++#define BB_HOSTNAME
++#define BB_ID
++#define BB_INIT
++#define BB_INSMOD
++#define BB_KILL
++#define BB_KILLALL
++#define BB_LENGTH
++#define BB_LN
++#define BB_LOADACM
++#define BB_LOADFONT
++#define BB_LOADKMAP
++#define BB_LOGGER
++#define BB_LOGNAME
++#define BB_LS
++#define BB_LSMOD
++#define BB_MAKEDEVS
++#define BB_MD5SUM
++#define BB_MKDIR
++#define BB_MKFIFO
++#define BB_MKFS_MINIX
++#define BB_MKNOD
++#define BB_MKSWAP
++#define BB_MKTEMP
++#define BB_NC
++#define BB_MORE
++#define BB_MOUNT
++#define BB_MT
++#define BB_NSLOOKUP
++#define BB_PING
++#define BB_POWEROFF
++#define BB_PRINTF
++#define BB_PS
++#define BB_PWD
++#define BB_RDATE
++#define BB_READLINK
++#define BB_REBOOT
++#define BB_RENICE
++#define BB_RESET
++#define BB_RM
++#define BB_RMDIR
++#define BB_RMMOD
++#define BB_RPMUNPACK
++#define BB_SED
++#define BB_SETKEYCODES
++#define BB_SH
++#define BB_SLEEP
++#define BB_SORT
++#define BB_SWAPONOFF
++#define BB_SYNC
++#define BB_SYSLOGD
++#define BB_TAIL
++#define BB_TAR
++#define BB_TEE
++#define BB_TEST
++#define BB_TELNET
++#define BB_TOUCH
++#define BB_TR
++#define BB_TRUE_FALSE
++#define BB_TTY
++#define BB_UPTIME
++#define BB_USLEEP
++#define BB_WC
++#define BB_WGET
++#define BB_WHICH
++#define BB_WHOAMI
++#define BB_UUENCODE
++#define BB_UUDECODE
++#define BB_UMOUNT
++#define BB_UNIQ
++#define BB_UNAME
++#define BB_UNIX2DOS
++#define BB_UPDATE
++#define BB_XARGS
++#define BB_YES
++// End of Applications List
++//
++//
++//
++// ---------------------------------------------------------
++// This is where feature definitions go.  Generally speaking,
++// turning this stuff off makes things a bit smaller (and less 
++// pretty/useful).
++//
++//
++//
++// Turn this on to use Erik's very cool devps, and devmtab kernel drivers,
++// thereby eliminating the need for the /proc filesystem and thereby saving
++// lots and lots memory for more important things.  You can not use this and
++// USE_PROCFS at the same time...  NOTE:  If you enable this feature, you
++// _must_ have patched the kernel to include the devps patch that is included
++// in the busybox/kernel-patches directory.  You will also need to create some
++// device special files in /dev on your embedded system:
++//        mknod /dev/mtab c 10 22
++//        mknod /dev/ps c 10 21
++// I emailed Linus and this patch will not be going into the stock kernel.
++//#define BB_FEATURE_USE_DEVPS_PATCH
++//
++// enable features that use the /proc filesystem (apps that 
++// break without this will tell you on compile)...
++// You can't use this and BB_FEATURE_USE_DEVPS_PATCH 
++// at the same time...
++#define BB_FEATURE_USE_PROCFS
++//
++// This compiles out everything but the most 
++// trivial --help usage information (i.e. reduces binary size)
++//#define BB_FEATURE_TRIVIAL_HELP
++//
++// Use termios to manipulate the screen ('more' is prettier with this on)
++#define BB_FEATURE_USE_TERMIOS
++//
++// calculate terminal & column widths (for more and ls)
++#define BB_FEATURE_AUTOWIDTH
++//
++// show username/groupnames (bypasses libc6 NSS) for ls
++#define BB_FEATURE_LS_USERNAME
++//
++// show file timestamps in ls
++#define BB_FEATURE_LS_TIMESTAMPS
++//
++// enable ls -p and -F
++#define BB_FEATURE_LS_FILETYPES
++//
++// sort the file names (still a bit buggy)
++#define BB_FEATURE_LS_SORTFILES
++//
++// enable ls -R
++#define BB_FEATURE_LS_RECURSIVE
++//
++// enable ls -L
++#define BB_FEATURE_LS_FOLLOWLINKS
++//
++// Change ping implementation -- simplified, featureless, but really small.
++//#define BB_FEATURE_SIMPLE_PING
++//
++// Make init use a simplified /etc/inittab file (recommended).
++//#define BB_FEATURE_USE_INITTAB
++//
++//Enable init being called as /linuxrc
++#define BB_FEATURE_LINUXRC
++//
++//Have init enable core dumping for child processes (for debugging only) 
++//#define BB_FEATURE_INIT_COREDUMPS
++//
++// Allow init to permenently chroot, and umount the old root fs
++// just like an initrd does.  Requires a kernel patch by Werner Almesberger. 
++// ftp://icaftp.epfl.ch/pub/people/almesber/misc/umount-root-*.tar.gz
++//#define BB_FEATURE_INIT_CHROOT
++//
++//Make sure nothing is printed to the console on boot
++//#define BB_FEATURE_EXTRA_QUIET
++//
++//Should syslogd also provide klogd support?
++#define BB_FEATURE_KLOGD
++//
++// enable syslogd -R remotehost
++#define BB_FEATURE_REMOTE_LOG
++//
++//Simple tail implementation (2.34k vs 3k for the full one).
++//Both provide 'tail -f' support (only one file at a time.)
++#define BB_FEATURE_SIMPLE_TAIL
++//
++// Enable support for loop devices in mount
++#define BB_FEATURE_MOUNT_LOOP
++//
++// Enable support for a real /etc/mtab file instead of /proc/mounts
++//#define BB_FEATURE_MOUNT_MTAB_SUPPORT
++//
++// Enable support for mounting remote NFS volumes
++#define BB_FEATURE_NFSMOUNT
++//
++// Enable support forced filesystem unmounting 
++// (i.e. in case of an unreachable NFS system).
++#define BB_FEATURE_MOUNT_FORCE
++//
++// Enable support for creation of tar files.
++#define BB_FEATURE_TAR_CREATE
++//
++// Enable support for "--exclude" for excluding files
++#define BB_FEATURE_TAR_EXCLUDE
++//
++//// Enable reverse sort
++#define BB_FEATURE_SORT_REVERSE
++//
++// Enable command line editing in the shell
++#define BB_FEATURE_SH_COMMAND_EDITING
++//
++//Allow the shell to invoke all the compiled in BusyBox commands as if they
++//were shell builtins.  Nice for staticly linking an emergency rescue shell
++//among other thing.
++#define BB_FEATURE_SH_STANDALONE_SHELL
++//
++//When this is enabled, busybox shell builtins can be called using full path
++//names.  This causes builtins (i.e. every single busybox command) to override
++//real commands on the filesystem.  For example, if you run run /bin/cat, it
++//will use BusyBox cat even if /bin/cat exists on the filesystem and is _not_
++//busybox.  Some systems want this, others do not.  Choose wisely.  :-) This
++//only has meaning when BB_FEATURE_SH_STANDALONE_SHELL is enabled.
++#define BB_FEATURE_SH_BUILTINS_ALWAYS_WIN
++//
++// Enable tab completion in the shell (not yet 
++// working very well -- so don't turn this on)
++//#define BB_FEATURE_SH_TAB_COMPLETION
++//
++//Turn on extra fbset options
++//#define BB_FEATURE_FBSET_FANCY
++//
++//Turn on fbset readmode support
++//#define BB_FEATURE_FBSET_READMODE
++//
++// You must enable one or both of these features
++// Support installing modules from pre 2.1 kernels
++//#define BB_FEATURE_INSMOD_OLD_KERNEL
++// Support installing modules from kernel versions after 2.1.18
++#define BB_FEATURE_INSMOD_NEW_KERNEL
++//
++// Support module version checking
++//#define BB_FEATURE_INSMOD_VERSION_CHECKING
++//
++// Support for Minix filesystem, version 2
++//#define BB_FEATURE_MINIX2
++//
++//
++// Enable busybox --install [-s]
++// to create links (or symlinks) for all the commands that are 
++// compiled into the binary.  (needs /proc filesystem)
++#define BB_FEATURE_INSTALLER
++//
++// Enable a nifty progress meter in wget (adds just under 2k)
++#define BB_FEATURE_STATUSBAR
++//
++// Clean up all memory before exiting -- usually not needed
++// as the OS can clean up...  Don't enable this unless you
++// have a really good reason for cleaning things up manually.
++//#define BB_FEATURE_CLEAN_UP
++//
++// End of Features List
++//
++//
++//
++//
++//
++//
++//---------------------------------------------------
++// Nothing beyond this point should ever be touched by 
++// mere mortals so leave this stuff alone.
++//
++#ifdef BB_FEATURE_MOUNT_MTAB_SUPPORT
++#define BB_MTAB
++#endif
++//
++#if defined BB_FEATURE_SH_COMMAND_EDITING && defined BB_SH
++#define BB_CMDEDIT
++#endif
++//
++#ifdef BB_KILLALL
++#ifndef BB_KILL
++#define BB_KILL
++#endif
++#endif
++//
++#ifdef BB_FEATURE_LINUXRC
++#ifndef BB_INIT
++#define BB_INIT
++#endif
++#define BB_LINUXRC
++#endif
++//
++#ifdef BB_GZIP
++#ifndef BB_GUNZIP
++#define BB_GUNZIP
++#endif
++#endif
++//
++#if defined BB_MOUNT && defined BB_FEATURE_NFSMOUNT
++#define BB_NFSMOUNT
++#endif
++//
++#if defined BB_FEATURE_SH_COMMAND_EDITING
++#ifndef BB_FEATURE_USE_TERMIOS
++#define BB_FEATURE_USE_TERMIOS
++#endif
++#endif
++//
++#if defined BB_FEATURE_AUTOWIDTH
++#ifndef BB_FEATURE_USE_TERMIOS
++#define BB_FEATURE_USE_TERMIOS
++#endif
++#endif
++//
++#if defined BB_INSMOD
++#ifndef BB_FEATURE_INSMOD_OLD_KERNEL
++#define BB_FEATURE_INSMOD_NEW_KERNEL
++#endif
++#endif
+diff --git a/debian/Config.h-udeb b/debian/Config.h-udeb
+new file mode 100644
+index 0000000..fa8cbdd
+--- /dev/null
++++ b/debian/Config.h-udeb
+@@ -0,0 +1,340 @@
++/* vi: set sw=4 ts=4: */
++// This file defines the feature set to be compiled into busybox.
++// When you turn things off here, they won't be compiled in at all.
++//
++//// This file is parsed by sed. You MUST use single line comments.
++//   i.e.  //#define BB_BLAH
++//
++//
++// BusyBox Applications
++#define BB_AR
++#define BB_BASENAME
++#define BB_CAT
++#define BB_CHMOD_CHOWN_CHGRP
++#define BB_CHROOT
++//#define BB_CHVT
++#define BB_CLEAR
++//#define BB_CMP
++#define BB_CP_MV
++#define BB_CUT
++#define BB_DATE
++//#define BB_DC
++#define BB_DD
++//#define BB_DEALLOCVT
++#define BB_DF
++#define BB_DIRNAME
++#define BB_DMESG
++//#define BB_DOS2UNIX
++//#define BB_DUTMP
++#define BB_DU
++//#define BB_DUMPKMAP
++#define BB_ECHO
++//#define BB_EXPR
++#define BB_FBSET
++//#define BB_FDFLUSH
++#define BB_FIND
++#define BB_FREE
++#define BB_FREERAMDISK
++//#define BB_FSCK_MINIX
++//#define BB_GETOPT
++#define BB_GREP
++#define BB_GUNZIP
++#define BB_GZIP
++#define BB_HALT
++#define BB_HEAD
++#define BB_HOSTID
++#define BB_HOSTNAME
++#define BB_ID
++#define BB_INIT
++//#define BB_INSMOD
++#define BB_KILL
++#define BB_KILLALL
++//#define BB_LENGTH
++#define BB_LN
++//#define BB_LOADACM
++//#define BB_LOADFONT
++//#define BB_LOADKMAP
++#define BB_LOGGER
++//#define BB_LOGNAME
++#define BB_LS
++//#define BB_LSMOD
++//#define BB_MAKEDEVS
++//#define BB_MD5SUM
++#define BB_MKDIR
++//#define BB_MKFIFO
++//#define BB_MKFS_MINIX
++#define BB_MKNOD
++#define BB_MKSWAP
++#define BB_MKTEMP
++//#define BB_NC
++#define BB_MORE
++#define BB_MOUNT
++//#define BB_MT
++#define BB_NSLOOKUP
++#define BB_PING
++#define BB_POWEROFF
++//#define BB_PRINTF
++#define BB_PS
++#define BB_PWD
++//#define BB_RDATE
++//#define BB_READLINK
++#define BB_REBOOT
++//#define BB_RENICE
++#define BB_RESET
++#define BB_RM
++#define BB_RMDIR
++//#define BB_RMMOD
++//#define BB_RPMUNPACK
++#define BB_SED
++//#define BB_SETKEYCODES
++//#define BB_SH
++#define BB_SLEEP
++//#define BB_SORT
++#define BB_SWAPONOFF
++#define BB_SYNC
++#define BB_SYSLOGD
++#define BB_TAIL
++#define BB_TAR
++//#define BB_TEE
++//#define BB_TEST
++//#define BB_TELNET
++#define BB_TOUCH
++//#define BB_TR
++#define BB_TRUE_FALSE
++//#define BB_TTY
++#define BB_UPTIME
++//#define BB_USLEEP
++//#define BB_WC
++#define BB_WGET
++#define BB_WHICH
++#define BB_WHOAMI
++//#define BB_UUENCODE
++//#define BB_UUDECODE
++#define BB_UMOUNT
++//#define BB_UNIQ
++#define BB_UNAME
++//#define BB_UNIX2DOS
++//#define BB_UPDATE
++#define BB_XARGS
++#define BB_YES
++// End of Applications List
++//
++//
++//
++// ---------------------------------------------------------
++// This is where feature definitions go.  Generally speaking,
++// turning this stuff off makes things a bit smaller (and less 
++// pretty/useful).
++//
++//
++//
++// Turn this on to use Erik's very cool devps, and devmtab kernel drivers,
++// thereby eliminating the need for the /proc filesystem and thereby saving
++// lots and lots memory for more important things.  You can not use this and
++// USE_PROCFS at the same time...  NOTE:  If you enable this feature, you
++// _must_ have patched the kernel to include the devps patch that is included
++// in the busybox/kernel-patches directory.  You will also need to create some
++// device special files in /dev on your embedded system:
++//        mknod /dev/mtab c 10 22
++//        mknod /dev/ps c 10 21
++// I emailed Linus and this patch will not be going into the stock kernel.
++//#define BB_FEATURE_USE_DEVPS_PATCH
++//
++// enable features that use the /proc filesystem (apps that 
++// break without this will tell you on compile)...
++// You can't use this and BB_FEATURE_USE_DEVPS_PATCH 
++// at the same time...
++#define BB_FEATURE_USE_PROCFS
++//
++// This compiles out everything but the most 
++// trivial --help usage information (i.e. reduces binary size)
++#define BB_FEATURE_TRIVIAL_HELP
++//
++// Use termios to manipulate the screen ('more' is prettier with this on)
++#define BB_FEATURE_USE_TERMIOS
++//
++// calculate terminal & column widths (for more and ls)
++#define BB_FEATURE_AUTOWIDTH
++//
++// show username/groupnames (bypasses libc6 NSS) for ls
++#define BB_FEATURE_LS_USERNAME
++//
++// show file timestamps in ls
++#define BB_FEATURE_LS_TIMESTAMPS
++//
++// enable ls -p and -F
++#define BB_FEATURE_LS_FILETYPES
++//
++// sort the file names
++#define BB_FEATURE_LS_SORTFILES
++//
++// enable ls -R
++#define BB_FEATURE_LS_RECURSIVE
++//
++// enable ls -L
++#define BB_FEATURE_LS_FOLLOWLINKS
++//
++// Change ping implementation -- simplified, featureless, but really small.
++//#define BB_FEATURE_SIMPLE_PING
++//
++// Make init use a simplified /etc/inittab file (recommended).
++#define BB_FEATURE_USE_INITTAB
++//
++//Enable init being called as /linuxrc
++#define BB_FEATURE_LINUXRC
++//
++//Have init enable core dumping for child processes (for debugging only) 
++//#define BB_FEATURE_INIT_COREDUMPS
++//
++// Allow init to permenently chroot, and umount the old root fs
++// just like an initrd does.  Requires a kernel patch by Werner Almesberger. 
++// ftp://icaftp.epfl.ch/pub/people/almesber/misc/umount-root-*.tar.gz
++//#define BB_FEATURE_INIT_CHROOT
++//
++//Make sure nothing is printed to the console on boot
++//#define BB_FEATURE_EXTRA_QUIET
++//
++//Should syslogd also provide klogd support?
++#define BB_FEATURE_KLOGD
++//
++// enable syslogd -R remotehost
++//#define BB_FEATURE_REMOTE_LOG
++//
++//Simple tail implementation (2.34k vs 3k for the full one).
++//Both provide 'tail -f' support (only one file at a time.)
++#define BB_FEATURE_SIMPLE_TAIL
++//
++// Enable support for loop devices in mount
++#define BB_FEATURE_MOUNT_LOOP
++//
++// Enable support for a real /etc/mtab file instead of /proc/mounts
++//#define BB_FEATURE_MOUNT_MTAB_SUPPORT
++//
++// Enable support for mounting remote NFS volumes. 
++// You may no -o nolock if no local portmapper is running.
++#define BB_FEATURE_NFSMOUNT
++//
++// Enable support forced filesystem unmounting 
++// (i.e. in case of an unreachable NFS system).
++#define BB_FEATURE_MOUNT_FORCE
++//
++// Enable support for creation of tar files.
++//#define BB_FEATURE_TAR_CREATE
++//
++// Enable support for "--exclude" for excluding files
++//#define BB_FEATURE_TAR_EXCLUDE
++//
++//// Enable reverse sort
++//#define BB_FEATURE_SORT_REVERSE
++//
++// Enable command line editing in the shell
++//#define BB_FEATURE_SH_COMMAND_EDITING
++//
++//Allow the shell to invoke all the compiled in BusyBox commands as if they
++//were shell builtins.  Nice for staticly linking an emergency rescue shell
++//among other thing.
++//#define BB_FEATURE_SH_STANDALONE_SHELL
++//
++//When this is enabled, busybox shell builtins can be called using full path
++//names.  This causes builtins (i.e. every single busybox command) to override
++//real commands on the filesystem.  For example, if you run run /bin/cat, it
++//will use BusyBox cat even if /bin/cat exists on the filesystem and is _not_
++//busybox.  Some systems want this, others do not.  Choose wisely.  :-) This
++//only has meaning when BB_FEATURE_SH_STANDALONE_SHELL is enabled.
++//#define BB_FEATURE_SH_BUILTINS_ALWAYS_WIN
++//
++// Enable tab completion in the shell (not yet 
++// working very well -- so don't turn this on)
++//#define BB_FEATURE_SH_TAB_COMPLETION
++//
++//Turn on extra fbset options
++//#define BB_FEATURE_FBSET_FANCY
++//
++//Turn on fbset readmode support
++//#define BB_FEATURE_FBSET_READMODE
++//
++// You must enable one or both of these features
++// Support installing modules from pre 2.1 kernels
++//#define BB_FEATURE_INSMOD_OLD_KERNEL
++// Support installing modules from kernel versions after 2.1.18
++//#define BB_FEATURE_INSMOD_NEW_KERNEL
++//
++// Support module version checking
++//#define BB_FEATURE_INSMOD_VERSION_CHECKING
++//
++// Support for Minix filesystem, version 2
++//#define BB_FEATURE_MINIX2
++//
++//
++// Enable busybox --install [-s]
++// to create links (or symlinks) for all the commands that are 
++// compiled into the binary.  (needs /proc filesystem)
++//#define BB_FEATURE_INSTALLER
++//
++// Enable a nifty progress meter in wget (adds just under 2k)
++#define BB_FEATURE_STATUSBAR
++//
++// Clean up all memory before exiting -- usually not needed
++// as the OS can clean up...  Don't enable this unless you
++// have a really good reason for cleaning things up manually.
++//#define BB_FEATURE_CLEAN_UP
++//
++// End of Features List
++//
++//
++//
++//
++//
++//
++//---------------------------------------------------
++// Nothing beyond this point should ever be touched by 
++// mere mortals so leave this stuff alone.
++//
++#ifdef BB_FEATURE_MOUNT_MTAB_SUPPORT
++#define BB_MTAB
++#endif
++//
++#if defined BB_FEATURE_SH_COMMAND_EDITING && defined BB_SH
++#define BB_CMDEDIT
++#endif
++//
++#ifdef BB_KILLALL
++#ifndef BB_KILL
++#define BB_KILL
++#endif
++#endif
++//
++#ifdef BB_FEATURE_LINUXRC
++#ifndef BB_INIT
++#define BB_INIT
++#endif
++#define BB_LINUXRC
++#endif
++//
++#ifdef BB_GZIP
++#ifndef BB_GUNZIP
++#define BB_GUNZIP
++#endif
++#endif
++//
++#if defined BB_MOUNT && defined BB_FEATURE_NFSMOUNT
++#define BB_NFSMOUNT
++#endif
++//
++#if defined BB_FEATURE_SH_COMMAND_EDITING
++#ifndef BB_FEATURE_USE_TERMIOS
++#define BB_FEATURE_USE_TERMIOS
++#endif
++#endif
++//
++#if defined BB_FEATURE_AUTOWIDTH
++#ifndef BB_FEATURE_USE_TERMIOS
++#define BB_FEATURE_USE_TERMIOS
++#endif
++#endif
++//
++#if defined BB_INSMOD
++#ifndef BB_FEATURE_INSMOD_OLD_KERNEL
++#define BB_FEATURE_INSMOD_NEW_KERNEL
++#endif
++#endif
+diff --git a/debian/changelog b/debian/changelog
+index 3300927..89c9167 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,38 +1,40 @@
+ busybox (0.48pre-1) unstable; urgency=low
+ 
+-  * Non-release.
++  * Now includes .udeb support for the debian-installer -- note that this
++    is not really a released version of BusyBox (though the code is quite 
++    solid).  I'm just getting the .udeb support out there to facilitate
++    further work on the debian-installer.
+   * See changelog for details.
+-  * Now includes .udeb support for the debian-installer.
+ 
+- -- Erik Andersen <andersee@debian.org>  Mon, 25 Sep 2000 23:00:56 -0600
++ -- Erik Andersen <andersee@debian.org>  Fri,  1 Dec 2000 15:39:30 -0700
+ 
+ busybox (0.47-1) unstable; urgency=low
+ 
+   * New version released.  See changelog for details.
+ 
+  -- Erik Andersen <andersee@debian.org>  Mon, 25 Sep 2000 23:00:56 -0600
+ 
+ busybox (0.46-1) unstable; urgency=low
+ 
+   * New version released.  See changelog for details.
+ 
+  -- Erik Andersen <andersee@debian.org>  Tue, 11 Jul 2000 12:15:44 -0600
+ 
+ busybox (0.45-1) unstable; urgency=low
+ 
+   * First attempt at packaging BusyBox as a .deb.  This has been in 
+     in the Debian boot-floppies CVS tree forever.  Hopefully, having it as a
+     standalone app will make life easier for me, the debian-installer team, and
+     everyone else as well...
+   * I have created a busybox-static that can be used as a rescue shell when you 
+     hose your system.  Just invoke "busybox sh" to fir up the shell.  This has
+     every app provided by busybox staically linked in.  There have been several
+     times in the past that I would have loved to have this sitting on my system
+     (i.e. when libc gets screwed up.)
+ 
+  -- Erik Andersen <andersee@debian.org>  Tue, 27 Jun 2000 12:26:41 -0600
+ 
+ Local variables:
+ mode: debian-changelog
+ add-log-mailing-address: "andersee@debian.org"
+ End:
+diff --git a/debian/control b/debian/control
+index 54475b7..5a66241 100644
+--- a/debian/control
++++ b/debian/control
+@@ -1,64 +1,63 @@
+ Source: busybox
+ Priority: optional
+ Maintainer: Erik Andersen <andersee@debian.org>
+ Build-Depends: debhelper (>= 2.1.18), dpkg-dev (1.7.0)
+ Standards-Version: 3.2.1.0
+ 
+ Package: busybox
+ Architecture: any
+ Depends: ${shlibs:Depends}
+ Conflicts: 
+ Replaces: 
+ Section: utils
+ Description: Tiny utilities for small and embedded systems. 
+  BusyBox combines tiny versions of many common UNIX utilities into a single
+  small executable. It provides minimalist replacements for the most common
+  utilities you would usually find on your desktop system (i.e. ls, cp, mv,
+  mount, tar, etc).  The utilities in BusyBox generally have fewer options than
+  their full-featured GNU cousins; however, the options that are included
+  provide the expected functionality and behave very much like their GNU
+  counterparts.
+  .
+  This package installs the BusyBox binary but does not install symlinks
+  for any of the supported utilities.  You can use /bin/busybox --install
+  to install BusyBox to the current directory (you do not want to do this
+  in / on your Debian system!).
+ 
+ Package: busybox-static
+ Architecture: any
+ Depends: ${shlibs:Depends}
+ Section: shells
+ Description: Provides a stand alone rescue shell with tons of builtin utilities. 
+  BusyBox combines tiny versions of many common UNIX utilities into a single
+  small executable. It provides minimalist replacements for the most common
+  utilities you would usually find on your desktop system (i.e. ls, cp, mv,
+  mount, tar, etc).  The utilities in BusyBox generally have fewer options than
+  their full-featured GNU cousins; however, the options that are included
+  provide the expected functionality and behave very much like their GNU
+  counterparts.
+  .
+  BusyBox-static provides you with a statically linked simple stand alone shell
+  that provides all the utilities available in BusyBox.  This package is
+  intended to be used as a rescue shell, in the event that you screw up your
+  system.  Invoke "busybox sh" and you have a standalone shell ready to save
+  your system from certain destruction.  Invoke "busybox", and it will list the
+  available builtin commands.
+ 
+ Package: busybox-udeb
+ Architecture: any
+ Depends: ${shlibs:Depends}
+ Section: debian-installer
+-Description: Tiny utilities for the debian-installer and for embedded systems. 
++Description: Tiny utilities for the debian-installer
+  BusyBox combines tiny versions of many common UNIX utilities into a single
+  small executable. It provides minimalist replacements for the most common
+  utilities you would usually find on your desktop system (i.e. ls, cp, mv,
+  mount, tar, etc).  The utilities in BusyBox generally have fewer options than
+  their full-featured GNU cousins; however, the options that are included
+  provide the expected functionality and behave very much like their GNU
+  counterparts.
+  .
+- BusyBox is used by the debian-installer.  Installing BusyBox onto your Debian
+- system is not recommended, unless you are intended to make a very small
+- embedded system.  Chances are good that for embedded systems, you will want to
+- recompile to only include the tools and utilities you wish to include.
++ busybox-udeb is used by the debian-installer, so unless you are working
++ on the debian-installer, this package is not for you.  Installing this 
++ on your Debian system is a very, very bad idea.  You have been warned.
+ 
+diff --git a/debian/rules b/debian/rules
+index 67741b1..d3e1686 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -1,180 +1,193 @@
+ #!/usr/bin/make -f
+ 
+ # This is a bit unusual, in that I have to completely recompile everything
+-# twice.  The first is the normal, dynamically linked package.  The second is
+-# for the statically linked package.  This file has been adjusted accordingly.
++# for each package I build (obviously static and dynamic builds require
++# things to be recompiled...)
+ 
+ # This is the debhelper compatability version to use.
+-export DH_COMPAT=1
++#export DH_COMPAT=1
+ 
++bbbd=debian/busybox_builddir
+ bb=debian/tmp
+-bbbd=debian/bb_builddir
++bbsbd=debian/busybox_static_builddir
+ bbs=debian/busybox-static
+-bbsbd=debian/bb-static_builddir
+-
+-#For the debian-installer .udeb package
+-PACKAGE=busybox-udeb
+-VERSION=$(shell dpkg-parsechangelog | grep ^Version: | cut -d ' ' -f 2)
+-ARCH=$(shell dpkg --print-architecture)
+-FILENAME=$(PACKAGE)_$(VERSION)_$(ARCH).udeb
+-PRIORITY=$(shell grep ^Priority: debian/control | cut -d ' ' -f 2)
++bbubd=debian/busybox_udeb_builddir
++bbu=debian/busybox-udeb
+ 
+ clean:
+ 	dh_testdir
+ 	dh_testroot
+-	rm -f build-stamp-busybox build-stamp-busybox-static
++	rm -f debian/build-stamp-busybox debian/build-stamp-busybox-static debian/build-stamp-busybox-udeb
+ 	-$(MAKE) clean
+-	-rm -rf $(bb) $(bbbd) $(bbs) $(bbsbd)
++	-rm -rf $(bb) $(bbbd) $(bbs) $(bbsbd) $(bbubd) $(bbu)
+ 	dh_clean
+ 
+-half_clean:
+-	dh_testdir
+-	dh_testroot
+-	rm -rf $(bbs) build-stamp-busybox-static
+-	-$(MAKE) clean
+-
+-build: build-stamp-busybox
+-build-stamp-busybox:
++build: debian/build-stamp-busybox
++debian/build-stamp-busybox:
+ 	dh_testdir
+ 	mkdir -p $(bbbd)
+-	cp Makefile Config.h $(bbbd)
++	cp Makefile $(bbbd)
++	cp debian/Config.h-deb $(bbbd)/Config.h
+ 	(cd $(bbbd); $(MAKE) "BB_SRC_DIR=../../")
+-	touch build-stamp-busybox
++	touch debian/build-stamp-busybox
+ 
+ install: build
+ 	dh_testdir
+ 	dh_testroot
+ 	dh_clean -k
+ 	dh_installdirs
+-	(cd $(bbbd); $(MAKE) "BB_SRC_DIR=../../" "PREFIX=../../$(bb)" install)
++	# Do not run 'make install', since we do not want all the symlinks. 
++	# This just installes the busybox binary...
++	#(cd $(bbbd); $(MAKE) "BB_SRC_DIR=../../" "PREFIX=../../$(bb)" install)
++	mkdir -p $(bb)/bin/
++	cp $(bbbd)/busybox $(bb)/bin/busybox
++	mkdir -p $(bb)/usr/share/doc/busybox/busybox.lineo.com
++	cp $(bbbd)/docs/busybox.lineo.com/BusyBox.html $(bb)/usr/share/doc/busybox/busybox.lineo.com/
+ 	mkdir -p $(bb)/usr/share/man/man1
+-	cp docs/BusyBox.1 $(bb)/usr/share/man/man1/busybox.1
++	cp $(bbbd)/docs/BusyBox.1 $(bb)/usr/share/man/man1/busybox.1
+ 
+ # Now for the statically linked stuff
+-build-static: build-stamp-busybox-static
+-build-stamp-busybox-static:
++build-static: debian/build-stamp-busybox-static
++debian/build-stamp-busybox-static:
+ 	dh_testdir
+-	$(MAKE) DOSTATIC=true
+-	touch build-stamp-busybox-static
++	mkdir -p $(bbsbd)
++	cp Makefile $(bbsbd)
++	cp debian/Config.h-deb $(bbsbd)/Config.h
++	(cd $(bbsbd); $(MAKE) DOSTATIC=true "BB_SRC_DIR=../../")
++	touch debian/build-stamp-busybox-static
+ 
+ install-static: build
+ 	dh_testdir
+ 	dh_testroot
+ 	dh_clean -k
+ 	dh_installdirs
+ 	# Do not run 'make install', since we do not want all the symlinks. 
+ 	# This just installes the busybox binary...
+-	#$(MAKE) "PREFIX=$(bbs)" install
++	#(cd $(bbsbd); $(MAKE) "BB_SRC_DIR=../../" "PREFIX=../../$(bbs)" install)
+ 	mkdir -p $(bbs)/bin/
+-	cp busybox $(bbs)/bin/busybox
++	cp $(bbsbd)/busybox $(bbs)/bin/busybox
++	mkdir -p $(bbs)/usr/share/doc/busybox-static/busybox.lineo.com
++	cp $(bbsbd)/docs/busybox.lineo.com/BusyBox.html $(bbs)/usr/share/doc/busybox-static/busybox.lineo.com/
+ 	mkdir -p $(bbs)/usr/share/man/man1/
+-	cp docs/BusyBox.1 $(bbs)/usr/share/man/man1/busybox.1
++	cp $(bbsbd)/docs/BusyBox.1 $(bbs)/usr/share/man/man1/busybox.1
++
++half_clean:
++	dh_testdir
++	dh_testroot
++	rm -rf $(bbs) debian/build-stamp-busybox-static
++	-$(MAKE) clean
+ 
+ do_static: half_clean build-static install-static
+ 
+ 
++
++# Now for the .udeb stuff
++PACKAGE=busybox
++VERSION=$(shell dpkg-parsechangelog | grep ^Version: | cut -d ' ' -f 2)
++ARCH=$(shell dpkg --print-architecture)
++FILENAME=$(PACKAGE)_$(VERSION)_$(ARCH).udeb
++PRIORITY=$(shell grep ^Priority: debian/control | cut -d ' ' -f 2)
++
++build-udeb: debian/build-stamp-busybox-udeb
++debian/build-stamp-busybox-udeb:
++	dh_testdir
++	mkdir -p $(bbubd)
++	cp Makefile $(bbubd)
++	cp debian/Config.h-udeb $(bbubd)/Config.h
++	(cd $(bbubd); $(MAKE) "BB_SRC_DIR=../../")
++	touch debian/build-stamp-busybox-udeb
++
++install-udeb: build
++	dh_testdir
++	dh_testroot
++	dh_clean -k
++	dh_installdirs
++	(cd $(bbubd); $(MAKE) "BB_SRC_DIR=../../" "PREFIX=../../$(bbu)" install)
++	mkdir -p $(bbu)/usr/share/man/man1/
++	cp $(bbubd)/docs/BusyBox.1 $(bbu)/usr/share/man/man1/busybox.1
++
++three_quarter_clean:
++	dh_testdir
++	dh_testroot
++	rm -rf $(bbu) debian/build-stamp-busybox-udeb
++	-$(MAKE) clean
++
++do_udeb: three_quarter_clean build-udeb install-udeb
++
++
++
+ # Build architecture-independent files here.
+ binary-indep:
+ # We have nothing to do by default.
+ 
+ # Build architecture-dependent files here.
+ binary-arch: busybox busybox-static busybox-udeb
+ 
+ busybox: install
+ 	@echo "--- Building: $@"
+ 	dh_testdir
+ 	dh_testroot
+ 	dh_installdirs
+-	#
+-	#Note that for busybox, we do not install any docs,
+-	# or man apges or anything else.  This is in blatent violation of every
+-	# Debian policy out there, since this package is intended to be used
+-	# _only_ by the debian-installer.
+-	#
+-	#dh_installdocs       -p$@ docs/BusyBox.txt \
+-	#	docs/BusyBox.html docs/busybox.lineo.com AUTHORS README TODO
+-	#rm -rf $(bb)/usr/share/doc/busybox/busybox.lineo.com/CVS \
+-	#	$(bb)/usr/share/doc/busybox/busybox.lineo.com/.cvsignore \
+-	#	$(bb)/usr/share/doc/busybox/busybox.lineo.com/images/CVS \
+-	#	$(bb)/usr/share/doc/busybox/busybox.lineo.com/images/.cvsignore
+-	#dh_undocumented      -p$@
+-	#dh_installchangelogs -p$@ Changelog
++	dh_installdocs       -p$@  $(bbbd)/docs/BusyBox.txt \
++		$(bbbd)/docs/BusyBox.html docs/style-guide.txt \
++		docs/busybox.lineo.com AUTHORS README TODO
++	rm -rf `find $(bb) -name CVS`
++	rm -f `find $(bb) -name .cvsignore`
++	dh_installchangelogs -p$@ Changelog
++	dh_undocumented      -p$@
+ 	dh_strip             -p$@
+ 	dh_compress          -p$@
+ 	dh_fixperms          -p$@
+ 	dh_installdeb        -p$@
+ 	dh_shlibdeps         -p$@
+-	#
+-	#Make _very_ sure there are no docs lurking about.
+-	#
+-	rm -rf $(bb)/usr/share/doc
+-	rm -rf $(bb)/usr/share/man
+ 	dh_gencontrol        -p$@
+ 	dh_md5sums           -p$@
+ 	dh_builddeb          -p$@
+ 
+ 
+ busybox-static: do_static
+ 	@echo "--- Building: $@"
+ 	dh_testdir
+ 	dh_testroot
+ 	dh_installdirs
+-	dh_installdocs       -p$@ docs/BusyBox.txt \
+-		docs/BusyBox.html docs/busybox.lineo.com AUTHORS README TODO
+-	rm -rf $(bbs)/usr/share/doc/busybox-static/busybox.lineo.com/CVS \
+-		$(bbs)/usr/share/doc/busybox-static/busybox.lineo.com/.cvsignore \
+-		$(bbs)/usr/share/doc/busybox-static/busybox.lineo.com/images/CVS \
+-		$(bbs)/usr/share/doc/busybox-static/busybox.lineo.com/images/.cvsignore
+-	dh_undocumented      -p$@
++	dh_installdocs       -p$@  $(bbsbd)/docs/BusyBox.txt \
++		$(bbsbd)/docs/BusyBox.html docs/style-guide.txt \
++		docs/busybox.lineo.com AUTHORS README TODO
++	rm -rf `find $(bbs) -name CVS`
++	rm -f `find $(bbs) -name .cvsignore`
+ 	dh_installchangelogs -p$@ Changelog
++	dh_undocumented      -p$@
+ 	dh_strip             -p$@
+ 	dh_compress          -p$@
+ 	dh_fixperms          -p$@
+ 	dh_installdeb        -p$@
+ 	dh_shlibdeps         -p$@
+ 	dh_gencontrol        -p$@
+ 	dh_md5sums           -p$@
+ 	dh_builddeb          -p$@
+ 
+ 
+ # Note that this builds a .udeb, which is not policy compliant or anything.
+ #
+-busybox-udeb: install
++busybox-udeb: do_udeb
+ 	@echo "--- Building: $@"
+ 	dh_testdir
+ 	dh_testroot
+ 	dh_installdirs
+-	#
+-	#Note that for busybox, we do not install any docs,
+-	# or man apges or anything else.  This is in blatent violation of every
+-	# Debian policy out there, since this package is intended to be used
+-	# _only_ by the debian-installer.
+-	#
+-	#dh_installdocs       -p$@ docs/BusyBox.txt \
+-	#	docs/BusyBox.html docs/busybox.lineo.com AUTHORS README TODO
+-	#rm -rf $(bb)/usr/share/doc/busybox/busybox.lineo.com/CVS \
+-	#	$(bb)/usr/share/doc/busybox/busybox.lineo.com/.cvsignore \
+-	#	$(bb)/usr/share/doc/busybox/busybox.lineo.com/images/CVS \
+-	#	$(bb)/usr/share/doc/busybox/busybox.lineo.com/images/.cvsignore
+-	#dh_undocumented      -p$@
+-	#dh_installchangelogs -p$@ Changelog
+ 	dh_strip             -p$@
+ 	dh_compress          -p$@
+ 	dh_fixperms          -p$@
+ 	dh_installdeb        -p$@
+ 	dh_shlibdeps         -p$@
+-	#
+ 	#Make _very_ sure there are no docs lurking about.
+-	#
+-	rm -rf $(bb)/usr/share/doc
+-	rm -rf $(bb)/usr/share/man
+-	dh_gencontrol        -p$@
++	rm -rf $(bbu)/usr/share/man
++	#dh_gencontrol        -p$@
+ 	# Don't write your stupid guesses to debian/files.
+-	#dh_gencontrol        -p$@ -- -fdebian/files~
++	dh_gencontrol        -p$@ -- -fdebian/files~
+ 	# Register file manually.
+ 	dpkg-distaddfile $(FILENAME) debian-installer $(PRIORITY)
+ 	dh_md5sums           -p$@
+ 	dh_builddeb          -p$@ --filename=$(FILENAME)
+ 
+ binary: binary-indep binary-arch
+ .PHONY: build clean binary-indep binary-arch binary install

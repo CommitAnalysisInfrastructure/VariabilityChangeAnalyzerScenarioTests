@@ -1,0 +1,2437 @@
+commit 911cedf
+diff --git a/src/include/cpu/x86/smm.h b/src/include/cpu/x86/smm.h
+index 607c0f0..feb50ec 100644
+--- a/src/include/cpu/x86/smm.h
++++ b/src/include/cpu/x86/smm.h
+@@ -1,487 +1,488 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2008-2009 coresystems GmbH
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; version 2 of the License.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
+ /* AMD64 SMM State-Save Area
+  * starts @ 0x7e00
+  */
+ 
+ #ifndef CPU_X86_SMM_H
+ #define CPU_X86_SMM_H
+ 
+ #define SMM_DEFAULT_BASE 0x30000
+ #define SMM_DEFAULT_SIZE 0x10000
+ 
+ /* used only by C programs so far */
+ #define SMM_BASE 0xa0000
+ 
+ #define SMM_ENTRY_OFFSET 0x8000
+ #define SMM_SAVE_STATE_BEGIN(x) (SMM_ENTRY_OFFSET + (x))
+ 
+ #include <arch/cpu.h>
+ #include <types.h>
+ typedef struct {
+ 	u16	es_selector;
+ 	u16	es_attributes;
+ 	u32	es_limit;
+ 	u64	es_base;
+ 
+ 	u16	cs_selector;
+ 	u16	cs_attributcs;
+ 	u32	cs_limit;
+ 	u64	cs_base;
+ 
+ 	u16	ss_selector;
+ 	u16	ss_attributss;
+ 	u32	ss_limit;
+ 	u64	ss_base;
+ 
+ 	u16	ds_selector;
+ 	u16	ds_attributds;
+ 	u32	ds_limit;
+ 	u64	ds_base;
+ 
+ 	u16	fs_selector;
+ 	u16	fs_attributfs;
+ 	u32	fs_limit;
+ 	u64	fs_base;
+ 
+ 	u16	gs_selector;
+ 	u16	gs_attributgs;
+ 	u32	gs_limit;
+ 	u64	gs_base;
+ 
+ 	u8	reserved0[4];
+ 	u16	gdtr_limit;
+ 	u8	reserved1[2];
+ 	u64	gdtr_base;
+ 
+ 	u16	ldtr_selector;
+ 	u16	ldtr_attributes;
+ 	u32	ldtr_limit;
+ 	u64	ldtr_base;
+ 
+ 	u8	reserved2[4];
+ 	u16	idtr_limit;
+ 	u8	reserved3[2];
+ 	u64	idtr_base;
+ 
+ 	u16	tr_selector;
+ 	u16	tr_attributes;
+ 	u32	tr_limit;
+ 	u64	tr_base;
+ 
+ 	u8	reserved4[40];
+ 
+ 	u8	io_restart;
+ 	u8	autohalt_restart;
+ 
+ 	u8	reserved5[6];
+ 
+ 	u64	efer;
+ 
+ 	u8	reserved6[36];
+ 
+ 	u32	smm_revision;
+ 	u32	smbase;
+ 
+ 	u8	reserved7[68];
+ 
+ 	u64	cr4;
+ 	u64	cr3;
+ 	u64	cr0;
+ 	u64	dr7;
+ 	u64	dr6;
+ 
+ 	u64	rflags;
+ 	u64	rip;
+ 	u64	r15;
+ 	u64	r14;
+ 	u64	r13;
+ 	u64	r12;
+ 	u64	r11;
+ 	u64	r10;
+ 	u64	r9;
+ 	u64	r8;
+ 
+ 	u64	rdi;
+ 	u64	rsi;
+ 	u64	rpb;
+ 	u64	rsp;
+ 	u64	rbx;
+ 	u64	rdx;
+ 	u64	rcx;
+ 	u64	rax;
+ } __attribute__((packed)) amd64_smm_state_save_area_t;
+ 
+ 
+ /* Intel Core 2 (EM64T) SMM State-Save Area
+  * starts @ 0x7d00
+  */
+ typedef struct {
+ 	u8	reserved0[208];
+ 
+ 	u32	gdtr_upper_base;
+ 	u32	ldtr_upper_base;
+ 	u32	idtr_upper_base;
+ 
+ 	u8	reserved1[4];
+ 
+ 	u64	io_rdi;
+ 	u64	io_rip;
+ 	u64	io_rcx;
+ 	u64	io_rsi;
+ 	u64	cr4;
+ 
+ 	u8	reserved2[68];
+ 
+ 	u64	gdtr_base;
+ 	u64	idtr_base;
+ 	u64	ldtr_base;
+ 
+ 	u8	reserved3[84];
+ 
+ 	u32	smm_revision;
+ 	u32	smbase;
+ 
+ 	u16	io_restart;
+ 	u16	autohalt_restart;
+ 
+ 	u8	reserved4[24];
+ 
+ 	u64	r15;
+ 	u64	r14;
+ 	u64	r13;
+ 	u64	r12;
+ 	u64	r11;
+ 	u64	r10;
+ 	u64	r9;
+ 	u64	r8;
+ 
+ 	u64	rax;
+ 	u64	rcx;
+ 	u64	rdx;
+ 	u64	rbx;
+ 
+ 	u64	rsp;
+ 	u64	rbp;
+ 	u64	rsi;
+ 	u64	rdi;
+ 
+ 
+ 	u64	io_mem_addr;
+ 	u32	io_misc_info;
+ 
+ 	u32	es_sel;
+ 	u32	cs_sel;
+ 	u32	ss_sel;
+ 	u32	ds_sel;
+ 	u32	fs_sel;
+ 	u32	gs_sel;
+ 
+ 	u32	ldtr_sel;
+ 	u32	tr_sel;
+ 
+ 	u64	dr7;
+ 	u64	dr6;
+ 	u64	rip;
+ 	u64	efer;
+ 	u64	rflags;
+ 
+ 	u64	cr3;
+ 	u64	cr0;
+ } __attribute__((packed)) em64t_smm_state_save_area_t;
+ 
+ 
+ /* Intel Revision 30101 SMM State-Save Area
+  * The following processor architectures use this:
+  * - SandyBridge
+  * - IvyBridge
+  * - Haswell
+  */
+ #define SMM_EM64T101_ARCH_OFFSET 0x7c00
+ #define SMM_EM64T101_SAVE_STATE_OFFSET \
+ 	SMM_SAVE_STATE_BEGIN(SMM_EM64T101_ARCH_OFFSET)
+ typedef struct {
+ 	u8	reserved0[256];
+ 	u8	reserved1[208];
+ 
+ 	u32	gdtr_upper_base;
+ 	u32	ldtr_upper_base;
+ 	u32	idtr_upper_base;
+ 
+ 	u32	io_cf8;
+ 
+ 	u64	io_rdi;
+ 	u64	io_rip;
+ 	u64	io_rcx;
+ 	u64	io_rsi;
+ 
+ 	u8	reserved2[52];
+ 	u32	shutdown_auto_restart;
+ 	u8	reserved3[8];
+ 	u32	cr4;
+ 
+ 	u8	reserved4[72];
+ 
+ 	u32	gdtr_base;
+ 	u8	reserved5[4];
+ 	u32	idtr_base;
+ 	u8	reserved6[4];
+ 	u32	ldtr_base;
+ 
+ 	u8	reserved7[56];
+ 	/* EPTP fields are only on Haswell according to BWGs, but Intel was
+ 	 * wise and reused the same revision number. */
+ 	u64	eptp;
+ 	u32	eptp_en;
+ 	u32	cs_base;
+ 	u8	reserved8[4];
+ 	u32	iedbase;
+ 
+ 	u8	reserved9[8];
+ 
+ 	u32	smbase;
+ 	u32	smm_revision;
+ 
+ 	u16	io_restart;
+ 	u16	autohalt_restart;
+ 
+ 	u8	reserved10[24];
+ 
+ 	u64	r15;
+ 	u64	r14;
+ 	u64	r13;
+ 	u64	r12;
+ 	u64	r11;
+ 	u64	r10;
+ 	u64	r9;
+ 	u64	r8;
+ 
+ 	u64	rax;
+ 	u64	rcx;
+ 	u64	rdx;
+ 	u64	rbx;
+ 
+ 	u64	rsp;
+ 	u64	rbp;
+ 	u64	rsi;
+ 	u64	rdi;
+ 
+ 
+ 	u64	io_mem_addr;
+ 	u32	io_misc_info;
+ 
+ 	u32	es_sel;
+ 	u32	cs_sel;
+ 	u32	ss_sel;
+ 	u32	ds_sel;
+ 	u32	fs_sel;
+ 	u32	gs_sel;
+ 
+ 	u32	ldtr_sel;
+ 	u32	tr_sel;
+ 
+ 	u64	dr7;
+ 	u64	dr6;
+ 	u64	rip;
+ 	u64	efer;
+ 	u64	rflags;
+ 
+ 	u64	cr3;
+ 	u64	cr0;
+ } __attribute__((packed)) em64t101_smm_state_save_area_t;
+ 
+ 
+ /* Legacy x86 SMM State-Save Area
+  * starts @ 0x7e00
+  */
+ 
+ typedef struct {
+ 	u8	reserved0[248];
+ 	u32	smbase;
+ 	u32	smm_revision;
+ 	u16	io_restart;
+ 	u16	autohalt_restart;
+ 	u8	reserved1[132];
+ 	u32	gdtbase;
+ 	u8	reserved2[8];
+ 	u32	idtbase;
+ 	u8	reserved3[16];
+ 	u32	es;
+ 	u32	cs;
+ 	u32	ss;
+ 	u32	ds;
+ 	u32	fs;
+ 	u32	gs;
+ 	u32	ldtbase;
+ 	u32	tr;
+ 	u32	dr7;
+ 	u32	dr6;
+ 	u32	eax;
+ 	u32	ecx;
+ 	u32	edx;
+ 	u32	ebx;
+ 	u32	esp;
+ 	u32	ebp;
+ 	u32	esi;
+ 	u32	edi;
+ 	u32	eip;
+ 	u32	eflags;
+ 	u32	cr3;
+ 	u32	cr0;
+ } __attribute__((packed)) legacy_smm_state_save_area_t;
+ 
+ typedef enum {
+ 	AMD64,
+ 	EM64T,
+ 	EM64T101,
+ 	LEGACY
+ } save_state_type_t;
+ 
+ 
+ typedef struct {
+ 	save_state_type_t type;
+ 	union {
+ 	amd64_smm_state_save_area_t *amd64_state_save;
+ 	em64t_smm_state_save_area_t *em64t_state_save;
+ 	em64t101_smm_state_save_area_t *em64t101_state_save;
+ 	legacy_smm_state_save_area_t *legacy_state_save;
+ 	};
+ } smm_state_save_area_t;
+ 
+ #define APM_CNT		0xb2
+ #define APM_CNT_CST_CONTROL	0x85
+ #define APM_CNT_PST_CONTROL	0x80
+ #define APM_CNT_ACPI_DISABLE	0x1e
+ #define APM_CNT_ACPI_ENABLE	0xe1
+ #define APM_CNT_MBI_UPDATE	0xeb
+ #define APM_CNT_GNVS_UPDATE	0xea
++#define APM_CNT_FINALIZE	0xcb
+ #define APM_STS		0xb3
+ 
+ /* SMI handler function prototypes */
+ void smi_handler(u32 smm_revision);
+ 
+ void io_trap_handler(int smif);
+ int southbridge_io_trap_handler(int smif);
+ int __attribute__((weak)) mainboard_io_trap_handler(int smif);
+ 
+ void southbridge_smi_set_eos(void);
+ 
+ #if CONFIG_SMM_MODULES
+ void cpu_smi_handler(void);
+ void northbridge_smi_handler(void);
+ void southbridge_smi_handler(void);
+ void mainboard_smi_gpi(u32 gpi_sts);
+ int  mainboard_smi_apmc(u8 data);
+ void mainboard_smi_sleep(u8 slp_typ);
+ #else
+ void __attribute__((weak)) cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
+ void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
+ void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
+ 
+ void __attribute__((weak)) mainboard_smi_gpi(u32 gpi_sts);
+ int __attribute__((weak)) mainboard_smi_apmc(u8 data);
+ void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ);
+ #endif /* CONFIG_SMM_MODULES */
+ 
+ #if !CONFIG_SMM_TSEG
+ void smi_release_lock(void);
+ #define tseg_relocate(ptr)
+ #elif CONFIG_SMM_MODULES
+ #define tseg_relocate(ptr)
+ #define smi_get_tseg_base() 0
+ #else
+ /* Return address of TSEG base */
+ u32 smi_get_tseg_base(void);
+ /* Adjust pointer with TSEG base */
+ void tseg_relocate(void **ptr);
+ #endif
+ 
+ /* Get PMBASE address */
+ u16 smm_get_pmbase(void);
+ 
+ #if CONFIG_SMM_MODULES
+ 
+ struct smm_runtime {
+ 	u32 smbase;
+ 	u32 save_state_size;
+ 	/* The apic_id_to_cpu provides a mapping from APIC id to cpu number.
+ 	 * The cpu number is indicated by the index into the array by matching
+ 	 * the default APIC id and value at the index. The stub loader
+ 	 * initializes this array with a 1:1 mapping. If the APIC ids are not
+ 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
+ 	 * loader to adjust this mapping. */
+ 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
+ } __attribute__ ((packed));
+ 
+ typedef void asmlinkage (*smm_handler_t)(void *arg, int cpu,
+                                          const struct smm_runtime *runtime);
+ 
+ #ifdef __SMM__
+ /* SMM Runtime helpers. */
+ 
+ /* Entry point for SMM modules. */
+ void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime);
+ 
+ /* Retrieve SMM save state for a given CPU. WARNING: This does not take into
+  * account CPUs which are configured to not save their state to RAM. */
+ void *smm_get_save_state(int cpu);
+ 
+ #else
+ /* SMM Module Loading API */
+ 
+ /* The smm_loader_params structure provides direction to the SMM loader:
+  * - stack_top - optional external stack provided to loader. It must be at
+  *               least per_cpu_stack_size * num_concurrent_stacks in size.
+  * - per_cpu_stack_size - stack size per cpu for smm modules.
+  * - num_concurrent_stacks - number of concurrent cpus in handler needing stack
+  *                           optional for setting up relocation handler.
+  * - per_cpu_save_state_size - the smm save state size per cpu
+  * - num_concurrent_save_states - number of concurrent cpus needing save state
+  *                                space
+  * - handler - optional handler to call. Only used during SMM relocation setup.
+  * - handler_arg - optional argument to handler for SMM relocation setup. For
+  *                 loading the SMM module, the handler_arg is filled in with
+  *                 the address of the module's parameters (if present).
+  * - runtime - this field is a result only. The SMM runtime location is filled
+  *             into this field so the code doing the loading can manipulate the
+  *             runtime's assumptions. e.g. updating the apic id to cpu map to
+  *             handle sparse apic id space.
+  */
+ struct smm_loader_params {
+ 	void *stack_top;
+ 	int per_cpu_stack_size;
+ 	int num_concurrent_stacks;
+ 
+ 	int per_cpu_save_state_size;
+ 	int num_concurrent_save_states;
+ 
+ 	smm_handler_t handler;
+ 	void *handler_arg;
+ 
+ 	struct smm_runtime *runtime;
+ };
+ 
+ /* Both of these return 0 on success, < 0 on failure. */
+ int smm_setup_relocation_handler(struct smm_loader_params *params);
+ int smm_load_module(void *smram, int size, struct smm_loader_params *params);
+ #endif /* __SMM__ */
+ #endif /* CONFIG_SMM_MODULES */
+ 
+ #endif
+diff --git a/src/southbridge/intel/lynxpoint/Kconfig b/src/southbridge/intel/lynxpoint/Kconfig
+index 28ebdb6..5ff00db 100644
+--- a/src/southbridge/intel/lynxpoint/Kconfig
++++ b/src/southbridge/intel/lynxpoint/Kconfig
+@@ -1,79 +1,86 @@
+ ##
+ ## This file is part of the coreboot project.
+ ##
+ ## Copyright (C) 2011 Google Inc.
+ ##
+ ## This program is free software; you can redistribute it and/or modify
+ ## it under the terms of the GNU General Public License as published by
+ ## the Free Software Foundation; version 2 of the License.
+ ##
+ ## This program is distributed in the hope that it will be useful,
+ ## but WITHOUT ANY WARRANTY; without even the implied warranty of
+ ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ ## GNU General Public License for more details.
+ ##
+ ## You should have received a copy of the GNU General Public License
+ ## along with this program; if not, write to the Free Software
+ ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ ##
+ 
+ config SOUTHBRIDGE_INTEL_LYNXPOINT
+ 	bool
+ 
+ if SOUTHBRIDGE_INTEL_LYNXPOINT
+ 
+ config SOUTH_BRIDGE_OPTIONS # dummy
+ 	def_bool y
+ 	select SOUTHBRIDGE_INTEL_COMMON
+ 	select IOAPIC
+ 	select HAVE_HARD_RESET
+ 	select HAVE_USBDEBUG_OPTIONS
+ 	select USE_WATCHDOG_ON_BOOT
+ 	select PCIEXP_ASPM
+ 	select PCIEXP_COMMON_CLOCK
+ 	select SPI_FLASH
+ 	select ALT_CBFS_LOAD_PAYLOAD
+ 
+ config INTEL_LYNXPOINT_LP
+ 	bool
+ 	default n
+ 	help
+ 	  Set this option to y for Lynxpont LP (Haswell ULT).
+ 
+ config EHCI_BAR
+ 	hex
+ 	default 0xe8000000
+ 
+ config EHCI_DEBUG_OFFSET
+ 	hex
+ 	default 0xa0
+ 
+ config BOOTBLOCK_SOUTHBRIDGE_INIT
+ 	string
+ 	default "southbridge/intel/lynxpoint/bootblock.c"
+ 
+ config SERIRQ_CONTINUOUS_MODE
+ 	bool
+ 	default n
+ 	help
+ 	  If you set this option to y, the serial IRQ machine will be
+ 	  operated in continuous mode.
+ 
+ config ME_BIN_PATH
+ 	string "Path to management engine firmware"
+ 	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
+ 
+ config IFD_BIN_PATH
+ 	string "Path to intel firmware descriptor"
+ 	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+ 
+ config ME_MBP_CLEAR_LATE
+ 	bool "Defer wait for ME MBP Cleared"
+ 	default y
+ 	help
+ 	  If you set this option to y, the Management Engine driver
+ 	  will defer waiting for the MBP Cleared indicator until the
+ 	  finalize step.  This can speed up boot time if the ME takes
+ 	  a long time to indicate this status.
+ 
++config FINALIZE_USB_ROUTE_XHCI
++	bool "Route all ports to XHCI controller in finalize step"
++	default y
++	help
++	  If you set this option to y, the USB ports will be routed
++	  to the XHCI controller during the finalize SMM callback.
++
+ endif
+diff --git a/src/southbridge/intel/lynxpoint/pch.h b/src/southbridge/intel/lynxpoint/pch.h
+index c16c009..6e1b10c 100644
+--- a/src/southbridge/intel/lynxpoint/pch.h
++++ b/src/southbridge/intel/lynxpoint/pch.h
+@@ -1,845 +1,846 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2008-2009 coresystems GmbH
+  * Copyright (C) 2012 The Chromium OS Authors.  All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; version 2 of the License.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
+ #ifndef SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
+ #define SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
+ 
+ /*
+  * Lynx Point PCH PCI Devices:
+  *
+  * Bus 0:Device 31:Function 0 LPC Controller1
+  * Bus 0:Device 31:Function 2 SATA Controller #1
+  * Bus 0:Device 31:Function 3 SMBus Controller
+  * Bus 0:Device 31:Function 5 SATA Controller #22
+  * Bus 0:Device 31:Function 6 Thermal Subsystem
+  * Bus 0:Device 29:Function 03 USB EHCI Controller #1
+  * Bus 0:Device 26:Function 03 USB EHCI Controller #2
+  * Bus 0:Device 28:Function 0 PCI Express* Port 1
+  * Bus 0:Device 28:Function 1 PCI Express Port 2
+  * Bus 0:Device 28:Function 2 PCI Express Port 3
+  * Bus 0:Device 28:Function 3 PCI Express Port 4
+  * Bus 0:Device 28:Function 4 PCI Express Port 5
+  * Bus 0:Device 28:Function 5 PCI Express Port 6
+  * Bus 0:Device 28:Function 6 PCI Express Port 7
+  * Bus 0:Device 28:Function 7 PCI Express Port 8
+  * Bus 0:Device 27:Function 0 Intel High Definition Audio Controller
+  * Bus 0:Device 25:Function 0 Gigabit Ethernet Controller
+  * Bus 0:Device 22:Function 0 Intel Management Engine Interface #1
+  * Bus 0:Device 22:Function 1 Intel Management Engine Interface #2
+  * Bus 0:Device 22:Function 2 IDE-R
+  * Bus 0:Device 22:Function 3 KT
+  * Bus 0:Device 20:Function 0 xHCI Controller
+ */
+ 
+ /* PCH types */
+ #define PCH_TYPE_LPT		0x8c
+ #define PCH_TYPE_LPT_LP		0x9c
+ 
+ /* PCH stepping values for LPC device */
+ #define LPT_H_STEP_B0		0x02
+ #define LPT_H_STEP_C0		0x03
+ #define LPT_H_STEP_C1		0x04
+ #define LPT_H_STEP_C2		0x05
+ #define LPT_LP_STEP_B0		0x02
+ #define LPT_LP_STEP_B1		0x03
+ #define LPT_LP_STEP_B2		0x04
+ 
+ /*
+  * It does not matter where we put the SMBus I/O base, as long as we
+  * keep it consistent and don't interfere with other devices.  Stage2
+  * will relocate this anyways.
+  * Our solution is to have SMB initialization move the I/O to SMBUS_IO_BASE
+  * again. But handling static BARs is a generic problem that should be
+  * solved in the device allocator.
+  */
+ #define SMBUS_IO_BASE		0x0400
+ #define SMBUS_SLAVE_ADDR	0x24
+ 
+ #if CONFIG_INTEL_LYNXPOINT_LP
+ #define DEFAULT_PMBASE		0x1000
+ #define DEFAULT_GPIOBASE	0x1400
+ #define DEFAULT_GPIOSIZE	0x400
+ #else
+ #define DEFAULT_PMBASE		0x500
+ #define DEFAULT_GPIOBASE	0x480
+ #define DEFAULT_GPIOSIZE	0x80
+ #endif
+ 
+ #define HPET_ADDR		0xfed00000
+ #define DEFAULT_RCBA		0xfed1c000
+ 
+ #ifndef __ACPI__
+ 
+ #if defined (__SMM__) && !defined(__ASSEMBLER__)
+ void intel_pch_finalize_smm(void);
+ void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ);
+ void usb_ehci_disable(device_t dev);
+ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ);
++void usb_xhci_route_all(void);
+ #endif
+ 
+ 
+ /* State Machine configuration. */
+ #define RCBA_REG_SIZE_MASK 0x8000
+ #define   RCBA_REG_SIZE_16   0x8000
+ #define   RCBA_REG_SIZE_32   0x0000
+ #define RCBA_COMMAND_MASK  0x000f
+ #define   RCBA_COMMAND_SET   0x0001
+ #define   RCBA_COMMAND_READ  0x0002
+ #define   RCBA_COMMAND_RMW   0x0003
+ #define   RCBA_COMMAND_END   0x0007
+ 
+ #define RCBA_ENCODE_COMMAND(command_, reg_, mask_, or_value_) \
+ 	{ .command = command_,   \
+ 	  .reg = reg_,           \
+ 	  .mask = mask_,         \
+ 	  .or_value = or_value_  \
+ 	}
+ #define RCBA_SET_REG_32(reg_, value_) \
+ 	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_SET, reg_, 0, value_)
+ #define RCBA_READ_REG_32(reg_) \
+ 	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_READ, reg_, 0, 0)
+ #define RCBA_RMW_REG_32(reg_, mask_, or_) \
+ 	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_RMW, reg_, mask_, or_)
+ #define RCBA_SET_REG_16(reg_, value_) \
+ 	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_SET, reg_, 0, value_)
+ #define RCBA_READ_REG_16(reg_) \
+ 	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_READ, reg_, 0, 0)
+ #define RCBA_RMW_REG_16(reg_, mask_, or_) \
+ 	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_RMW, reg_, mask_, or_)
+ #define RCBA_END_CONFIG \
+ 	RCBA_ENCODE_COMMAND(RCBA_COMMAND_END, 0, 0, 0)
+ 
+ struct rcba_config_instruction
+ {
+ 	u16 command;
+ 	u16 reg;
+ 	u32 mask;
+ 	u32 or_value;
+ };
+ 
+ #if !defined(__ASSEMBLER__)
+ void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
+ int pch_silicon_revision(void);
+ int pch_silicon_type(void);
+ int pch_is_lp(void);
+ u16 get_pmbase(void);
+ u16 get_gpiobase(void);
+ 
+ /* Power Management register handling in pmutil.c */
+ /* PM1_CNT */
+ void enable_pm1_control(u32 mask);
+ void disable_pm1_control(u32 mask);
+ /* PM1 */
+ u16 clear_pm1_status(void);
+ void enable_pm1(u16 events);
+ u32 clear_smi_status(void);
+ /* SMI */
+ void enable_smi(u32 mask);
+ void disable_smi(u32 mask);
+ /* ALT_GP_SMI */
+ u32 clear_alt_smi_status(void);
+ void enable_alt_smi(u32 mask);
+ /* TCO */
+ u32 clear_tco_status(void);
+ void enable_tco_sci(void);
+ /* GPE0 */
+ u32 clear_gpe_status(void);
+ void clear_gpe_enable(void);
+ void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4);
+ void disable_all_gpe(void);
+ void enable_gpe(u32 mask);
+ void disable_gpe(u32 mask);
+ /*
+  * get GPIO pin value
+  */
+ int get_gpio(int gpio_num);
+ /*
+  * Get a number comprised of multiple GPIO values. gpio_num_array points to
+  * the array of gpio pin numbers to scan, terminated by -1.
+  */
+ unsigned get_gpios(const int *gpio_num_array);
+ /*
+  * Set GPIO pin value.
+  */
+ void set_gpio(int gpio_num, int value);
+ /* Return non-zero if gpio is set to native function. 0 otherwise. */
+ int gpio_is_native(int gpio_num);
+ 
+ #if !defined(__PRE_RAM__) && !defined(__SMM__)
+ #include <device/device.h>
+ #include <arch/acpi.h>
+ #include "chip.h"
+ void pch_enable(device_t dev);
+ void pch_disable_devfn(device_t dev);
+ u32 pch_iobp_read(u32 address);
+ void pch_iobp_write(u32 address, u32 data);
+ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
+ #if CONFIG_ELOG
+ void pch_log_state(void);
+ #endif
+ void acpi_create_intel_hpet(acpi_hpet_t * hpet);
+ void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
+ 
+ /* These helpers are for performing SMM relocation. */
+ void southbridge_trigger_smi(void);
+ void southbridge_clear_smi_status(void);
+ /* The initialization of the southbridge is split into 2 compoments. One is
+  * for clearing the state in the SMM registers. The other is for enabling
+  * SMIs. They are split so that other work between the 2 actions. */
+ void southbridge_smm_clear_state(void);
+ void southbridge_smm_enable_smi(void);
+ #else
+ void enable_smbus(void);
+ void enable_usb_bar(void);
+ int smbus_read_byte(unsigned device, unsigned address);
+ int early_spi_read(u32 offset, u32 size, u8 *buffer);
+ int early_pch_init(const void *gpio_map,
+                    const struct rcba_config_instruction *rcba_config);
+ #endif /* !__PRE_RAM__ && !__SMM__ */
+ #endif /* __ASSEMBLER__ */
+ 
+ #define MAINBOARD_POWER_OFF	0
+ #define MAINBOARD_POWER_ON	1
+ #define MAINBOARD_POWER_KEEP	2
+ 
+ #ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+ #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+ #endif
+ 
+ /* PCI Configuration Space (D30:F0): PCI2PCI */
+ #define PSTS	0x06
+ #define SMLT	0x1b
+ #define SECSTS	0x1e
+ #define INTR	0x3c
+ #define BCTRL	0x3e
+ #define   SBR	(1 << 6)
+ #define   SEE	(1 << 1)
+ #define   PERE	(1 << 0)
+ 
+ /* Power Management Control and Status */
+ #define PCH_PCS			0x84
+ #define  PCH_PCS_PS_D3HOT	3
+ 
+ #define PCH_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
+ #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)
+ #define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)
+ #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
+ #define PCH_PCIE_DEV_SLOT	28
+ 
+ /* PCI Configuration Space (D31:F0): LPC */
+ #define PCH_LPC_DEV		PCI_DEV(0, 0x1f, 0)
+ #define SERIRQ_CNTL		0x64
+ 
+ #define GEN_PMCON_1		0xa0
+ #define GEN_PMCON_2		0xa2
+ #define GEN_PMCON_3		0xa4
+ #define PMIR			0xac
+ #define  PMIR_CF9LOCK		(1 << 31)
+ #define  PMIR_CF9GR		(1 << 20)
+ 
+ /* GEN_PMCON_3 bits */
+ #define RTC_BATTERY_DEAD	(1 << 2)
+ #define RTC_POWER_FAILED	(1 << 1)
+ #define SLEEP_AFTER_POWER_FAIL	(1 << 0)
+ 
+ #define PMBASE			0x40
+ #define ACPI_CNTL		0x44
+ #define   ACPI_EN		(1 << 7)
+ #define BIOS_CNTL		0xDC
+ #define GPIO_BASE		0x48 /* LPC GPIO Base Address Register */
+ #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */
+ #define GPIO_ROUT		0xb8
+ 
+ #define PIRQA_ROUT		0x60
+ #define PIRQB_ROUT		0x61
+ #define PIRQC_ROUT		0x62
+ #define PIRQD_ROUT		0x63
+ #define PIRQE_ROUT		0x68
+ #define PIRQF_ROUT		0x69
+ #define PIRQG_ROUT		0x6A
+ #define PIRQH_ROUT		0x6B
+ 
+ #define LPC_IO_DEC		0x80 /* IO Decode Ranges Register */
+ #define LPC_EN			0x82 /* LPC IF Enables Register */
+ #define  CNF2_LPC_EN		(1 << 13) /* 0x4e/0x4f */
+ #define  CNF1_LPC_EN		(1 << 12) /* 0x2e/0x2f */
+ #define  MC_LPC_EN		(1 << 11) /* 0x62/0x66 */
+ #define  KBC_LPC_EN		(1 << 10) /* 0x60/0x64 */
+ #define  GAMEH_LPC_EN		(1 << 9)  /* 0x208/0x20f */
+ #define  GAMEL_LPC_EN		(1 << 8)  /* 0x200/0x207 */
+ #define  FDD_LPC_EN		(1 << 3)  /* LPC_IO_DEC[12] */
+ #define  LPT_LPC_EN		(1 << 2)  /* LPC_IO_DEC[9:8] */
+ #define  COMB_LPC_EN		(1 << 1)  /* LPC_IO_DEC[6:4] */
+ #define  COMA_LPC_EN		(1 << 0)  /* LPC_IO_DEC[2:0] */
+ #define LPC_GEN1_DEC		0x84 /* LPC IF Generic Decode Range 1 */
+ #define LPC_GEN2_DEC		0x88 /* LPC IF Generic Decode Range 2 */
+ #define LPC_GEN3_DEC		0x8c /* LPC IF Generic Decode Range 3 */
+ #define LPC_GEN4_DEC		0x90 /* LPC IF Generic Decode Range 4 */
+ #define LGMR			0x98 /* LPC Generic Memory Range */
+ 
+ /* PCI Configuration Space (D31:F1): IDE */
+ #define PCH_IDE_DEV		PCI_DEV(0, 0x1f, 1)
+ #define PCH_SATA_DEV		PCI_DEV(0, 0x1f, 2)
+ #define PCH_SATA2_DEV		PCI_DEV(0, 0x1f, 5)
+ #define INTR_LN			0x3c
+ #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
+ #define   IDE_DECODE_ENABLE	(1 << 15)
+ #define   IDE_SITRE		(1 << 14)
+ #define   IDE_ISP_5_CLOCKS	(0 << 12)
+ #define   IDE_ISP_4_CLOCKS	(1 << 12)
+ #define   IDE_ISP_3_CLOCKS	(2 << 12)
+ #define   IDE_RCT_4_CLOCKS	(0 <<  8)
+ #define   IDE_RCT_3_CLOCKS	(1 <<  8)
+ #define   IDE_RCT_2_CLOCKS	(2 <<  8)
+ #define   IDE_RCT_1_CLOCKS	(3 <<  8)
+ #define   IDE_DTE1		(1 <<  7)
+ #define   IDE_PPE1		(1 <<  6)
+ #define   IDE_IE1		(1 <<  5)
+ #define   IDE_TIME1		(1 <<  4)
+ #define   IDE_DTE0		(1 <<  3)
+ #define   IDE_PPE0		(1 <<  2)
+ #define   IDE_IE0		(1 <<  1)
+ #define   IDE_TIME0		(1 <<  0)
+ #define IDE_TIM_SEC		0x42	/* IDE timings, secondary */
+ 
+ #define IDE_SDMA_CNT		0x48	/* Synchronous DMA control */
+ #define   IDE_SSDE1		(1 <<  3)
+ #define   IDE_SSDE0		(1 <<  2)
+ #define   IDE_PSDE1		(1 <<  1)
+ #define   IDE_PSDE0		(1 <<  0)
+ 
+ #define IDE_SDMA_TIM		0x4a
+ 
+ #define IDE_CONFIG		0x54	/* IDE I/O Configuration Register */
+ #define   SIG_MODE_SEC_NORMAL	(0 << 18)
+ #define   SIG_MODE_SEC_TRISTATE	(1 << 18)
+ #define   SIG_MODE_SEC_DRIVELOW	(2 << 18)
+ #define   SIG_MODE_PRI_NORMAL	(0 << 16)
+ #define   SIG_MODE_PRI_TRISTATE	(1 << 16)
+ #define   SIG_MODE_PRI_DRIVELOW	(2 << 16)
+ #define   FAST_SCB1		(1 << 15)
+ #define   FAST_SCB0		(1 << 14)
+ #define   FAST_PCB1		(1 << 13)
+ #define   FAST_PCB0		(1 << 12)
+ #define   SCB1			(1 <<  3)
+ #define   SCB0			(1 <<  2)
+ #define   PCB1			(1 <<  1)
+ #define   PCB0			(1 <<  0)
+ 
+ #define SATA_SIRI		0xa0 /* SATA Indexed Register Index */
+ #define SATA_SIRD		0xa4 /* SATA Indexed Register Data */
+ #define SATA_SP			0xd0 /* Scratchpad */
+ 
+ /* SATA IOBP Registers */
+ #define SATA_IOBP_SP0G3IR	0xea000151
+ #define SATA_IOBP_SP1G3IR	0xea000051
+ #define SATA_IOBP_SP0DTLE_DATA	0xea002550
+ #define SATA_IOBP_SP0DTLE_EDGE	0xea002554
+ #define SATA_IOBP_SP1DTLE_DATA	0xea002750
+ #define SATA_IOBP_SP1DTLE_EDGE	0xea002754
+ 
+ #define SATA_DTLE_MASK		0xF
+ #define SATA_DTLE_DATA_SHIFT	24
+ #define SATA_DTLE_EDGE_SHIFT	16
+ 
+ /* EHCI PCI Registers */
+ #define EHCI_PWR_CTL_STS	0x54
+ #define  PWR_CTL_SET_MASK	0x3
+ #define  PWR_CTL_SET_D0		0x0
+ #define  PWR_CTL_SET_D3		0x3
+ #define  PWR_CTL_ENABLE_PME	(1 << 8)
+ 
+ /* EHCI Memory Registers */
+ #define EHCI_USB_CMD		0x20
+ #define  EHCI_USB_CMD_RUN	(1 << 0)
+ #define  EHCI_USB_CMD_PSE	(1 << 4)
+ #define  EHCI_USB_CMD_ASE	(1 << 5)
+ #define EHCI_PORTSC(port)	(0x64 + (port * 4))
+ #define  EHCI_PORTSC_ENABLED	(1 << 2)
+ #define  EHCI_PORTSC_SUSPEND	(1 << 7)
+ 
+ /* XHCI PCI Registers */
+ #define XHCI_PWR_CTL_STS	0x74
+ #define XHCI_USB2PR		0xd0
+ #define XHCI_USB2PRM		0xd4
+ #define  XHCI_USB2PR_HCSEL	0x7fff
+ #define XHCI_USB3PR		0xd8
+ #define  XHCI_USB3PR_SSEN	0x3f
+ #define XHCI_USB3PRM		0xdc
+ #define XHCI_USB3FUS		0xe0
+ #define  XHCI_USB3FUS_SS_MASK	3
+ #define  XHCI_USB3FUS_SS_SHIFT	3
+ #define XHCI_USB3PDO		0xe8
+ 
+ /* XHCI Memory Registers */
+ #define XHCI_USB3_PORTSC(port)	((pch_is_lp() ? 0x510 : 0x570) + (port * 0x10))
+ #define  XHCI_USB3_PORTSC_CHST	(0x7f << 17)
+ #define  XHCI_USB3_PORTSC_WCE	(1 << 25)	/* Wake on Connect */
+ #define  XHCI_USB3_PORTSC_WDE	(1 << 26)	/* Wake on Disconnect */
+ #define  XHCI_USB3_PORTSC_WOE	(1 << 27)	/* Wake on Overcurrent */
+ #define  XHCI_USB3_PORTSC_WRC	(1 << 19)	/* Warm Reset Complete */
+ #define  XHCI_USB3_PORTSC_LWS  	(1 << 16)	/* Link Write Strobe */
+ #define  XHCI_USB3_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
+ #define  XHCI_USB3_PORTSC_PLS	(0xf << 5)	/* Port Link State */
+ #define   XHCI_PLSR_DISABLED	(4 << 5)	/* Port is disabled */
+ #define   XHCI_PLSR_RXDETECT	(5 << 5)	/* Port is disconnected */
+ #define   XHCI_PLSR_POLLING	(7 << 5)	/* Port is polling */
+ #define   XHCI_PLSW_ENABLE	(5 << 5)	/* Transition from disabled */
+ 
+ /* Serial IO IOBP Registers */
+ #define SIO_IOBP_PORTCTRL0	0xcb000000	/* SDIO D23:F0 */
+ #define  SIO_IOBP_PORTCTRL0_ACPI_IRQ_EN		(1 << 5)
+ #define  SIO_IOBP_PORTCTRL0_PCI_CONF_DIS	(1 << 4)
+ #define SIO_IOBP_PORTCTRL1	0xcb000014	/* SDIO D23:F0 */
+ #define  SIO_IOBP_PORTCTRL1_SNOOP_SELECT(x)	(((x) & 3) << 13)
+ #define SIO_IOBP_GPIODF		0xcb000154
+ #define  SIO_IOBP_GPIODF_SDIO_IDLE_DET_EN	(1 << 4)
+ #define  SIO_IOBP_GPIODF_DMA_IDLE_DET_EN	(1 << 3)
+ #define  SIO_IOBP_GPIODF_UART_IDLE_DET_EN	(1 << 2)
+ #define  SIO_IOBP_GPIODF_I2C_IDLE_DET_EN	(1 << 1)
+ #define  SIO_IOBP_GPIODF_SPI_IDLE_DET_EN	(1 << 0)
+ #define SIO_IOBP_PORTCTRL2	0xcb000240	/* DMA D21:F0 */
+ #define SIO_IOBP_PORTCTRL3	0xcb000248	/* I2C0 D21:F1 */
+ #define SIO_IOBP_PORTCTRL4	0xcb000250	/* I2C1 D21:F2 */
+ #define SIO_IOBP_PORTCTRL5	0xcb000258	/* SPI0 D21:F3 */
+ #define SIO_IOBP_PORTCTRL6	0xcb000260	/* SPI1 D21:F4 */
+ #define SIO_IOBP_PORTCTRL7	0xcb000268	/* UART0 D21:F5 */
+ #define SIO_IOBP_PORTCTRL8	0xcb000270	/* UART1 D21:F6 */
+ #define SIO_IOBP_PORTCTRLX(x)	(0xcb000240 + ((x) * 8))
+ /* PORTCTRL 2-8 have the same layout */
+ #define  SIO_IOBP_PORTCTRL_ACPI_IRQ_EN		(1 << 21)
+ #define  SIO_IOBP_PORTCTRL_PCI_CONF_DIS		(1 << 20)
+ #define  SIO_IOBP_PORTCTRL_SNOOP_SELECT(x)	(((x) & 3) << 18)
+ #define  SIO_IOBP_PORTCTRL_INT_PIN(x)		(((x) & 0xf) << 2)
+ #define  SIO_IOBP_PORTCTRL_PM_CAP_PRSNT		(1 << 1)
+ #define SIO_IOBP_FUNCDIS0	0xce00aa07	/* DMA D21:F0 */
+ #define SIO_IOBP_FUNCDIS1	0xce00aa47	/* I2C0 D21:F1 */
+ #define SIO_IOBP_FUNCDIS2	0xce00aa87	/* I2C1 D21:F2 */
+ #define SIO_IOBP_FUNCDIS3	0xce00aac7	/* SPI0 D21:F3 */
+ #define SIO_IOBP_FUNCDIS4	0xce00ab07	/* SPI1 D21:F4 */
+ #define SIO_IOBP_FUNCDIS5	0xce00ab47	/* UART0 D21:F5 */
+ #define SIO_IOBP_FUNCDIS6	0xce00ab87	/* UART1 D21:F6 */
+ #define SIO_IOBP_FUNCDIS7	0xce00ae07	/* SDIO D23:F0 */
+ #define  SIO_IOBP_FUNCDIS_DIS			(1 << 8)
+ 
+ /* Serial IO Devices */
+ #define SIO_ID_SDMA		0 /* D21:F0 */
+ #define SIO_ID_I2C0		1 /* D21:F1 */
+ #define SIO_ID_I2C1		2 /* D21:F2 */
+ #define SIO_ID_SPI0		3 /* D21:F3 */
+ #define SIO_ID_SPI1		4 /* D21:F4 */
+ #define SIO_ID_UART0		5 /* D21:F5 */
+ #define SIO_ID_UART1		6 /* D21:F6 */
+ #define SIO_ID_SDIO		7 /* D23:F0 */
+ 
+ #define SIO_REG_PPR_CLOCK		0x800
+ #define  SIO_REG_PPR_CLOCK_EN		 (1 << 0)
+ #define SIO_REG_PPR_RST			0x804
+ #define  SIO_REG_PPR_RST_ASSERT		 0x3
+ #define SIO_REG_PPR_GEN			0x808
+ #define  SIO_REG_PPR_GEN_LTR_MODE_MASK	 (1 << 2)
+ #define  SIO_REG_PPR_GEN_VOLTAGE_MASK	 (1 << 3)
+ #define  SIO_REG_PPR_GEN_VOLTAGE(x)	 ((x & 1) << 3)
+ #define SIO_REG_AUTO_LTR		0x814
+ 
+ #define SIO_REG_SDIO_PPR_GEN		0x1008
+ #define SIO_REG_SDIO_PPR_SW_LTR		0x1010
+ #define SIO_REG_SDIO_PPR_CMD12		0x3c
+ #define  SIO_REG_SDIO_PPR_CMD12_B30	 (1 << 30)
+ 
+ #define SIO_PIN_INTA 1 /* IRQ5 in ACPI mode */
+ #define SIO_PIN_INTB 2 /* IRQ6 in ACPI mode */
+ #define SIO_PIN_INTC 3 /* IRQ7 in ACPI mode */
+ #define SIO_PIN_INTD 4 /* IRQ13 in ACPI mode */
+ 
+ /* PCI Configuration Space (D31:F3): SMBus */
+ #define PCH_SMBUS_DEV		PCI_DEV(0, 0x1f, 3)
+ #define SMB_BASE		0x20
+ #define HOSTC			0x40
+ #define SMB_RCV_SLVA		0x09
+ 
+ /* HOSTC bits */
+ #define I2C_EN			(1 << 2)
+ #define SMB_SMI_EN		(1 << 1)
+ #define HST_EN			(1 << 0)
+ 
+ /* SMBus I/O bits. */
+ #define SMBHSTSTAT		0x0
+ #define SMBHSTCTL		0x2
+ #define SMBHSTCMD		0x3
+ #define SMBXMITADD		0x4
+ #define SMBHSTDAT0		0x5
+ #define SMBHSTDAT1		0x6
+ #define SMBBLKDAT		0x7
+ #define SMBTRNSADD		0x9
+ #define SMBSLVDATA		0xa
+ #define SMLINK_PIN_CTL		0xe
+ #define SMBUS_PIN_CTL		0xf
+ 
+ #define SMBUS_TIMEOUT		(10 * 1000 * 100)
+ 
+ 
+ /* Southbridge IO BARs */
+ 
+ #define GPIOBASE		0x48
+ 
+ #define PMBASE		0x40
+ 
+ /* Root Complex Register Block */
+ #define RCBA		0xf0
+ 
+ #define RCBA8(x) *((volatile u8 *)(DEFAULT_RCBA + x))
+ #define RCBA16(x) *((volatile u16 *)(DEFAULT_RCBA + x))
+ #define RCBA32(x) *((volatile u32 *)(DEFAULT_RCBA + x))
+ 
+ #define RCBA_AND_OR(bits, x, and, or) \
+         RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
+ #define RCBA8_AND_OR(x, and, or)  RCBA_AND_OR(8, x, and, or)
+ #define RCBA16_AND_OR(x, and, or) RCBA_AND_OR(16, x, and, or)
+ #define RCBA32_AND_OR(x, and, or) RCBA_AND_OR(32, x, and, or)
+ #define RCBA32_OR(x, or) RCBA_AND_OR(32, x, ~0UL, or)
+ 
+ #define VCH		0x0000	/* 32bit */
+ #define VCAP1		0x0004	/* 32bit */
+ #define VCAP2		0x0008	/* 32bit */
+ #define PVC		0x000c	/* 16bit */
+ #define PVS		0x000e	/* 16bit */
+ 
+ #define V0CAP		0x0010	/* 32bit */
+ #define V0CTL		0x0014	/* 32bit */
+ #define V0STS		0x001a	/* 16bit */
+ 
+ #define V1CAP		0x001c	/* 32bit */
+ #define V1CTL		0x0020	/* 32bit */
+ #define V1STS		0x0026	/* 16bit */
+ 
+ #define RCTCL		0x0100	/* 32bit */
+ #define ESD		0x0104	/* 32bit */
+ #define ULD		0x0110	/* 32bit */
+ #define ULBA		0x0118	/* 64bit */
+ 
+ #define RP1D		0x0120	/* 32bit */
+ #define RP1BA		0x0128	/* 64bit */
+ #define RP2D		0x0130	/* 32bit */
+ #define RP2BA		0x0138	/* 64bit */
+ #define RP3D		0x0140	/* 32bit */
+ #define RP3BA		0x0148	/* 64bit */
+ #define RP4D		0x0150	/* 32bit */
+ #define RP4BA		0x0158	/* 64bit */
+ #define HDD		0x0160	/* 32bit */
+ #define HDBA		0x0168	/* 64bit */
+ #define RP5D		0x0170	/* 32bit */
+ #define RP5BA		0x0178	/* 64bit */
+ #define RP6D		0x0180	/* 32bit */
+ #define RP6BA		0x0188	/* 64bit */
+ 
+ #define RPC		0x0400	/* 32bit */
+ #define RPFN		0x0404	/* 32bit */
+ 
+ /* Root Port configuratinon space hide */
+ #define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
+ /* Get the function number assigned to a Root Port */
+ #define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
+ /* Set the function number for a Root Port */
+ #define RPFN_FNSET(port,func)   (((func) & 7) << ((port) * 4))
+ /* Root Port function number mask */
+ #define RPFN_FNMASK(port)       (7 << ((port) * 4))
+ 
+ #define TRSR		0x1e00	/*  8bit */
+ #define TRCR		0x1e10	/* 64bit */
+ #define TWDR		0x1e18	/* 64bit */
+ 
+ #define IOTR0		0x1e80	/* 64bit */
+ #define IOTR1		0x1e88	/* 64bit */
+ #define IOTR2		0x1e90	/* 64bit */
+ #define IOTR3		0x1e98	/* 64bit */
+ 
+ #define TCTL		0x3000	/*  8bit */
+ 
+ #define NOINT		0
+ #define INTA		1
+ #define INTB		2
+ #define INTC		3
+ #define INTD		4
+ 
+ #define DIR_IDR		12	/* Interrupt D Pin Offset */
+ #define DIR_ICR		8	/* Interrupt C Pin Offset */
+ #define DIR_IBR		4	/* Interrupt B Pin Offset */
+ #define DIR_IAR		0	/* Interrupt A Pin Offset */
+ 
+ #define PIRQA		0
+ #define PIRQB		1
+ #define PIRQC		2
+ #define PIRQD		3
+ #define PIRQE		4
+ #define PIRQF		5
+ #define PIRQG		6
+ #define PIRQH		7
+ 
+ /* IO Buffer Programming */
+ #define IOBPIRI		0x2330
+ #define IOBPD		0x2334
+ #define IOBPS		0x2338
+ #define  IOBPS_READY	0x0001
+ #define  IOBPS_TX_MASK	0x0006
+ #define  IOBPS_MASK     0xff00
+ #define  IOBPS_READ     0x0600
+ #define  IOBPS_WRITE	0x0700
+ #define IOBPU		0x233a
+ #define  IOBPU_MAGIC	0xf000
+ 
+ #define D31IP		0x3100	/* 32bit */
+ #define D31IP_TTIP	24	/* Thermal Throttle Pin */
+ #define D31IP_SIP2	20	/* SATA Pin 2 */
+ #define D31IP_SMIP	12	/* SMBUS Pin */
+ #define D31IP_SIP	8	/* SATA Pin */
+ #define D30IP		0x3104	/* 32bit */
+ #define D30IP_PIP	0	/* PCI Bridge Pin */
+ #define D29IP		0x3108	/* 32bit */
+ #define D29IP_E1P	0	/* EHCI #1 Pin */
+ #define D28IP		0x310c	/* 32bit */
+ #define D28IP_P8IP	28	/* PCI Express Port 8 */
+ #define D28IP_P7IP	24	/* PCI Express Port 7 */
+ #define D28IP_P6IP	20	/* PCI Express Port 6 */
+ #define D28IP_P5IP	16	/* PCI Express Port 5 */
+ #define D28IP_P4IP	12	/* PCI Express Port 4 */
+ #define D28IP_P3IP	8	/* PCI Express Port 3 */
+ #define D28IP_P2IP	4	/* PCI Express Port 2 */
+ #define D28IP_P1IP	0	/* PCI Express Port 1 */
+ #define D27IP		0x3110	/* 32bit */
+ #define D27IP_ZIP	0	/* HD Audio Pin */
+ #define D26IP		0x3114	/* 32bit */
+ #define D26IP_E2P	0	/* EHCI #2 Pin */
+ #define D25IP		0x3118	/* 32bit */
+ #define D25IP_LIP	0	/* GbE LAN Pin */
+ #define D22IP		0x3124	/* 32bit */
+ #define D22IP_KTIP	12	/* KT Pin */
+ #define D22IP_IDERIP	8	/* IDE-R Pin */
+ #define D22IP_MEI2IP	4	/* MEI #2 Pin */
+ #define D22IP_MEI1IP	0	/* MEI #1 Pin */
+ #define D20IP		0x3128	/* 32bit */
+ #define D20IP_XHCI	0	/* XHCI Pin */
+ #define D31IR		0x3140	/* 16bit */
+ #define D30IR		0x3142	/* 16bit */
+ #define D29IR		0x3144	/* 16bit */
+ #define D28IR		0x3146	/* 16bit */
+ #define D27IR		0x3148	/* 16bit */
+ #define D26IR		0x314c	/* 16bit */
+ #define D25IR		0x3150	/* 16bit */
+ #define D23IR		0x3158	/* 16bit */
+ #define D22IR		0x315c	/* 16bit */
+ #define D20IR		0x3160	/* 16bit */
+ #define D21IR		0x3164	/* 16bit */
+ #define D19IR		0x3168	/* 16bit */
+ #define ACPIIRQEN	0x31e0	/* 32bit */
+ #define OIC		0x31fe	/* 16bit */
+ #define PMSYNC_CONFIG	0x33c4	/* 32bit */
+ #define PMSYNC_CONFIG2	0x33cc	/* 32bit */
+ #define SOFT_RESET_CTRL 0x38f4
+ #define SOFT_RESET_DATA 0x38f8
+ 
+ #define DIR_ROUTE(a,b,c,d) \
+   (((d) << DIR_IDR) | ((c) << DIR_ICR) | \
+   ((b) << DIR_IBR) | ((a) << DIR_IAR))
+ 
+ #define RC		0x3400	/* 32bit */
+ #define HPTC		0x3404	/* 32bit */
+ #define GCS		0x3410	/* 32bit */
+ #define BUC		0x3414	/* 32bit */
+ #define PCH_DISABLE_GBE		(1 << 5)
+ #define FD		0x3418	/* 32bit */
+ #define DISPBDF		0x3424  /* 16bit */
+ #define FD2		0x3428	/* 32bit */
+ #define CG		0x341c	/* 32bit */
+ 
+ /* Function Disable 1 RCBA 0x3418 */
+ #define PCH_DISABLE_ALWAYS	(1 << 0)
+ #define PCH_DISABLE_ADSPD	(1 << 1)
+ #define PCH_DISABLE_SATA1	(1 << 2)
+ #define PCH_DISABLE_SMBUS	(1 << 3)
+ #define PCH_DISABLE_HD_AUDIO	(1 << 4)
+ #define PCH_DISABLE_EHCI2	(1 << 13)
+ #define PCH_DISABLE_LPC		(1 << 14)
+ #define PCH_DISABLE_EHCI1	(1 << 15)
+ #define PCH_DISABLE_PCIE(x)	(1 << (16 + x))
+ #define PCH_DISABLE_THERMAL	(1 << 24)
+ #define PCH_DISABLE_SATA2	(1 << 25)
+ #define PCH_DISABLE_XHCI	(1 << 27)
+ 
+ /* Function Disable 2 RCBA 0x3428 */
+ #define PCH_DISABLE_KT		(1 << 4)
+ #define PCH_DISABLE_IDER	(1 << 3)
+ #define PCH_DISABLE_MEI2	(1 << 2)
+ #define PCH_DISABLE_MEI1	(1 << 1)
+ #define PCH_ENABLE_DBDF		(1 << 0)
+ 
+ /* ICH7 PMBASE */
+ #define PM1_STS		0x00
+ #define   WAK_STS	(1 << 15)
+ #define   PCIEXPWAK_STS	(1 << 14)
+ #define   PRBTNOR_STS	(1 << 11)
+ #define   RTC_STS	(1 << 10)
+ #define   PWRBTN_STS	(1 << 8)
+ #define   GBL_STS	(1 << 5)
+ #define   BM_STS	(1 << 4)
+ #define   TMROF_STS	(1 << 0)
+ #define PM1_EN		0x02
+ #define   PCIEXPWAK_DIS	(1 << 14)
+ #define   RTC_EN	(1 << 10)
+ #define   PWRBTN_EN	(1 << 8)
+ #define   GBL_EN	(1 << 5)
+ #define   TMROF_EN	(1 << 0)
+ #define PM1_CNT		0x04
+ #define   SLP_EN	(1 << 13)
+ #define   SLP_TYP	(7 << 10)
+ #define    SLP_TYP_S0	0
+ #define    SLP_TYP_S1	1
+ #define    SLP_TYP_S3	5
+ #define    SLP_TYP_S4	6
+ #define    SLP_TYP_S5	7
+ #define   GBL_RLS	(1 << 2)
+ #define   BM_RLD	(1 << 1)
+ #define   SCI_EN	(1 << 0)
+ #define PM1_TMR		0x08
+ #define PROC_CNT	0x10
+ #define LV2		0x14
+ #define LV3		0x15
+ #define LV4		0x16
+ #define PM2_CNT		0x50 // mobile only
+ #define GPE0_STS	0x20
+ #define   PME_B0_STS	(1 << 13)
+ #define   PME_STS	(1 << 11)
+ #define   BATLOW_STS	(1 << 10)
+ #define   PCI_EXP_STS	(1 << 9)
+ #define   RI_STS	(1 << 8)
+ #define   SMB_WAK_STS	(1 << 7)
+ #define   TCOSCI_STS	(1 << 6)
+ #define   SWGPE_STS	(1 << 2)
+ #define   HOT_PLUG_STS	(1 << 1)
+ #define GPE0_STS_2	0x24
+ #define GPE0_EN		0x28
+ #define   PME_B0_EN	(1 << 13)
+ #define   PME_EN	(1 << 11)
+ #define   TCOSCI_EN	(1 << 6)
+ #define GPE0_EN_2	0x2c
+ #define SMI_EN		0x30
+ #define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
+ #define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
+ #define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
+ #define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
+ #define   MCSMI_EN	 (1 << 11) // Trap microcontroller range access
+ #define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
+ #define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
+ #define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
+ #define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
+ #define   LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
+ #define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
+ #define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
+ #define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+ #define SMI_STS		0x34
+ #define ALT_GP_SMI_EN	0x38
+ #define ALT_GP_SMI_STS	0x3a
+ #define GPE_CNTL	0x42
+ #define DEVACT_STS	0x44
+ #define SS_CNT		0x50
+ #define C3_RES		0x54
+ #define TCO1_STS	0x64
+ #define   DMISCI_STS	(1 << 9)
+ #define TCO2_STS	0x66
+ #define ALT_GP_SMI_EN2	0x5c
+ #define ALT_GP_SMI_STS2	0x5e
+ 
+ /* Lynxpoint LP */
+ #define LP_GPE0_STS_1	0x80	/* GPIO 0-31 */
+ #define LP_GPE0_STS_2	0x84	/* GPIO 32-63 */
+ #define LP_GPE0_STS_3	0x88	/* GPIO 64-94 */
+ #define LP_GPE0_STS_4	0x8c	/* Standard GPE */
+ #define LP_GPE0_EN_1	0x90
+ #define LP_GPE0_EN_2	0x94
+ #define LP_GPE0_EN_3	0x98
+ #define LP_GPE0_EN_4	0x9c
+ 
+ /*
+  * SPI Opcode Menu setup for SPIBAR lockdown
+  * should support most common flash chips.
+  */
+ 
+ #define SPIBAR_OFFSET 0x3800
+ #define SPIBAR8(x) RCBA8(x + SPIBAR_OFFSET)
+ #define SPIBAR16(x) RCBA16(x + SPIBAR_OFFSET)
+ #define SPIBAR32(x) RCBA32(x + SPIBAR_OFFSET)
+ 
+ /* Reigsters within the SPIBAR */
+ #define SSFC 0x91
+ #define FDOC 0xb0
+ #define FDOD 0xb4
+ 
+ #define SPI_OPMENU_0 0x01 /* WRSR: Write Status Register */
+ #define SPI_OPTYPE_0 0x01 /* Write, no address */
+ 
+ #define SPI_OPMENU_1 0x02 /* BYPR: Byte Program */
+ #define SPI_OPTYPE_1 0x03 /* Write, address required */
+ 
+ #define SPI_OPMENU_2 0x03 /* READ: Read Data */
+ #define SPI_OPTYPE_2 0x02 /* Read, address required */
+ 
+ #define SPI_OPMENU_3 0x05 /* RDSR: Read Status Register */
+ #define SPI_OPTYPE_3 0x00 /* Read, no address */
+ 
+ #define SPI_OPMENU_4 0x20 /* SE20: Sector Erase 0x20 */
+ #define SPI_OPTYPE_4 0x03 /* Write, address required */
+ 
+ #define SPI_OPMENU_5 0x9f /* RDID: Read ID */
+ #define SPI_OPTYPE_5 0x00 /* Read, no address */
+ 
+ #define SPI_OPMENU_6 0xd8 /* BED8: Block Erase 0xd8 */
+ #define SPI_OPTYPE_6 0x03 /* Write, address required */
+ 
+ #define SPI_OPMENU_7 0x0b /* FAST: Fast Read */
+ #define SPI_OPTYPE_7 0x02 /* Read, address required */
+ 
+ #define SPI_OPMENU_UPPER ((SPI_OPMENU_7 << 24) | (SPI_OPMENU_6 << 16) | \
+ 			  (SPI_OPMENU_5 << 8) | SPI_OPMENU_4)
+ #define SPI_OPMENU_LOWER ((SPI_OPMENU_3 << 24) | (SPI_OPMENU_2 << 16) | \
+ 			  (SPI_OPMENU_1 << 8) | SPI_OPMENU_0)
+ 
+ #define SPI_OPTYPE ((SPI_OPTYPE_7 << 14) | (SPI_OPTYPE_6 << 12) | \
+ 		    (SPI_OPTYPE_5 << 10) | (SPI_OPTYPE_4 << 8) |  \
+ 		    (SPI_OPTYPE_3 << 6) | (SPI_OPTYPE_2 << 4) |	  \
+ 		    (SPI_OPTYPE_1 << 2) | (SPI_OPTYPE_0))
+ 
+ #define SPI_OPPREFIX ((0x50 << 8) | 0x06) /* EWSR and WREN */
+ 
+ #define SPIBAR_HSFS                 0x3804   /* SPI hardware sequence status */
+ #define  SPIBAR_HSFS_SCIP           (1 << 5) /* SPI Cycle In Progress */
+ #define  SPIBAR_HSFS_AEL            (1 << 2) /* SPI Access Error Log */
+ #define  SPIBAR_HSFS_FCERR          (1 << 1) /* SPI Flash Cycle Error */
+ #define  SPIBAR_HSFS_FDONE          (1 << 0) /* SPI Flash Cycle Done */
+ #define SPIBAR_HSFC                 0x3806   /* SPI hardware sequence control */
+ #define  SPIBAR_HSFC_BYTE_COUNT(c)  (((c - 1) & 0x3f) << 8)
+ #define  SPIBAR_HSFC_CYCLE_READ     (0 << 1) /* Read cycle */
+ #define  SPIBAR_HSFC_CYCLE_WRITE    (2 << 1) /* Write cycle */
+ #define  SPIBAR_HSFC_CYCLE_ERASE    (3 << 1) /* Erase cycle */
+ #define  SPIBAR_HSFC_GO             (1 << 0) /* GO: start SPI transaction */
+ #define SPIBAR_FADDR                0x3808   /* SPI flash address */
+ #define SPIBAR_FDATA(n)             (0x3810 + (4 * n)) /* SPI flash data */
+ 
+ #endif /* __ACPI__ */
+ #endif /* SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H */
+diff --git a/src/southbridge/intel/lynxpoint/smihandler.c b/src/southbridge/intel/lynxpoint/smihandler.c
+index e920cfe..d1e9bbc 100644
+--- a/src/southbridge/intel/lynxpoint/smihandler.c
++++ b/src/southbridge/intel/lynxpoint/smihandler.c
+@@ -1,541 +1,548 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2008-2009 coresystems GmbH
+  * Copyright 2013 Google Inc.
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+  * published by the Free Software Foundation; version 2 of
+  * the License.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+  * MA 02110-1301 USA
+  */
+ 
+ #include <delay.h>
+ #include <types.h>
+ #include <arch/hlt.h>
+ #include <arch/io.h>
+ #include <console/console.h>
+ #include <cpu/x86/cache.h>
+ #include <device/pci_def.h>
+ #include <cpu/x86/smm.h>
+ #include <elog.h>
+ #include <pc80/mc146818rtc.h>
+ #include "pch.h"
+ 
+ #include "nvs.h"
+ 
+ 
+ static u8 smm_initialized = 0;
+ 
+ /* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
+  * by coreboot.
+  */
+ static global_nvs_t *gnvs;
+ global_nvs_t *smm_get_gnvs(void)
+ {
+ 	return gnvs;
+ }
+ 
+ int southbridge_io_trap_handler(int smif)
+ {
+ 	switch (smif) {
+ 	case 0x32:
+ 		printk(BIOS_DEBUG, "OS Init\n");
+ 		/* gnvs->smif:
+ 		 *  On success, the IO Trap Handler returns 0
+ 		 *  On failure, the IO Trap Handler returns a value != 0
+ 		 */
+ 		gnvs->smif = 0;
+ 		return 1; /* IO trap handled */
+ 	}
+ 
+ 	/* Not handled */
+ 	return 0;
+ }
+ 
+ /**
+  * @brief Set the EOS bit
+  */
+ void southbridge_smi_set_eos(void)
+ {
+ 	enable_smi(EOS);
+ }
+ 
+ static void busmaster_disable_on_bus(int bus)
+ {
+         int slot, func;
+         unsigned int val;
+         unsigned char hdr;
+ 
+         for (slot = 0; slot < 0x20; slot++) {
+                 for (func = 0; func < 8; func++) {
+                         u32 reg32;
+                         device_t dev = PCI_DEV(bus, slot, func);
+ 
+                         val = pci_read_config32(dev, PCI_VENDOR_ID);
+ 
+                         if (val == 0xffffffff || val == 0x00000000 ||
+                             val == 0x0000ffff || val == 0xffff0000)
+                                 continue;
+ 
+                         /* Disable Bus Mastering for this one device */
+                         reg32 = pci_read_config32(dev, PCI_COMMAND);
+                         reg32 &= ~PCI_COMMAND_MASTER;
+                         pci_write_config32(dev, PCI_COMMAND, reg32);
+ 
+                         /* If this is a bridge, then follow it. */
+                         hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
+                         hdr &= 0x7f;
+                         if (hdr == PCI_HEADER_TYPE_BRIDGE ||
+                             hdr == PCI_HEADER_TYPE_CARDBUS) {
+                                 unsigned int buses;
+                                 buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
+                                 busmaster_disable_on_bus((buses >> 8) & 0xff);
+                         }
+                 }
+         }
+ }
+ 
+ 
+ static void southbridge_smi_sleep(void)
+ {
+ 	u8 reg8;
+ 	u32 reg32;
+ 	u8 slp_typ;
+ 	u8 s5pwr = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+ 	u16 pmbase = get_pmbase();
+ 
+ 	// save and recover RTC port values
+ 	u8 tmp70, tmp72;
+ 	tmp70 = inb(0x70);
+ 	tmp72 = inb(0x72);
+ 	get_option(&s5pwr, "power_on_after_fail");
+ 	outb(tmp70, 0x70);
+ 	outb(tmp72, 0x72);
+ 
+ 	/* First, disable further SMIs */
+ 	disable_smi(SLP_SMI_EN);
+ 
+ 	/* Figure out SLP_TYP */
+ 	reg32 = inl(pmbase + PM1_CNT);
+ 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
+ 	slp_typ = (reg32 >> 10) & 7;
+ 
+ 	/* Do any mainboard sleep handling */
+ 	mainboard_smi_sleep(slp_typ-2);
+ 
+ 	/* USB sleep preparations */
++#if !CONFIG_FINALIZE_USB_ROUTE_XHCI
+ 	usb_ehci_sleep_prepare(PCH_EHCI1_DEV, slp_typ);
+ 	usb_ehci_sleep_prepare(PCH_EHCI2_DEV, slp_typ);
++#endif
+ 	usb_xhci_sleep_prepare(PCH_XHCI_DEV, slp_typ);
+ 
+ #if CONFIG_ELOG_GSMI
+ 	/* Log S3, S4, and S5 entry */
+ 	if (slp_typ >= 5)
+ 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ-2);
+ #endif
+ 
+ 	/* Next, do the deed.
+ 	 */
+ 
+ 	switch (slp_typ) {
+ 	case SLP_TYP_S0:
+ 		printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n");
+ 		break;
+ 	case SLP_TYP_S1:
+ 		printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n");
+ 		break;
+ 	case SLP_TYP_S3:
+ 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
+ 
+ 		/* Invalidate the cache before going to S3 */
+ 		wbinvd();
+ 		break;
+ 	case SLP_TYP_S4:
+ 		printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n");
+ 		break;
+ 	case SLP_TYP_S5:
+ 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
+ 
+ 		/* Disable all GPE */
+ 		disable_all_gpe();
+ 
+ 		/* Always set the flag in case CMOS was changed on runtime. For
+ 		 * "KEEP", switch to "OFF" - KEEP is software emulated
+ 		 */
+ 		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+ 		if (s5pwr == MAINBOARD_POWER_ON) {
+ 			reg8 &= ~1;
+ 		} else {
+ 			reg8 |= 1;
+ 		}
+ 		pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
+ 
+ 		/* also iterates over all bridges on bus 0 */
+ 		busmaster_disable_on_bus(0);
+ 		break;
+ 	default:
+ 		printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n");
+ 		break;
+ 	}
+ 
+ 	/* Write back to the SLP register to cause the originally intended
+ 	 * event again. We need to set BIT13 (SLP_EN) though to make the
+ 	 * sleep happen.
+ 	 */
+ 	enable_pm1_control(SLP_EN);
+ 
+ 	/* Make sure to stop executing code here for S3/S4/S5 */
+ 	if (slp_typ > 1)
+ 		hlt();
+ 
+ 	/* In most sleep states, the code flow of this function ends at
+ 	 * the line above. However, if we entered sleep state S1 and wake
+ 	 * up again, we will continue to execute code in this function.
+ 	 */
+ 	reg32 = inl(pmbase + PM1_CNT);
+ 	if (reg32 & SCI_EN) {
+ 		/* The OS is not an ACPI OS, so we set the state to S0 */
+ 		disable_pm1_control(SLP_EN | SLP_TYP);
+ 	}
+ }
+ 
+ /*
+  * Look for Synchronous IO SMI and use save state from that
+  * core in case we are not running on the same core that
+  * initiated the IO transaction.
+  */
+ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
+ {
+ 	em64t101_smm_state_save_area_t *state;
+ 	int node;
+ 
+ 	/* Check all nodes looking for the one that issued the IO */
+ 	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
+ 		state = smm_get_save_state(node);
+ 
+ 		/* Check for Synchronous IO (bit0==1) */
+ 		if (!(state->io_misc_info & (1 << 0)))
+ 			continue;
+ 
+ 		/* Make sure it was a write (bit4==0) */
+ 		if (state->io_misc_info & (1 << 4))
+ 			continue;
+ 
+ 		/* Check for APMC IO port */
+ 		if (((state->io_misc_info >> 16) & 0xff) != APM_CNT)
+ 			continue;
+ 
+ 		/* Check AX against the requested command */
+ 		if ((state->rax & 0xff) != cmd)
+ 			continue;
+ 
+ 		return state;
+ 	}
+ 
+ 	return NULL;
+ }
+ 
+ #if CONFIG_ELOG_GSMI
+ static void southbridge_smi_gsmi(void)
+ {
+ 	u32 *ret, *param;
+ 	u8 sub_command;
+ 	em64t101_smm_state_save_area_t *io_smi =
+ 		smi_apmc_find_state_save(ELOG_GSMI_APM_CNT);
+ 
+ 	if (!io_smi)
+ 		return;
+ 
+ 	/* Command and return value in EAX */
+ 	ret = (u32*)&io_smi->rax;
+ 	sub_command = (u8)(*ret >> 8);
+ 
+ 	/* Parameter buffer in EBX */
+ 	param = (u32*)&io_smi->rbx;
+ 
+ 	/* drivers/elog/gsmi.c */
+ 	*ret = gsmi_exec(sub_command, param);
+ }
+ #endif
+ 
+ static void southbridge_smi_apmc(void)
+ {
+ 	u8 reg8;
+ 	em64t101_smm_state_save_area_t *state;
+ 
+ 	/* Emulate B2 register as the FADT / Linux expects it */
+ 
+ 	reg8 = inb(APM_CNT);
+ 	switch (reg8) {
+ 	case APM_CNT_CST_CONTROL:
+ 		/* Calling this function seems to cause
+ 		 * some kind of race condition in Linux
+ 		 * and causes a kernel oops
+ 		 */
+ 		printk(BIOS_DEBUG, "C-state control\n");
+ 		break;
+ 	case APM_CNT_PST_CONTROL:
+ 		/* Calling this function seems to cause
+ 		 * some kind of race condition in Linux
+ 		 * and causes a kernel oops
+ 		 */
+ 		printk(BIOS_DEBUG, "P-state control\n");
+ 		break;
+ 	case APM_CNT_ACPI_DISABLE:
+ 		disable_pm1_control(SCI_EN);
+ 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
+ 		break;
+ 	case APM_CNT_ACPI_ENABLE:
+ 		enable_pm1_control(SCI_EN);
+ 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
+ 		break;
+ 	case APM_CNT_GNVS_UPDATE:
+ 		if (smm_initialized) {
+ 			printk(BIOS_DEBUG,
+ 			       "SMI#: SMM structures already initialized!\n");
+ 			return;
+ 		}
+ 		state = smi_apmc_find_state_save(reg8);
+ 		if (state) {
+ 			/* EBX in the state save contains the GNVS pointer */
+ 			gnvs = (global_nvs_t *)((u32)state->rbx);
+ 			smm_initialized = 1;
+ 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
+ 		}
+ 		break;
++	case APM_CNT_FINALIZE:
++#if CONFIG_FINALIZE_USB_ROUTE_XHCI
++		usb_xhci_route_all();
++#endif
++		break;
+ #if CONFIG_ELOG_GSMI
+ 	case ELOG_GSMI_APM_CNT:
+ 		southbridge_smi_gsmi();
+ 		break;
+ #endif
+ 	}
+ 
+ 	mainboard_smi_apmc(reg8);
+ }
+ 
+ static void southbridge_smi_pm1(void)
+ {
+ 	u16 pm1_sts = clear_pm1_status();
+ 
+ 	/* While OSPM is not active, poweroff immediately
+ 	 * on a power button event.
+ 	 */
+ 	if (pm1_sts & PWRBTN_STS) {
+ 		// power button pressed
+ #if CONFIG_ELOG_GSMI
+ 		elog_add_event(ELOG_TYPE_POWER_BUTTON);
+ #endif
+ 		disable_pm1_control(-1UL);
+ 		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
+ 	}
+ }
+ 
+ static void southbridge_smi_gpe0(void)
+ {
+ 	clear_gpe_status();
+ }
+ 
+ static void southbridge_smi_gpi(void)
+ {
+ 	mainboard_smi_gpi(clear_alt_smi_status());
+ 
+ 	/* Clear again after mainboard handler */
+ 	clear_alt_smi_status();
+ }
+ 
+ static void southbridge_smi_mc(void)
+ {
+ 	u32 reg32;
+ 
+ 	reg32 = inl(get_pmbase() + SMI_EN);
+ 
+ 	/* Are microcontroller SMIs enabled? */
+ 	if ((reg32 & MCSMI_EN) == 0)
+ 		return;
+ 
+ 	printk(BIOS_DEBUG, "Microcontroller SMI.\n");
+ }
+ 
+ 
+ 
+ static void southbridge_smi_tco(void)
+ {
+ 	u32 tco_sts = clear_tco_status();
+ 
+ 	/* Any TCO event? */
+ 	if (!tco_sts)
+ 		return;
+ 
+ 	if (tco_sts & (1 << 8)) { // BIOSWR
+ 		u8 bios_cntl;
+ 
+ 		bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+ 
+ 		if (bios_cntl & 1) {
+ 			/* BWE is RW, so the SMI was caused by a
+ 			 * write to BWE, not by a write to the BIOS
+ 			 */
+ 
+ 			/* This is the place where we notice someone
+ 			 * is trying to tinker with the BIOS. We are
+ 			 * trying to be nice and just ignore it. A more
+ 			 * resolute answer would be to power down the
+ 			 * box.
+ 			 */
+ 			printk(BIOS_DEBUG, "Switching back to RO\n");
+ 			pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc,
+ 					   (bios_cntl & ~1));
+ 		} /* No else for now? */
+ 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
+ 		/* Handle TCO timeout */
+ 		printk(BIOS_DEBUG, "TCO Timeout.\n");
+ 	}
+ }
+ 
+ static void southbridge_smi_periodic(void)
+ {
+ 	u32 reg32;
+ 
+ 	reg32 = inl(get_pmbase() + SMI_EN);
+ 
+ 	/* Are periodic SMIs enabled? */
+ 	if ((reg32 & PERIODIC_EN) == 0)
+ 		return;
+ 
+ 	printk(BIOS_DEBUG, "Periodic SMI.\n");
+ }
+ 
+ static void southbridge_smi_monitor(void)
+ {
+ #define IOTRAP(x) (trap_sts & (1 << x))
+ 	u32 trap_sts, trap_cycle;
+ 	u32 data, mask = 0;
+ 	int i;
+ 
+ 	trap_sts = RCBA32(0x1e00); // TRSR - Trap Status Register
+ 	RCBA32(0x1e00) = trap_sts; // Clear trap(s) in TRSR
+ 
+ 	trap_cycle = RCBA32(0x1e10);
+ 	for (i=16; i<20; i++) {
+ 		if (trap_cycle & (1 << i))
+ 			mask |= (0xff << ((i - 16) << 2));
+ 	}
+ 
+ 
+ 	/* IOTRAP(3) SMI function call */
+ 	if (IOTRAP(3)) {
+ 		if (gnvs && gnvs->smif)
+ 			io_trap_handler(gnvs->smif); // call function smif
+ 		return;
+ 	}
+ 
+ 	/* IOTRAP(2) currently unused
+ 	 * IOTRAP(1) currently unused */
+ 
+ 	/* IOTRAP(0) SMIC */
+ 	if (IOTRAP(0)) {
+ 		if (!(trap_cycle & (1 << 24))) { // It's a write
+ 			printk(BIOS_DEBUG, "SMI1 command\n");
+ 			data = RCBA32(0x1e18);
+ 			data &= mask;
+ 			// if (smi1)
+ 			// 	southbridge_smi_command(data);
+ 			// return;
+ 		}
+ 		// Fall through to debug
+ 	}
+ 
+ 	printk(BIOS_DEBUG, "  trapped io address = 0x%x\n",
+ 	       trap_cycle & 0xfffc);
+ 	for (i=0; i < 4; i++)
+ 		if(IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);
+ 	printk(BIOS_DEBUG, "  AHBE = %x\n", (trap_cycle >> 16) & 0xf);
+ 	printk(BIOS_DEBUG, "  MASK = 0x%08x\n", mask);
+ 	printk(BIOS_DEBUG, "  read/write: %s\n",
+ 	       (trap_cycle & (1 << 24)) ? "read" : "write");
+ 
+ 	if (!(trap_cycle & (1 << 24))) {
+ 		/* Write Cycle */
+ 		data = RCBA32(0x1e18);
+ 		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", data);
+ 	}
+ #undef IOTRAP
+ }
+ 
+ typedef void (*smi_handler_t)(void);
+ 
+ static smi_handler_t southbridge_smi[32] = {
+ 	NULL,			  //  [0] reserved
+ 	NULL,			  //  [1] reserved
+ 	NULL,			  //  [2] BIOS_STS
+ 	NULL,			  //  [3] LEGACY_USB_STS
+ 	southbridge_smi_sleep,	  //  [4] SLP_SMI_STS
+ 	southbridge_smi_apmc,	  //  [5] APM_STS
+ 	NULL,			  //  [6] SWSMI_TMR_STS
+ 	NULL,			  //  [7] reserved
+ 	southbridge_smi_pm1,	  //  [8] PM1_STS
+ 	southbridge_smi_gpe0,	  //  [9] GPE0_STS
+ 	southbridge_smi_gpi,	  // [10] GPI_STS
+ 	southbridge_smi_mc,	  // [11] MCSMI_STS
+ 	NULL,			  // [12] DEVMON_STS
+ 	southbridge_smi_tco,	  // [13] TCO_STS
+ 	southbridge_smi_periodic, // [14] PERIODIC_STS
+ 	NULL,			  // [15] SERIRQ_SMI_STS
+ 	NULL,			  // [16] SMBUS_SMI_STS
+ 	NULL,			  // [17] LEGACY_USB2_STS
+ 	NULL,			  // [18] INTEL_USB2_STS
+ 	NULL,			  // [19] reserved
+ 	NULL,			  // [20] PCI_EXP_SMI_STS
+ 	southbridge_smi_monitor,  // [21] MONITOR_STS
+ 	NULL,			  // [22] reserved
+ 	NULL,			  // [23] reserved
+ 	NULL,			  // [24] reserved
+ 	NULL,			  // [25] EL_SMI_STS
+ 	NULL,			  // [26] SPI_STS
+ 	NULL,			  // [27] reserved
+ 	NULL,			  // [28] reserved
+ 	NULL,			  // [29] reserved
+ 	NULL,			  // [30] reserved
+ 	NULL			  // [31] reserved
+ };
+ 
+ /**
+  * @brief Interrupt handler for SMI#
+  *
+  * @param smm_revision revision of the smm state save map
+  */
+ 
+ void southbridge_smi_handler(void)
+ {
+ 	int i;
+ 	u32 smi_sts;
+ 
+ 	/* We need to clear the SMI status registers, or we won't see what's
+ 	 * happening in the following calls.
+ 	 */
+ 	smi_sts = clear_smi_status();
+ 
+ 	/* Call SMI sub handler for each of the status bits */
+ 	for (i = 0; i < 31; i++) {
+ 		if (smi_sts & (1 << i)) {
+ 			if (southbridge_smi[i]) {
+ 				southbridge_smi[i]();
+ 			} else {
+ 				printk(BIOS_DEBUG,
+ 				       "SMI_STS[%d] occured, but no "
+ 				       "handler available.\n", i);
+ 			}
+ 		}
+ 	}
+ }
+diff --git a/src/southbridge/intel/lynxpoint/usb_xhci.c b/src/southbridge/intel/lynxpoint/usb_xhci.c
+index df264e3..dbf0f40 100644
+--- a/src/southbridge/intel/lynxpoint/usb_xhci.c
++++ b/src/southbridge/intel/lynxpoint/usb_xhci.c
+@@ -1,351 +1,433 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2013 Google Inc.
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+  * published by the Free Software Foundation; version 2 of
+  * the License.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
+ #include <console/console.h>
+ #include <delay.h>
+ #include <device/device.h>
+ #include <device/pci.h>
+ #include <device/pci_ids.h>
+ #include <arch/io.h>
+ #include "pch.h"
+ 
+-#ifdef __SMM__
+-
+ static u32 usb_xhci_mem_base(device_t dev)
+ {
+ 	u32 mem_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+ 
+ 	/* Check if the controller is disabled or not present */
+ 	if (mem_base == 0 || mem_base == 0xffffffff)
+ 		return 0;
+ 
+ 	return mem_base & ~0xf;
+ }
+ 
+-#endif
+-
+-#if 0
+-
+ static int usb_xhci_port_count_usb3(device_t dev)
+ {
+ 	if (pch_is_lp()) {
+ 		/* LynxPoint-LP has 4 SS ports */
+ 		return 4;
+ 	} else {
+ 		/* LynxPoint-H can have 0, 2, 4, or 6 SS ports */
+ 		u32 mem_base = usb_xhci_mem_base(dev);
+ 		u32 fus = read32(mem_base + XHCI_USB3FUS);
+ 		fus >>= XHCI_USB3FUS_SS_SHIFT;
+ 		fus &= XHCI_USB3FUS_SS_MASK;
+ 		switch (fus) {
+ 		case 3: return 0;
+ 		case 2: return 2;
+ 		case 1: return 4;
+ 		case 0: default: return 6;
+ 		}
+ 	}
+ 	return 0;
+ }
+ 
+ static void usb_xhci_reset_status_usb3(u32 mem_base, int port)
+ {
+ 	u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
+ 	write32(portsc, read32(portsc) | XHCI_USB3_PORTSC_CHST);
+ }
+ 
+ static void usb_xhci_reset_port_usb3(u32 mem_base, int port)
+ {
+ 	u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
+ 	write32(portsc, read32(portsc) | XHCI_USB3_PORTSC_WPR);
+ }
+ 
++#ifdef __SMM__
++
+ #define XHCI_RESET_DELAY_US	1000 /* 1ms */
+ #define XHCI_RESET_TIMEOUT	100  /* 100ms */
+ 
+ /*
+  * 1) Wait until port is done polling
+  * 2) If port is disconnected
+  *  a) Issue warm port reset
+  *  b) Poll for warm reset complete
+  *  c) Write 1 to port change status bits
+  */
+ static void usb_xhci_reset_usb3(device_t dev, int all)
+ {
+ 	u32 status, port_disabled;
+ 	int timeout, port;
+ 	int port_count = usb_xhci_port_count_usb3(dev);
+ 	u32 mem_base = usb_xhci_mem_base(dev);
+ 
+ 	if (!mem_base || !port_count)
+ 		return;
+ 
+ 	/* Get mask of disabled ports */
+ 	port_disabled = pci_read_config32(dev, XHCI_USB3PDO);
+ 
+ 	/* Wait until all enabled ports are done polling */
+ 	for (timeout = XHCI_RESET_TIMEOUT; timeout; timeout--) {
+ 		int complete = 1;
+ 		for (port = 0; port < port_count; port++) {
+ 			/* Skip disabled ports */
+ 			if (port_disabled & (1 << port))
+ 				continue;
+ 			/* Read port link status field */
+ 			status = read32(mem_base + XHCI_USB3_PORTSC(port));
+ 			status &= XHCI_USB3_PORTSC_PLS;
+ 			if (status == XHCI_PLSR_POLLING)
+ 				complete = 0;
+ 		}
+ 		/* Exit if all ports not polling */
+ 		if (complete)
+ 			break;
+ 		udelay(XHCI_RESET_DELAY_US);
+ 	}
+ 
+ 	/* Reset all requested ports */
+ 	for (port = 0; port < port_count; port++) {
+ 		u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
+ 		/* Skip disabled ports */
+ 		if (port_disabled & (1 << port))
+ 			continue;
+ 		status = read32(portsc) & XHCI_USB3_PORTSC_PLS;
+ 		/* Reset all or only disconnected ports */
+ 		if (all || status == XHCI_PLSR_RXDETECT)
+ 			usb_xhci_reset_port_usb3(mem_base, port);
+ 		else
+ 			port_disabled |= 1 << port; /* No reset */
+ 	}
+ 
+ 	/* Wait for warm reset complete on all reset ports */
+ 	for (timeout = XHCI_RESET_TIMEOUT; timeout; timeout--) {
+ 		int complete = 1;
+ 		for (port = 0; port < port_count; port++) {
+ 			/* Only check ports that were reset */
+ 			if (port_disabled & (1 << port))
+ 				continue;
+ 			/* Check if warm reset is complete */
+ 			status = read32(mem_base + XHCI_USB3_PORTSC(port));
+ 			if (!(status & XHCI_USB3_PORTSC_WRC))
+ 				complete = 0;
+ 		}
+ 		/* Check for warm reset complete in any port */
+ 		if (complete)
+ 			break;
+ 		udelay(XHCI_RESET_DELAY_US);
+ 	}
+ 
+ 	/* Clear port change status bits */
+ 	for (port = 0; port < port_count; port++)
+ 		usb_xhci_reset_status_usb3(mem_base, port);
+ }
+ 
+-#endif
+-
+-#ifdef __SMM__
+-
+ /* Handler for XHCI controller on entry to S3/S4/S5 */
+ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
+ {
+ 	u16 reg16;
+ 	u32 reg32;
+ 	u32 mem_base = usb_xhci_mem_base(dev);
+ 
+ 	if (!mem_base || slp_typ < 3)
+ 		return;
+ 
+ 	if (pch_is_lp()) {
+ 		/* Set D0 state */
+ 		reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
+ 		reg16 &= ~PWR_CTL_SET_MASK;
+ 		reg16 |= PWR_CTL_SET_D0;
+ 		pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
+ 
+ 		/* Clear PCI 0xB0[14:13] */
+ 		reg32 = pci_read_config32(dev, 0xb0);
+ 		reg32 &= ~((1 << 14) | (1 << 13));
+ 		pci_write_config32(dev, 0xb0, reg32);
+ 
+ 		/* Clear MMIO 0x816c[14,2] */
+ 		reg32 = read32(mem_base + 0x816c);
+ 		reg32 &= ~((1 << 14) | (1 << 2));
+ 		write32(mem_base + 0x816c, reg32);
+ 
+ 		/* Set MMIO 0x80e0[15] */
+ 		reg32 = read32(mem_base + 0x80e0);
+ 		reg32 |= (1 << 15);
+ 		write32(mem_base + 0x80e0, reg32);
+ 	}
+ 
+ 	/* Set D3Hot state and enable PME */
+ 	pci_or_config16(dev, XHCI_PWR_CTL_STS, PWR_CTL_SET_D3);
+ 	pci_or_config16(dev, XHCI_PWR_CTL_STS, PWR_CTL_ENABLE_PME);
+ }
+ 
++/* Route all ports to XHCI controller */
++void usb_xhci_route_all(void)
++{
++	u32 port_mask, route;
++	u16 reg16;
++
++	/* Skip if EHCI is already disabled */
++	if (RCBA32(FD) & PCH_DISABLE_EHCI1)
++		return;
++
++	/* Set D0 state */
++	reg16 = pci_read_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS);
++	reg16 &= ~PWR_CTL_SET_MASK;
++	reg16 |= PWR_CTL_SET_D0;
++	pci_write_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS, reg16);
++
++	/* Set USB3 superspeed enable */
++	port_mask = pci_read_config32(PCH_XHCI_DEV, XHCI_USB3PRM);
++	route = pci_read_config32(PCH_XHCI_DEV, XHCI_USB3PR);
++	route &= ~XHCI_USB3PR_SSEN;
++	route |= XHCI_USB3PR_SSEN & port_mask;
++	pci_write_config32(PCH_XHCI_DEV, XHCI_USB3PR, route);
++
++	/* Route USB2 ports to XHCI controller */
++	port_mask = pci_read_config32(PCH_XHCI_DEV, XHCI_USB2PRM);
++	route = pci_read_config32(PCH_XHCI_DEV, XHCI_USB2PR);
++	route &= ~XHCI_USB2PR_HCSEL;
++	route |= XHCI_USB2PR_HCSEL & port_mask;
++	pci_write_config32(PCH_XHCI_DEV, XHCI_USB2PR, route);
++
++	/* Disable EHCI controller */
++	usb_ehci_disable(PCH_EHCI1_DEV);
++
++	/* LynxPoint-H has a second EHCI controller */
++	if (!pch_is_lp())
++		usb_ehci_disable(PCH_EHCI2_DEV);
++
++	/* Reset and clear port change status */
++	usb_xhci_reset_usb3(PCH_XHCI_DEV, 1);
++}
++
+ #else /* !__SMM__ */
+ 
+ static void usb_xhci_clock_gating(device_t dev)
+ {
+ 	u32 reg32;
+ 
+ 	/* IOBP 0xE5004001[7:6] = 11b */
+ 	pch_iobp_update(0xe5004001, ~0, (1 << 7)|(1 << 6));
+ 
+ 	reg32 = pci_read_config32(dev, 0x40);
+ 	reg32 &= ~(1 << 23); /* unsupported request */
+ 
+ 	if (pch_is_lp()) {
+ 		/* D20:F0:40h[18,17,8] = 111b */
+ 		reg32 |= (1 << 18) | (1 << 17) | (1 << 8);
+ 		/* D20:F0:40h[21,20,19] = 110b to enable XHCI Idle L1 */
+ 		reg32 &= ~(1 << 19);
+ 		reg32 |= (1 << 21) | (1 << 20);
+ 	} else {
+ 		/* D20:F0:40h[21,20,18,17,8] = 11111b */
+ 		reg32 |= (1 << 21)|(1 << 20)|(1 << 18)|(1 << 17)|(1 << 8);
+ 	}
+ 
+ 	/* Avoid writing upper byte as it is write-once */
+ 	pci_write_config16(dev, 0x40, (u16)(reg32 & 0xffff));
+ 	pci_write_config8(dev, 0x40 + 2, (u8)((reg32 >> 16) & 0xff));
+ 
+ 	/* D20:F0:44h[9,7,3] = 111b */
+ 	reg32 = pci_read_config32(dev, 0x44);
+ 	reg32 |= (1 << 9) | (1 << 7) | (1 << 3);
+ 	pci_write_config32(dev, 0x44, reg32);
+ 
+ 	reg32 = pci_read_config32(dev, 0xa0);
+ 	if (pch_is_lp()) {
+ 		/* D20:F0:A0h[18] = 1 */
+ 		reg32 |= (1 << 18);
+ 	} else {
+ 		/* D20:F0:A0h[6] = 1 */
+ 		reg32 |= (1 << 6);
+ 	}
+ 	pci_write_config32(dev, 0xa0, reg32);
+ 
+ 	/* D20:F0:A4h[13] = 0 */
+ 	reg32 = pci_read_config32(dev, 0xa4);
+ 	reg32 &= ~(1 << 13);
+ 	pci_write_config32(dev, 0xa4, reg32);
+ }
+ 
++/* Re-enable ports that are disabled */
++static void usb_xhci_enable_ports_usb3(device_t dev)
++{
++#if CONFIG_FINALIZE_USB_ROUTE_XHCI
++	int port;
++	u32 portsc, status, disabled;
++	u32 mem_base = usb_xhci_mem_base(dev);
++	int port_count = usb_xhci_port_count_usb3(dev);
++
++	if (!mem_base || !port_count)
++		return;
++
++	/* Get port disable override map */
++	disabled = pci_read_config32(dev, XHCI_USB3PDO);
++
++	for (port = 0; port < port_count; port++) {
++		/* Skip overridden ports */
++		if (disabled & (1 << port))
++			continue;
++		portsc = mem_base + XHCI_USB3_PORTSC(port);
++		status = read32(portsc) & XHCI_USB3_PORTSC_PLS;
++
++		switch (status) {
++		case XHCI_PLSR_RXDETECT:
++			/* Clear change status */
++			printk(BIOS_DEBUG, "usb_xhci reset port %d\n", port);
++			usb_xhci_reset_status_usb3(mem_base, port);
++			break;
++		case XHCI_PLSR_DISABLED:
++		default:
++			/* Transition to enabled */
++			printk(BIOS_DEBUG, "usb_xhci enable port %d\n", port);
++			usb_xhci_reset_port_usb3(mem_base, port);
++			status = read32(portsc);
++			status &= ~XHCI_USB3_PORTSC_PLS;
++			status |= XHCI_PLSW_ENABLE | XHCI_USB3_PORTSC_LWS;
++			write32(portsc, status);
++			break;
++		}
++	}
++#endif
++}
++
+ static void usb_xhci_init(device_t dev)
+ {
+ 	struct resource *bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
+ 	u32 reg32;
+ 
+ 	if (!bar0 || bar0->base == 0 || bar0->base == 0xffffffff)
+ 		return;
+ 
+ 	/* Enable clock gating first */
+ 	usb_xhci_clock_gating(dev);
+ 
+ 	/* D20:F0:74h[1:0] = 11b (set D3Hot state) */
+ 	reg32 = pci_read_config16(dev, 0x74);
+ 	reg32 |= (1 << 1) | (1 << 0);
+ 	pci_write_config16(dev, 0x74, reg32);
+ 
+ 	reg32 = read32(bar0->base + 0x8144);
+ 	if (pch_is_lp()) {
+ 		/* XHCIBAR + 8144h[8,7,6] = 111b */
+ 		reg32 |= (1 << 8) | (1 << 7) | (1 << 6);
+ 	} else {
+ 		/* XHCIBAR + 8144h[8,7,6] = 100b */
+ 		reg32 &= ~((1 << 7) | (1 << 6));
+ 		reg32 |= (1 << 8);
+ 	}
+ 	write32(bar0->base + 0x8144, reg32);
+ 
+ 	if (pch_is_lp()) {
+ 		/* XHCIBAR + 816Ch[19:0] = 000f0038h */
+ 		reg32 = read32(bar0->base + 0x816c);
+ 		reg32 &= ~0x000fffff;
+ 		reg32 |= 0x000f0038;
+ 		write32(bar0->base + 0x816c, reg32);
+ 
+ 		/* D20:F0:B0h[17,14,13] = 100b */
+ 		reg32 = pci_read_config32(dev, 0xb0);
+ 		reg32 &= ~((1 << 14) | (1 << 13));
+ 		reg32 |= (1 << 17);
+ 		pci_write_config32(dev, 0xb0, reg32);
+ 
+ 		/* XHCIBAR + 818Ch[7:0] = FFh */
+ 		reg32 = read32(bar0->base + 0x818c);
+ 		reg32 |= 0xff;
+ 		write32(bar0->base + 0x818c, reg32);
+ 	}
+ 
+ 	reg32 = pci_read_config32(dev, 0x50);
+ 	if (pch_is_lp()) {
+ 		/* D20:F0:50h[28:0] = 0FCE2E5Fh */
+ 		reg32 &= ~0x1fffffff;
+ 		reg32 |= 0x0fce2e5f;
+ 	} else {
+ 		/* D20:F0:50h[26:0] = 07886E9Fh */
+ 		reg32 &= ~0x07ffffff;
+ 		reg32 |= 0x07886e9f;
+ 	}
+ 	pci_write_config32(dev, 0x50, reg32);
+ 
+ 	/* D20:F0:44h[31] = 1 (Access Control Bit) */
+ 	reg32 = pci_read_config32(dev, 0x40);
+ 	reg32 |= (1 << 31);
+ 	pci_write_config32(dev, 0x40, reg32);
+ 
+ 	/* D20:F0:40h[31,23] = 10b (OC Configuration Done) */
+ 	reg32 = pci_read_config32(dev, 0x40);
+ 	reg32 &= ~(1 << 23); /* unsupported request */
+ 	reg32 |= (1 << 31);
+ 	pci_write_config32(dev, 0x40, reg32);
++
++#if CONFIG_HAVE_ACPI_RESUME
++	/* Enable ports that are disabled before returning to OS */
++	if (acpi_slp_type == 3)
++		usb_xhci_enable_ports_usb3(dev);
++#endif
+ }
+ 
+ static void usb_xhci_set_subsystem(device_t dev, unsigned vendor,
+ 				   unsigned device)
+ {
+ 	if (!vendor || !device) {
+ 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+ 				pci_read_config32(dev, PCI_VENDOR_ID));
+ 	} else {
+ 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+ 				((device & 0xffff) << 16) | (vendor & 0xffff));
+ 	}
+ }
+ 
+ static struct pci_operations lops_pci = {
+ 	.set_subsystem = &usb_xhci_set_subsystem,
+ };
+ 
+ static struct device_operations usb_xhci_ops = {
+ 	.read_resources		= pci_dev_read_resources,
+ 	.set_resources		= pci_dev_set_resources,
+ 	.enable_resources	= pci_dev_enable_resources,
+ 	.init			= usb_xhci_init,
+ 	.ops_pci		= &lops_pci,
+ };
+ 
+ static const unsigned short pci_device_ids[] = { 0x8c31, /* LynxPoint-H */
+ 						 0x9c31, /* LynxPoint-LP */
+ 						 0 };
+ 
+ static const struct pci_driver pch_usb_xhci __pci_driver = {
+ 	.ops	 = &usb_xhci_ops,
+ 	.vendor	 = PCI_VENDOR_ID_INTEL,
+ 	.devices = pci_device_ids,
+ };
+ #endif /* !__SMM__ */

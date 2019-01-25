@@ -1,0 +1,42 @@
+commit buildChangeCommit
+diff --git a/Makefile b/Makefile
+index 15209be..d35f1a4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,430 +1,429 @@
+# Artificial makefile change
+
+-GOAL+= $(SOME_MAKE_CONFIG_OPTION)
+
++# Comment to be ignored in counting var changes
+-ifeq ($(CONFIG_PAYLOAD_ELF),y) # This should be counted as variability change
+-GOAL+=filo # previous $(CONFIG_A) [should not be counted as variability change]
++
++endif
+
+-### Some comment
++#Some Comment
+
+-#some comment with \
+-    continuation
+
++ANOTHER_GOAL+=$(first) \
++   $(CONFIG_B) \
++   $(second)
+
+-ANOTHER_OTHER_GOAL+=$(call extract_nth,1,$(CONFIG_C))
+
++ifneq (($(some_symbol),y), \
++        ($(CONFIG_C, y)))
+ifdef CONFIG_D
+# TODO
+endif
++endif
+
+-# Do not use this strange \
+-  $(CONFIG_STRANGE) \
+-  but use internal flag
+
+dtb-$(CONFIG_MACH_KIRKWOOD) += \
+    kirkwood-b3.dtb \
++    kirkwood-blackarmor-nas220.dtb

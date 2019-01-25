@@ -1,0 +1,141 @@
+commit sourceChangeCommit
+diff --git a/SourceA.c b/SourceA.c
+index 15209be..d35f1a4 100644
+--- a/SourceA.c
++++ b/SourceA.c
+@@ -1,430 +1,429 @@
+ // Here come the full content of the file and
+ /* the changes introduced by the commit */
+ /*
+  * These lines introduce comments that should
+  * be ignored.
+  */
+
+-
+
++ 
+
+-if (CONFIG_OUTER) {
+	doSome();
+	if (CONFIG_INNER) {
+		doSomeMore();
+	}
+-}
+  
+-if (CONFIG_OUTER) {
+-	doSome();
++	if (CONFIG_INNER) {
++		doSomeMore();
++	}
+-}
+
+-if (CONFIG_OUTER) {
+-	doSome();
+-	if (CONFIG_INNER) {
+-		doSomeMore();
+-	}
+-}
+
+if (CONFIG_SYMBOL) {
+	doSome();
+-}
+	doSomeMore();
++}
+  
++#if CONFIG_OUTER
+#if CONFIG_INNER
+#else
+#endif
++#endif
+
+-#if OUTER 
+-#if CONFIG_INNER
+-#else
+-#endif
+-#endif
+
+ #if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+    /* PCI Init, will run VBIOS */
+    pci_dev_init(dev);
+ #else
+    printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
+-#endif
+    fake_vbios();
++#endif
+
+-#define SOME_CODE_CONFIG_OPTION  
+
+#ifdef CONFIG_A
++// Neither this comment, nor the surrounding #ifdef CONFIG_A should be identified as variability change
+#endif
+
++#ifdef CONFIG_B
+-/* This comment should not be identified, but the surrounding #ifdef CONFIG_B */
++#endif
+
+-#if ! defined(CONFIG_C)
+-/* This comment should not be identified, but the surrounding #if ! defined(CONFIG_C) */
+-#else
+-/* This comment should not be identified,
+- * but the surrounding #else
+- */
+-#endif
+
++#if IS_MODULE(CONFIG_D)
++// This comment should not be identified, but the surrounding #if IS_MODULE(CONFIG_D)
++#elif defined(SOURCE_SYMBOL_A)
++// Neither this comment, nor the surrounding #elif defined(SOURCE_SYMBOL_A) should be identified as variability change
++#else
++// This comment should not be identified, but the surrounding #else
++#endif
+
+-#if IS_REACHABLE(CONFIG_E)
+-#ifdef CONFIG_F
+-#else
+-#endif
+-#endif
+
++#if SOURCE_SYMBOL_B \
++       || defined(CONFIG_G)
++#endif
+
+-/*
+- * #ifdef CONFIG_Z
+- *
+- * #endif
+- */
+
++# define MD5_SMALL CONFIG_MD5_SMALL
+
+-/* Multi-line comment infront of Config-symbol */ printf("Num of CPU: %i\n", CONFIG_CPU_NUM);
+-/* Multi-line comment including CONFIG_CPU_NUM symbol */ printf("Num of CPU: %i\n", 5);
++printf("Num of CPU: %i\n", CONFIG_CPU_NUM); /* Multi-line comment after of Config-symbol */
+
++   if ((busn != CONFIG_CBB) && (MAX_NODE_NUMS == 64)) {
++       return (dev->path.pci.devfn >> 3) - CONFIG_CDB + 32;
++   } else {
++       return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
++   }
+
++if (IS_ENABLED(X)
++       && CONFIG_A == 5) {
++   i++;
++}
+
+if (true) {
+    // Something here
+    if (false) {
+        // Something here
+    }
++} else if (CONFIG_B == 10) {
++    // Something here
++}
+
+if (CONFIG_C) {
+    if (CONFIG_D) {
++    }
++   if (CONFIG_E) {
+    } else {
+    }
++} else {
+}

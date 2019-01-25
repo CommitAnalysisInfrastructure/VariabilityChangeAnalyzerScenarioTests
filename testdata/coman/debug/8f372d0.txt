@@ -1,0 +1,1079 @@
+commit 8f372d0
+diff --git a/src/mainboard/technexion/tim5690/acpi/usb.asl b/src/mainboard/technexion/tim5690/acpi/usb.asl
+index 5381e76..dbffa39 100644
+--- a/src/mainboard/technexion/tim5690/acpi/usb.asl
++++ b/src/mainboard/technexion/tim5690/acpi/usb.asl
+@@ -1,158 +1,158 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; version 2 of the License.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  */
+ 
+ /* simple name description */
+ /*
+ DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
+ 		)
+ 	{
+ 		#include "usb.asl"
+ 	}
+ */
+ Method(UCOC, 0) {
+ 	Sleep(20)
+-    	Store(0x13,CMTI)
++	Store(0x13,CMTI)
+ 	Store(0,GPSL)
+ }
+ 
+ /* USB Port 0 overcurrent uses Gpm 0 */
+ If(LLessEqual(UOM0,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L13) {
+ 			UCOC()
+ 			if(LEqual(GPB0,PLC0)) {
+ 				Not(PLC0,PLC0)
+ 				Store(PLC0, \_SB.PT0D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 1 overcurrent uses Gpm 1 */
+ If (LLessEqual(UOM1,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L14) {
+ 			UCOC()
+ 			if (LEqual(GPB1,PLC1)) {
+ 				Not(PLC1,PLC1)
+ 				Store(PLC1, \_SB.PT1D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 2 overcurrent uses Gpm 2 */
+ If (LLessEqual(UOM2,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L15) {
+ 			UCOC()
+ 			if (LEqual(GPB2,PLC2)) {
+ 				Not(PLC2,PLC2)
+ 				Store(PLC2, \_SB.PT2D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 3 overcurrent uses Gpm 3 */
+ If (LLessEqual(UOM3,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L16) {
+ 			UCOC()
+ 			if (LEqual(GPB3,PLC3)) {
+ 				Not(PLC3,PLC3)
+ 				Store(PLC3, \_SB.PT3D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 4 overcurrent uses Gpm 4 */
+ If (LLessEqual(UOM4,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L19) {
+ 			UCOC()
+ 			if (LEqual(GPB4,PLC4)) {
+ 				Not(PLC4,PLC4)
+ 				Store(PLC4, \_SB.PT4D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 5 overcurrent uses Gpm 5 */
+ /* If (LLessEqual(UOM5,9)) {
+ *	Scope (\_GPE) {
+ *		Method (_L1A) {
+ *			UCOC()
+ *			if (LEqual(GPB5,PLC5)) {
+ *				Not(PLC5,PLC5)
+ *				Store(PLC5, \_SB.PT5D)
+ *			}
+ *		}
+ *	}
+ * }
+ */
+ 
+ /* USB Port 6 overcurrent uses Gpm 6 */
+ If (LLessEqual(UOM6,9)) {
+ 	Scope (\_GPE) {
+ 		/* Method (_L1C) { */
+ 		Method (_L06) {
+ 			UCOC()
+ 			if (LEqual(GPB6,PLC6)) {
+ 				Not(PLC6,PLC6)
+ 				Store(PLC6, \_SB.PT6D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 7 overcurrent uses Gpm 7 */
+ If (LLessEqual(UOM7,9)) {
+- 	Scope (\_GPE) {
++	Scope (\_GPE) {
+ 		/* Method (_L1D) { */
+ 		Method (_L07) {
+ 			UCOC()
+ 			if (LEqual(GPB7,PLC7)) {
+ 				Not(PLC7,PLC7)
+ 				Store(PLC7, \_SB.PT7D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 8 overcurrent uses Gpm 8 */
+ If (LLessEqual(UOM8,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L17) {
+ 			if (LEqual(G8IS,PLC8)) {
+ 				Not(PLC8,PLC8)
+ 				Store(PLC8, \_SB.PT8D)
+ 			}
+ 		}
+ 	}
+ }
+ 
+ /* USB Port 9 overcurrent uses Gpm 9 */
+ If (LLessEqual(UOM9,9)) {
+ 	Scope (\_GPE) {
+ 		Method (_L0E) {
+ 			if (LEqual(G9IS,0)) {
+ 			Store(1,\_SB.PT9D)
+ 			}
+ 		}
+ 	}
+ }
+diff --git a/src/mainboard/technexion/tim5690/mainboard.c b/src/mainboard/technexion/tim5690/mainboard.c
+index f84b7a0..8bc1075 100644
+--- a/src/mainboard/technexion/tim5690/mainboard.c
++++ b/src/mainboard/technexion/tim5690/mainboard.c
+@@ -1,257 +1,257 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; version 2 of the License.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  */
+ 
+ #include <console/console.h>
+ #include <device/device.h>
+ #include <device/pci.h>
+ #include <arch/io.h>
+ #include <cpu/x86/msr.h>
+ #include <cpu/amd/mtrr.h>
+ #include <device/pci_def.h>
+ #include <southbridge/amd/sb600/sb600.h>
+ #include <superio/ite/it8712f/it8712f.h>
+ #include "tn_post_code.h"
+ #include "vgabios.h"
+ 
+ #define ADT7461_ADDRESS 0x4C
+ #define ARA_ADDRESS     0x0C /* Alert Response Address */
+ #define SMBUS_IO_BASE 0x1000
+ 
+ 
+ /* Video BIOS Function Extensions Specification
+  */
+ //Callback Sub-Function 00h - Get LCD Panel ID
+ #define LCD_PANEL_ID_NO 0x00	/* No LCD */
+ #define LCD_PANEL_ID_01 0x01	/* 1024x768, 24 bits, 1 channel */
+ #define LCD_PANEL_ID_02 0x02	/* 1280x1024, 24 bits, 2 channels */
+ #define LCD_PANEL_ID_03 0x03	/* 1440x900, 24 bits, 2 channels */
+ #define LCD_PANEL_ID_04 0x04	/* 1680x1050, 24 bits, 2 channels */
+ #define LCD_PANEL_ID_05 0x05	/* 1920x1200, 24 bits, 2 channels */
+ #define LCD_PANEL_ID_06 0x06	/* 1920x1080, 24 bits, 2 channels */
+ //Callback Sub-Function 05h - Select Boot-up TV Standard
+ #define TV_MODE_00	0x00	/* NTSC */
+ #define TV_MODE_01	0x01	/* PAL */
+ #define TV_MODE_02	0x02	/* PALM */
+ #define TV_MODE_03	0x03	/* PAL60 */
+ #define TV_MODE_04	0x04	/* NTSCJ */
+ #define TV_MODE_05	0x05	/* PALCN */
+ #define TV_MODE_06	0x06	/* PALN */
+ #define TV_MODE_09	0x09	/* SCART-RGB */
+ #define TV_MODE_NO	0xff	/* No TV Support */
+ 
+ /* The base address is 0x2e or 0x4e, depending on config bytes. */
+ #define SIO_BASE                     0x2e
+ #define SIO_INDEX                    SIO_BASE
+ #define SIO_DATA                     SIO_BASE+1
+ 
+ /* Global configuration registers. */
+ #define IT8712F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
+ #define IT8712F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+ #define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
+ #define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
+ #define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
+ #define IT8712F_CONFIG_REG_MFC       0x2a /* Multi-function control */
+ #define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
+ 
+ #define IT8712F_CONFIGURATION_PORT   0x2e /* Write-only. */
+ #define IT8712F_SIMPLE_IO_BASE       0x200 /* Simple I/O base address */
+ 
+ int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
+ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
+ #define ADT7461_read_byte(address) \
+ 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
+ #define ARA_read_byte(address) \
+ 	do_smbus_read_byte(SMBUS_IO_BASE, ARA_ADDRESS, address)
+ #define ADT7461_write_byte(address, val) \
+ 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
+ 
+ 
+ /* The content of IT8712F_CONFIG_REG_LDN (index 0x07) must be set to the
+    LDN the register belongs to, before you can access the register. */
+ static void it8712f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
+ {
+-        outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
+-        outb(ldn, SIO_DATA);
+-        outb(index, SIO_BASE);
+-        outb(value, SIO_DATA);
++	outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
++	outb(ldn, SIO_DATA);
++	outb(index, SIO_BASE);
++	outb(value, SIO_DATA);
+ }
+ 
+ static void it8712f_enter_conf(void)
+ {
+-        /*  Enter the configuration state (MB PnP mode). */
+-
+-        /* Perform MB PnP setup to put the SIO chip at 0x2e. */
+-        /* Base address 0x2e: 0x87 0x01 0x55 0x55. */
+-        /* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
+-        outb(0x87, IT8712F_CONFIGURATION_PORT);
+-        outb(0x01, IT8712F_CONFIGURATION_PORT);
+-        outb(0x55, IT8712F_CONFIGURATION_PORT);
+-        outb(0x55, IT8712F_CONFIGURATION_PORT);
++	/*  Enter the configuration state (MB PnP mode). */
++
++	/* Perform MB PnP setup to put the SIO chip at 0x2e. */
++	/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
++	/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
++	outb(0x87, IT8712F_CONFIGURATION_PORT);
++	outb(0x01, IT8712F_CONFIGURATION_PORT);
++	outb(0x55, IT8712F_CONFIGURATION_PORT);
++	outb(0x55, IT8712F_CONFIGURATION_PORT);
+ }
+ 
+ static void it8712f_exit_conf(void)
+ {
+-        /* Exit the configuration state (MB PnP mode). */
+-        it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
++	/* Exit the configuration state (MB PnP mode). */
++	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
+ }
+ 
+ /* set thermal config
+  */
+ static void set_thermal_config(void)
+ {
+ 	u8 byte;
+ 	u16 word;
+ 	device_t sm_dev;
+ 
+ 	/* set ADT 7461 */
+ 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
+ 	ADT7461_write_byte(0x0C, 0x00);	/* Local Temperature Low limit */
+ 	ADT7461_write_byte(0x0D, 0x50);	/* External Temperature Hight limit  High Byte */
+ 	ADT7461_write_byte(0x0E, 0x00);	/* External Temperature Low limit High Byte */
+ 
+ 	ADT7461_write_byte(0x19, 0x55);	/* External THERM limit */
+ 	ADT7461_write_byte(0x20, 0x55);	/* Local THERM limit */
+ 
+ 	byte = ADT7461_read_byte(0x02);	/* read status register to clear it */
+ 	ARA_read_byte(0x05); /* A hardware alert can only be cleared by the master sending an ARA as a read command */
+ 	printk(BIOS_INFO, "Init adt7461 end , status 0x02 %02x\n", byte);
+ 
+ 	/* sb600 settings for thermal config */
+ 	/* set SB600 GPIO 64 to GPIO with pull-up */
+ 	byte = pm2_ioread(0x42);
+ 	byte &= 0x3f;
+ 	pm2_iowrite(0x42, byte);
+ 
+ 	/* set GPIO 64 to input */
+ 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+ 	word = pci_read_config16(sm_dev, 0x56);
+ 	word |= 1 << 7;
+ 	pci_write_config16(sm_dev, 0x56, word);
+ 
+ 	/* set GPIO 64 internal pull-up */
+ 	byte = pm2_ioread(0xf0);
+ 	byte &= 0xee;
+ 	pm2_iowrite(0xf0, byte);
+ 
+ 	/* set Talert to be active low */
+ 	byte = pm_ioread(0x67);
+ 	byte &= ~(1 << 5);
+ 	pm_iowrite(0x67, byte);
+ 
+ 	/* set Talert to generate ACPI event */
+ 	byte = pm_ioread(0x3c);
+ 	byte &= 0xf3;
+ 	pm_iowrite(0x3c, byte);
+ 
+ 	/* THERMTRIP pin */
+ 	/* byte = pm_ioread(0x68);
+ 	 * byte |= 1 << 3;
+ 	 * pm_iowrite(0x68, byte);
+ 	 *
+ 	 * byte = pm_ioread(0x55);
+ 	 * byte |= 1 << 0;
+ 	 * pm_iowrite(0x55, byte);
+ 	 *
+ 	 * byte = pm_ioread(0x67);
+ 	 * byte &= ~( 1 << 6);
+ 	 * pm_iowrite(0x67, byte);
+ 	 */
+ }
+ 
+ /* Mainboard specific GPIO setup. */
+ static void mb_gpio_init(u16 *iobase)
+ {
+-        /* Init Super I/O GPIOs. */
+-        it8712f_enter_conf();
+-        outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
+-        outb(IT8712F_GPIO, SIO_DATA);
+-        outb(0x62, SIO_INDEX);
+-        outb((*iobase >> 8), SIO_DATA);
+-        outb(0x63, SIO_INDEX);
+-        outb((*iobase & 0xff), SIO_DATA);
+-        it8712f_exit_conf();
++	/* Init Super I/O GPIOs. */
++	it8712f_enter_conf();
++	outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
++	outb(IT8712F_GPIO, SIO_DATA);
++	outb(0x62, SIO_INDEX);
++	outb((*iobase >> 8), SIO_DATA);
++	outb(0x63, SIO_INDEX);
++	outb((*iobase & 0xff), SIO_DATA);
++	it8712f_exit_conf();
+ }
+ 
+ #if CONFIG_VGA_ROM_RUN
+ /* The LCD's panel id seletion. */
+ static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
+ {
+ 	switch (num_id) {
+ 	case 0x1:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_01;
+ 		break;
+ 	case 0x2:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_02;
+ 		break;
+ 	case 0x3:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_03;
+ 		break;
+ 	case 0x4:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_04;
+ 		break;
+ 	case 0x5:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_05;
+ 		break;
+ 	case 0x6:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_06;
+ 		break;
+ 	default:
+ 		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_NO;
+ 		break;
+ 	}
+ }
+ #endif
+ 
+ /*************************************************
+ * enable the dedicated function in tim5690 board.
+ * This function called early than rs690_enable.
+ *************************************************/
+ static void mainboard_enable(device_t dev)
+ {
+ 	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
+ #if CONFIG_VGA_ROM_RUN
+ 	rs690_vbios_regs vbios_regs;
+ 	u8 port2;
+ #endif
+ 
+ 	printk(BIOS_INFO, "Mainboard tim5690 Enable. dev=0x%p\n", dev);
+ 
+ 	mb_gpio_init(&gpio_base);
+ 
+ #if CONFIG_VGA_ROM_RUN
+ 	/* The LCD's panel id seletion by switch. */
+ 	port2 = inb(gpio_base+1);
+ 	lcd_panel_id(&vbios_regs, ((~port2) & 0xf));
+ 
+ 	/* No support TV */
+ 	vbios_regs.int15_regs.fun05_tv_standard = TV_MODE_NO;
+ 	vgabios_init(&vbios_regs);
+ #endif
+ 
+ 	set_thermal_config();
+ }
+ 
+ void mainboard_post(u8 value)
+ {
+ 	switch (value) {
+ 	case POST_ENTER_ELF_BOOT:
+ 		technexion_post_code(LED_MESSAGE_FINISH);
+ 		break;
+ 	}
+ }
+ 
+ struct chip_operations mainboard_ops = {
+ 	.enable_dev = mainboard_enable,
+ };
+diff --git a/src/mainboard/technexion/tim5690/speaker.c b/src/mainboard/technexion/tim5690/speaker.c
+index 50f510d..7c0ea64 100644
+--- a/src/mainboard/technexion/tim5690/speaker.c
++++ b/src/mainboard/technexion/tim5690/speaker.c
+@@ -1,87 +1,87 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2009 Libra Li <libra.li@technexion.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; either version 2 of the License, or
+  * (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  */
+ 
+ 
+ #ifdef __PRE_RAM__
+ 
+ #include <arch/cpu.h>
+ #include "southbridge/amd/sb600/sb600.h"
+ 
+ #else
+ 
+ #include <arch/io.h>
+ #include <device/pci.h>
+ #include <device/pci_ids.h>
+ #include "southbridge/amd/sb600/sb600.h"
+ #include <delay.h>
+ 
+ #endif /* __PRE_RAM__ */
+ 
+ #include "speaker.h"
+ 
+ void speaker_init(uint8_t time) {
+-   /* SB600 RRG.
+-    * Options_0 - RW - 8 bits - [PM_Reg: 60h].
+-    * SpkrEn, bit[5]=1b, Setting this bit will configure GPIO2 to be speaker output.
+-    */
++	/* SB600 RRG.
++	 * Options_0 - RW - 8 bits - [PM_Reg: 60h].
++	 * SpkrEn, bit[5]=1b, Setting this bit will configure GPIO2 to be speaker output.
++	 */
+ #ifdef __PRE_RAM__
+-   pmio_write(0x60, (pmio_read(0x60) | (1<<5)));
++	pmio_write(0x60, (pmio_read(0x60) | (1<<5)));
+ #else
+-   pm_iowrite(0x60, (pm_ioread(0x60) | (1<<5)));
++	pm_iowrite(0x60, (pm_ioread(0x60) | (1<<5)));
+ #endif /* __PRE_RAM__ */
+ 
+-   /* SB600 RRG.
+-    * Tmr1CntrlWord - RW - 8 bits - [IO_Reg: 43h].
+-    * ModeSelect, bit[3:1]=011b, Square wave output.
+-    * CmmandSelect, bit[5:4]=11b, Read/write least, and then most significant byte.
+-    * CounterSelect, bit[7:6]=10b, Select counter 2.
+-    */
+-   outb(0xb6, 0x43);
++	/* SB600 RRG.
++	 * Tmr1CntrlWord - RW - 8 bits - [IO_Reg: 43h].
++	 * ModeSelect, bit[3:1]=011b, Square wave output.
++	 * CmmandSelect, bit[5:4]=11b, Read/write least, and then most significant byte.
++	 * CounterSelect, bit[7:6]=10b, Select counter 2.
++	 */
++	outb(0xb6, 0x43);
+ 
+ 
+-   /* SB600 RRG.
+-    * TimerCh2- RW - 8 bits - [IO_Reg: 42h].
+-    */
+-   outb(time, 0x42);
++	/* SB600 RRG.
++	 * TimerCh2- RW - 8 bits - [IO_Reg: 42h].
++	 */
++	outb(time, 0x42);
+ }
+ 
+ void speaker_on_nodelay(void) {
+-   /* SB600 RRG.
+-    * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
+-    * SpkrEnable, bit[0]=1b, Enable counter 2
+-    * SpkrTmrEnable, bit[1]=1b, Speaker timer on
+-    */
+-   outb(inb(0x61) | 0x03, 0x61);
++	/* SB600 RRG.
++	 * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
++	 * SpkrEnable, bit[0]=1b, Enable counter 2
++	 * SpkrTmrEnable, bit[1]=1b, Speaker timer on
++	 */
++	outb(inb(0x61) | 0x03, 0x61);
+ }
+ 
+ void speaker_on_delay(void) {
+-   speaker_on_nodelay();
+-   mdelay(100);
++	speaker_on_nodelay();
++	mdelay(100);
+ }
+ 
+ void speaker_off_nodelay(void) {
+-   /* SB600 RRG.
+-    * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
+-    * SpkrEnable, bit[0]=0b, Disable counter 2
+-    * SpkrTmrEnable, bit[1]=0b, Speaker timer off
+-    */
+-   outb(inb(0x61) & ~0x03, 0x61);
++	/* SB600 RRG.
++	 * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
++	 * SpkrEnable, bit[0]=0b, Disable counter 2
++	 * SpkrTmrEnable, bit[1]=0b, Speaker timer off
++	 */
++	outb(inb(0x61) & ~0x03, 0x61);
+ }
+ 
+ void speaker_off_delay(void) {
+-   speaker_off_nodelay();
+-   mdelay(100);
++	speaker_off_nodelay();
++	mdelay(100);
+ }
+diff --git a/src/mainboard/technexion/tim5690/tn_post_code.c b/src/mainboard/technexion/tim5690/tn_post_code.c
+index 213034a..fba0d75 100644
+--- a/src/mainboard/technexion/tim5690/tn_post_code.c
++++ b/src/mainboard/technexion/tim5690/tn_post_code.c
+@@ -1,223 +1,223 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2009 Libra Li <libra.li@technexion.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; either version 2 of the License, or
+  * (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  */
+ 
+ 
+ #ifdef __PRE_RAM__
+ 
+ #include <arch/cpu.h>
+ #include "southbridge/amd/sb600/sb600.h"
+ 
+ #else
+ 
+ #include <device/pci.h>
+ #include <device/pci_ids.h>
+ 
+ #endif
+ 
+ #include "tn_post_code.h"
+ 
+ 
+ #ifdef __PRE_RAM__
+ 
+ // TechNexion's Post Code Initially.
+ void technexion_post_code_init(void)
+ {
+-   uint8_t reg8_data;
+-   device_t dev = 0;
+-
+-   // SMBus Module and ACPI Block (Device 20, Function 0)
+-   dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
+-
+-   // LED[bit0]:GPIO0
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pmio_read(0x60);
+-   reg8_data |= (1 << 7);  // 1: GPIO if not used by SATA
+-   pmio_write(0x60, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0x80);
+-   reg8_data = ((reg8_data | (1 << 0)) & ~(1 << 4));
+-   pci_write_config8(dev, 0x80, reg8_data);
+-
+-   // LED[bit1]:GPIO1
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pci_read_config8(dev, 0x80);
+-   reg8_data = ((reg8_data | (1 << 1)) & ~(1 << 5));
+-   pci_write_config8(dev, 0x80, reg8_data);
+-
+-   // LED[bit2]:GPIO4
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pmio_read(0x5e);
+-   reg8_data &= ~(1 << 7); // 0: GPIO if not used by SATA
+-   pmio_write(0x5e, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0xa8);
+-   reg8_data |= (1 << 0);
+-   pci_write_config8(dev, 0xa8, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0xa9);
+-   reg8_data &= ~(1 << 0);
+-   pci_write_config8(dev, 0xa9, reg8_data);
+-
+-   // LED[bit3]:GPIO6
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pmio_read(0x60);
+-   reg8_data |= (1 << 7); // 1: GPIO if not used by SATA
+-   pmio_write(0x60, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0xa8);
+-   reg8_data |= (1 << 2);
+-   pci_write_config8(dev, 0xa8, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0xa9);
+-   reg8_data &= ~(1 << 2);
+-   pci_write_config8(dev, 0xa9, reg8_data);
+-   // LED[bit4]:GPIO7
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pci_read_config8(dev, 0xa8);
+-   reg8_data |= (1 << 3);
+-   pci_write_config8(dev, 0xa8, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0xa9);
+-   reg8_data &= ~(1 << 3);
+-   pci_write_config8(dev, 0xa9, reg8_data);
+-
+-   // LED[bit5]:GPIO8
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pci_read_config8(dev, 0xa8);
+-   reg8_data |= (1 << 4);
+-   pci_write_config8(dev, 0xa8, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0xa9);
+-   reg8_data &= ~(1 << 4);
+-   pci_write_config8(dev, 0xa9, reg8_data);
+-
+-   // LED[bit6]:GPIO10
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pci_read_config8(dev, 0xab);
+-   reg8_data = ((reg8_data | (1 << 0)) & ~(1 << 1));
+-   pci_write_config8(dev, 0xab, reg8_data);
+-
+-   // LED[bit7]:GPIO66
+-   // This is reference SB600 RRG 4.1.1 GPIO
+-   reg8_data = pmio_read(0x68);
+-   reg8_data &= ~(1 << 5); // 0: GPIO
+-   pmio_write(0x68, reg8_data);
+-
+-   reg8_data = pci_read_config8(dev, 0x7e);
+-   reg8_data = ((reg8_data | (1 << 1)) & ~(1 << 5));
+-   pci_write_config8(dev, 0x7e, reg8_data);
++	uint8_t reg8_data;
++	device_t dev = 0;
++
++	// SMBus Module and ACPI Block (Device 20, Function 0)
++	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
++
++	// LED[bit0]:GPIO0
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pmio_read(0x60);
++	reg8_data |= (1 << 7);  // 1: GPIO if not used by SATA
++	pmio_write(0x60, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0x80);
++	reg8_data = ((reg8_data | (1 << 0)) & ~(1 << 4));
++	pci_write_config8(dev, 0x80, reg8_data);
++
++	// LED[bit1]:GPIO1
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pci_read_config8(dev, 0x80);
++	reg8_data = ((reg8_data | (1 << 1)) & ~(1 << 5));
++	pci_write_config8(dev, 0x80, reg8_data);
++
++	// LED[bit2]:GPIO4
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pmio_read(0x5e);
++	reg8_data &= ~(1 << 7); // 0: GPIO if not used by SATA
++	pmio_write(0x5e, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0xa8);
++	reg8_data |= (1 << 0);
++	pci_write_config8(dev, 0xa8, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0xa9);
++	reg8_data &= ~(1 << 0);
++	pci_write_config8(dev, 0xa9, reg8_data);
++
++	// LED[bit3]:GPIO6
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pmio_read(0x60);
++	reg8_data |= (1 << 7); // 1: GPIO if not used by SATA
++	pmio_write(0x60, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0xa8);
++	reg8_data |= (1 << 2);
++	pci_write_config8(dev, 0xa8, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0xa9);
++	reg8_data &= ~(1 << 2);
++	pci_write_config8(dev, 0xa9, reg8_data);
++	// LED[bit4]:GPIO7
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pci_read_config8(dev, 0xa8);
++	reg8_data |= (1 << 3);
++	pci_write_config8(dev, 0xa8, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0xa9);
++	reg8_data &= ~(1 << 3);
++	pci_write_config8(dev, 0xa9, reg8_data);
++
++	// LED[bit5]:GPIO8
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pci_read_config8(dev, 0xa8);
++	reg8_data |= (1 << 4);
++	pci_write_config8(dev, 0xa8, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0xa9);
++	reg8_data &= ~(1 << 4);
++	pci_write_config8(dev, 0xa9, reg8_data);
++
++	// LED[bit6]:GPIO10
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pci_read_config8(dev, 0xab);
++	reg8_data = ((reg8_data | (1 << 0)) & ~(1 << 1));
++	pci_write_config8(dev, 0xab, reg8_data);
++
++	// LED[bit7]:GPIO66
++	// This is reference SB600 RRG 4.1.1 GPIO
++	reg8_data = pmio_read(0x68);
++	reg8_data &= ~(1 << 5); // 0: GPIO
++	pmio_write(0x68, reg8_data);
++
++	reg8_data = pci_read_config8(dev, 0x7e);
++	reg8_data = ((reg8_data | (1 << 1)) & ~(1 << 5));
++	pci_write_config8(dev, 0x7e, reg8_data);
+ 
+ }
+ 
+ #endif
+ 
+ /* TechNexion's Post Code.
+  */
+ void technexion_post_code(uint8_t udata8)
+ {
+-   uint8_t u8_data;
+-   device_t dev = 0;
++	uint8_t u8_data;
++	device_t dev = 0;
+ 
+-   // SMBus Module and ACPI Block (Device 20, Function 0)
++	// SMBus Module and ACPI Block (Device 20, Function 0)
+ #ifdef __PRE_RAM__
+-   dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
++	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM), 0);
+ #else
+-   dev = dev_find_device(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM, 0);
++	dev = dev_find_device(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB600_SM, 0);
+ #endif
+ 
+-   udata8 = ~(udata8);
+-
+-   // LED[bit0]:GPIO0
+-   u8_data = pci_read_config8(dev, 0x80);
+-   if (udata8 & 0x1) {
+-      u8_data |= (1 << 0);
+-   }
+-   else {
+-      u8_data &= ~(1 << 0);
+-   }
+-   pci_write_config8(dev, 0x80, u8_data);
+-
+-   // LED[bit1]:GPIO1
+-   u8_data = pci_read_config8(dev, 0x80);
+-   if (udata8 & 0x2) {
+-      u8_data |= (1 << 1);
+-   }
+-   else {
+-      u8_data &= ~(1 << 1);
+-   }
+-   pci_write_config8(dev, 0x80, u8_data);
+-
+-   // LED[bit2]:GPIO4
+-   u8_data = pci_read_config8(dev, 0xa8);
+-   if (udata8 & 0x4) {
+-      u8_data |= (1 << 0);
+-   }
+-   else {
+-      u8_data &= ~(1 << 0);
+-   }
+-   pci_write_config8(dev, 0xa8, u8_data);
+-
+-   // LED[bit3]:GPIO6
+-   u8_data = pci_read_config8(dev, 0xa8);
+-   if (udata8 & 0x8) {
+-      u8_data |= (1 << 2);
+-   }
+-   else {
+-      u8_data &= ~(1 << 2);
+-   }
+-   pci_write_config8(dev, 0xa8, u8_data);
+-
+-   // LED[bit4]:GPIO7
+-   u8_data = pci_read_config8(dev, 0xa8);
+-   if (udata8 & 0x10) {
+-      u8_data |= (1 << 3);
+-   }
+-   else {
+-      u8_data &= ~(1 << 3);
+-   }
+-   pci_write_config8(dev, 0xa8, u8_data);
+-
+-   // LED[bit5]:GPIO8
+-   u8_data = pci_read_config8(dev, 0xa8);
+-   if (udata8 & 0x20) {
+-      u8_data |= (1 << 4);
+-   }
+-   else {
+-      u8_data &= ~(1 << 4);
+-   }
+-   pci_write_config8(dev, 0xa8, u8_data);
+-
+-   // LED[bit6]:GPIO10
+-   u8_data = pci_read_config8(dev, 0xab);
+-   if (udata8 & 0x40) {
+-      u8_data |= (1 << 0);
+-   }
+-   else {
+-      u8_data &= ~(1 << 0);
+-   }
+-   pci_write_config8(dev, 0xab, u8_data);
+-
+-   // LED[bit7]:GPIO66
+-   u8_data = pci_read_config8(dev, 0x7e);
+-   if (udata8 & 0x80) {
+-      u8_data |= (1 << 1);
+-   }
+-   else {
+-      u8_data &= ~(1 << 1);
+-   }
+-   pci_write_config8(dev, 0x7e, u8_data);
++	udata8 = ~(udata8);
++
++	// LED[bit0]:GPIO0
++	u8_data = pci_read_config8(dev, 0x80);
++	if (udata8 & 0x1) {
++		u8_data |= (1 << 0);
++	}
++	else {
++		u8_data &= ~(1 << 0);
++	}
++	pci_write_config8(dev, 0x80, u8_data);
++
++	// LED[bit1]:GPIO1
++	u8_data = pci_read_config8(dev, 0x80);
++	if (udata8 & 0x2) {
++		u8_data |= (1 << 1);
++	}
++	else {
++		u8_data &= ~(1 << 1);
++	}
++	pci_write_config8(dev, 0x80, u8_data);
++
++	// LED[bit2]:GPIO4
++	u8_data = pci_read_config8(dev, 0xa8);
++	if (udata8 & 0x4) {
++		u8_data |= (1 << 0);
++	}
++	else {
++		u8_data &= ~(1 << 0);
++	}
++	pci_write_config8(dev, 0xa8, u8_data);
++
++	// LED[bit3]:GPIO6
++	u8_data = pci_read_config8(dev, 0xa8);
++	if (udata8 & 0x8) {
++		u8_data |= (1 << 2);
++	}
++	else {
++		u8_data &= ~(1 << 2);
++	}
++	pci_write_config8(dev, 0xa8, u8_data);
++
++	// LED[bit4]:GPIO7
++	u8_data = pci_read_config8(dev, 0xa8);
++	if (udata8 & 0x10) {
++		u8_data |= (1 << 3);
++	}
++	else {
++		u8_data &= ~(1 << 3);
++	}
++	pci_write_config8(dev, 0xa8, u8_data);
++
++	// LED[bit5]:GPIO8
++	u8_data = pci_read_config8(dev, 0xa8);
++	if (udata8 & 0x20) {
++		u8_data |= (1 << 4);
++	}
++	else {
++		u8_data &= ~(1 << 4);
++	}
++	pci_write_config8(dev, 0xa8, u8_data);
++
++	// LED[bit6]:GPIO10
++	u8_data = pci_read_config8(dev, 0xab);
++	if (udata8 & 0x40) {
++		u8_data |= (1 << 0);
++	}
++	else {
++		u8_data &= ~(1 << 0);
++	}
++	pci_write_config8(dev, 0xab, u8_data);
++
++	// LED[bit7]:GPIO66
++	u8_data = pci_read_config8(dev, 0x7e);
++	if (udata8 & 0x80) {
++		u8_data |= (1 << 1);
++	}
++	else {
++		u8_data &= ~(1 << 1);
++	}
++	pci_write_config8(dev, 0x7e, u8_data);
+ 
+ }
+diff --git a/src/mainboard/technexion/tim5690/vgabios.c b/src/mainboard/technexion/tim5690/vgabios.c
+index f62bc87..fe4b41c 100644
+--- a/src/mainboard/technexion/tim5690/vgabios.c
++++ b/src/mainboard/technexion/tim5690/vgabios.c
+@@ -1,75 +1,75 @@
+ /*
+  * This file is part of the coreboot project.
+  *
+  * Copyright (C) 2009 coresystems GmbH
+  * Copyright (C) 2009 Libra Li <libra.li@technexion.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; either version 2 of the License, or
+  * (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  */
+ 
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <console/console.h>
+ #include <arch/interrupt.h>
+ #include "vgabios.h"
+ #include <x86emu/regs.h>
+ 
+ 
+ int tim5690_int15_handler(void);
+ 
+ static rs690_vbios_regs vbios_regs_local;
+ 
+ /* Initialization interrupt function */
+ static void vbios_fun_init(rs690_vbios_regs *vbios_regs)
+ {
+-        vbios_regs_local.int15_regs.fun00_panel_id = vbios_regs->int15_regs.fun00_panel_id;
+-        vbios_regs_local.int15_regs.fun05_tv_standard = vbios_regs->int15_regs.fun05_tv_standard;
++	vbios_regs_local.int15_regs.fun00_panel_id = vbios_regs->int15_regs.fun00_panel_id;
++	vbios_regs_local.int15_regs.fun05_tv_standard = vbios_regs->int15_regs.fun05_tv_standard;
+ }
+ 
+ /* BIOS int15 function */
+ int tim5690_int15_handler(void)
+ {
+-        int res = 0;
++	int res = 0;
+ 
+-        printk(BIOS_DEBUG, "tim5690_int15_handler\n");
++	printk(BIOS_DEBUG, "tim5690_int15_handler\n");
+ 
+-        switch (X86_EAX & 0xffff) {
+-        case AMD_RS690_INT15:
+-                switch (X86_EBX & 0xff) {
+-                case 0x00:
+-                        X86_EAX &= ~(0xff);
+-                        X86_EBX = (X86_EBX & ~(0xff)) | vbios_regs_local.int15_regs.fun00_panel_id;
+-                        res = 1;
+-                        break;
+-                case 0x05:
+-                        X86_EAX &= ~(0xff);
+-                        X86_EBX = (X86_EBX & ~(0xff)) | vbios_regs_local.int15_regs.fun05_tv_standard;
+-                        res = 1;
+-                        break;
+-                }
+-                break;
+-        default:
+-                printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
+-                                X86_EAX & 0xffff);
++	switch (X86_EAX & 0xffff) {
++	case AMD_RS690_INT15:
++		switch (X86_EBX & 0xff) {
++		case 0x00:
++			X86_EAX &= ~(0xff);
++			X86_EBX = (X86_EBX & ~(0xff)) | vbios_regs_local.int15_regs.fun00_panel_id;
++			res = 1;
++			break;
++		case 0x05:
++			X86_EAX &= ~(0xff);
++			X86_EBX = (X86_EBX & ~(0xff)) | vbios_regs_local.int15_regs.fun05_tv_standard;
++			res = 1;
++			break;
++		}
+ 		break;
+-        }
++	default:
++		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
++				X86_EAX & 0xffff);
++		break;
++	}
+ 
+-        return res;
++	return res;
+ }
+ 
+ /* Initialization VBIOS function */
+ void vgabios_init(rs690_vbios_regs *vbios_regs)
+ {
+ 	printk(BIOS_DEBUG, "vgabios_init\n");
+ 
+ 	mainboard_interrupt_handlers(0x15, &tim5690_int15_handler);
+ 	vbios_fun_init(vbios_regs);
+ }
