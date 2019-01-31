@@ -13,7 +13,7 @@
 /**
  * This package contains tests using new commits particularly for ComAnI.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 package net.ssehub.comani.analysis.variabilitychange.tests.comani;

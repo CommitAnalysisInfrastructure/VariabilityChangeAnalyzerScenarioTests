@@ -44,7 +44,7 @@ import net.ssehub.comani.analysis.variabilitychange.tests.coman.LinuxMergeCommit
 /**
  * This class summarizes all individual test classes into a single test suite.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 public class AllTests {

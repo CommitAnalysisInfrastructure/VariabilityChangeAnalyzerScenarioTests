@@ -42,7 +42,7 @@ import net.ssehub.comani.utility.FileUtilities;
  * {@link net.ssehub.comani.analysis.variabilitychange.tests.coman.LinuxMergeCommitsTests} are the different 
  * {@link #TEST_COMMITS_DIRECTORY} and the way the commits located in this directory were extracted.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 public class LinuxMergeCommitsTests extends AbstractCommitsTests {

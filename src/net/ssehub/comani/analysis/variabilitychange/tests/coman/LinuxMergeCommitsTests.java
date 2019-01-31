@@ -36,7 +36,7 @@ import net.ssehub.comani.utility.FileUtilities;
  * provide detailed information about changed files and lines. Hence, the result of analyzing such commits should be an
  * empty result file and an additional "unanalyzed" file, which only contains the id's of those merge commits.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 public class LinuxMergeCommitsTests extends AbstractCommitsTests {

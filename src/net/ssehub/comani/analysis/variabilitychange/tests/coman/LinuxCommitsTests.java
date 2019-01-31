@@ -39,7 +39,7 @@ import net.ssehub.comani.utility.FileUtilities;
  * These tests were used initially to check the correct counting and categorization of changed lines of the ComAn 
  * tool-set.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 @RunWith(Parameterized.class)

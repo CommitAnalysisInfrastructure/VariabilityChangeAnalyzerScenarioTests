@@ -13,7 +13,7 @@
 /**
  * This package contains tests using the test commits, which were originally used to test the ComAn tool-set.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 package net.ssehub.comani.analysis.variabilitychange.tests.coman;

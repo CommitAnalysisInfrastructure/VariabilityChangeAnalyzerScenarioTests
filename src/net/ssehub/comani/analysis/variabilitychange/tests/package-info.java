@@ -16,7 +16,7 @@
  * well as real commits from different repositories, like the Linux kernel or the Coreboot firmware, to check the 
  * correct classification of changed files and lines.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 package net.ssehub.comani.analysis.variabilitychange.tests;

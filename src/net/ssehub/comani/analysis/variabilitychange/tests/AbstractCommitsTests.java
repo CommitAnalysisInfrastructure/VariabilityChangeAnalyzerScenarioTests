@@ -29,7 +29,7 @@ import net.ssehub.comani.utility.FileUtilities;
  * This abstract class provides common attributes and methods used by the specific test classes, which perform tests
  * with commit files.
  * 
- * @author Christian Kröher
+ * @author Christian Kroeher
  *
  */
 public class AbstractCommitsTests {
@@ -215,7 +215,7 @@ public class AbstractCommitsTests {
      * </ul>
      * Further, each element provides its index in the {@link #parsedAnalysisResults}.
      * 
-     * @author Christian Kröher
+     * @author Christian Kroeher
      *
      */
     protected enum AnalysisResultElement {
