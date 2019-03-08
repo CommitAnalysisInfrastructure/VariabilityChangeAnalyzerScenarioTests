@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import net.ssehub.comani.analysis.AnalysisSetupException;
-import net.ssehub.comani.analysis.variabilitychange.tests.AbstractCommitsTests;
+import net.ssehub.comani.analysis.variabilitychange.tests.AbstractLinuxLikeTests;
 import net.ssehub.comani.analysis.variabilitychange.tests.AllTests;
 import net.ssehub.comani.extraction.ExtractionSetupException;
 import net.ssehub.comani.utility.FileUtilities;
@@ -39,7 +39,7 @@ import net.ssehub.comani.utility.FileUtilities;
  * @author Christian Kroeher
  *
  */
-public class LinuxMergeCommitsTests extends AbstractCommitsTests {
+public class LinuxMergeCommitsTests extends AbstractLinuxLikeTests {
     
     /**
      * The directory in which the test commit files are located. Each file contains the information of a particular

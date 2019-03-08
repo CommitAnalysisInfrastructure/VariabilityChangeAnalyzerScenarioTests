@@ -27,7 +27,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import net.ssehub.comani.analysis.AnalysisSetupException;
-import net.ssehub.comani.analysis.variabilitychange.tests.AbstractCommitsTests;
+import net.ssehub.comani.analysis.variabilitychange.tests.AbstractLinuxLikeTests;
 import net.ssehub.comani.analysis.variabilitychange.tests.AllTests;
 import net.ssehub.comani.extraction.ExtractionSetupException;
 import net.ssehub.comani.utility.FileUtilities;
@@ -50,7 +50,7 @@ import net.ssehub.comani.utility.FileUtilities;
  *
  */
 @RunWith(Parameterized.class)
-public class LinuxCommitsTests extends AbstractCommitsTests {
+public class LinuxCommitsTests extends AbstractLinuxLikeTests {
     
     /**
      * The directory in which the test commit files are located. Each file contains the information of a particular
@@ -65,10 +65,6 @@ public class LinuxCommitsTests extends AbstractCommitsTests {
         "60a27d6.txt", "60ff189.txt", "2572f00.txt", "5793e27.txt", "b4c45fe.txt",
         "ba12ac2.txt", "c2e13cc.txt", "c61f4d5.txt", "dd739ea.txt", "f953ccd.txt", "fbfbc48.txt",
         "fcf6c5e.txt"};
-    /*
-     * TODO The following commit files will not be part of the result file, but categorized as unanalyzed as they
-     * represent merge commits "4294616.txt", "79c7c7a.txt", "efde611.txt" 
-     */
     
     /**
      * The name of the test commit file currently under test.

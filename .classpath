@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/VariabilityChangeAnalyzer"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ComAnI"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GitCommitExtractor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SvnCommitExtractor"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

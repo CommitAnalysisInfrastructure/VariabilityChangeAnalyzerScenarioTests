@@ -21,8 +21,10 @@ import net.ssehub.comani.analysis.AnalysisSetupException;
 import net.ssehub.comani.analysis.variabilitychange.core.VariabilityChangeAnalyzer;
 import net.ssehub.comani.data.CommitQueue;
 import net.ssehub.comani.data.CommitQueue.QueueState;
+import net.ssehub.comani.extraction.AbstractCommitExtractor;
 import net.ssehub.comani.extraction.ExtractionSetupException;
 import net.ssehub.comani.extraction.git.GitCommitExtractor;
+import net.ssehub.comani.extraction.svn.SvnCommitExtractor;
 import net.ssehub.comani.utility.FileUtilities;
 
 /**
@@ -73,21 +75,36 @@ public class AbstractCommitsTests {
      * 
      * @param testCommitsDirectory the {@link File} denoting the directory in which the test commit files are located
      * @param testCommitFileNames the names of the test commit files located in the given directory
-     * @throws ExtractionSetupException if instantiating the {@link GitCommitExtractor} fails
+     * @param vcs the name of the version control system from which the test commits stem from; either "git" or "svn"
+     * @param vmFilesPattern the regular expression for identifying variability model files
+     * @param codeFilesPattern the regular expression for identifying code files
+     * @param buildFilesPattern the regular expression for identifying build files
+     * @throws ExtractionSetupException if instantiating the respective commit extractor fails
      * @throws AnalysisSetupException if instantiating the {@link VariabilityChangeAnalyzer} fails
      */
-    protected static void setUp(File testCommitsDirectory, String[] testCommitFileNames) 
+    //checkstyle: stop parameter number check
+    protected static void setUp(File testCommitsDirectory, String[] testCommitFileNames, String vcs, 
+            String vmFilesPattern, String codeFilesPattern, String buildFilesPattern) 
             throws ExtractionSetupException, AnalysisSetupException {
         System.out.println("## Setting up tests based on commits located at \"" 
             + testCommitsDirectory.getPath() + "\" ##");
         // Define the required properties for the commit extractor and analyzer
         Properties pluginProperties = new Properties();
-        pluginProperties.setProperty("core.version_control_system", "git");
+        pluginProperties.setProperty("core.version_control_system", vcs);
         pluginProperties.setProperty("analysis.output", AllTests.TESTOUTPUT_DIRECTORY.getAbsolutePath());
+        pluginProperties.setProperty("analysis.variability_change_analyzer.vm_files_regex", vmFilesPattern);
+        pluginProperties.setProperty("analysis.variability_change_analyzer.code_files_regex", codeFilesPattern);
+        pluginProperties.setProperty("analysis.variability_change_analyzer.build_files_regex", buildFilesPattern);
         // Instantiate the common commit queue for the commit extractor and analyzer
         CommitQueue commitQueue = new CommitQueue(testCommitFileNames.length);
         // Instantiate the commit extractor and analyzer
-        GitCommitExtractor commitExtractor = new GitCommitExtractor(pluginProperties, commitQueue);
+//        GitCommitExtractor commitExtractor = new GitCommitExtractor(pluginProperties, commitQueue);
+        AbstractCommitExtractor commitExtractor;
+        if (vcs.equals("git")) {
+            commitExtractor = new GitCommitExtractor(pluginProperties, commitQueue);
+        } else {
+            commitExtractor = new SvnCommitExtractor(pluginProperties, commitQueue);
+        }
         VariabilityChangeAnalyzer commitAnalyzer = new VariabilityChangeAnalyzer(pluginProperties, commitQueue);
         // Extract the commits based on the commit files in the test commits directory
         commitQueue.setState(QueueState.OPEN);
@@ -98,6 +115,7 @@ public class AbstractCommitsTests {
         // Parse the result file containing the classification of changed lines per commit
         parseAnalysisResults(testCommitFileNames);
     }
+    //checkstyle: resume parameter number check
     
     /**
      * Deletes the result files created by the commit analyzer during {@link #setUp()} from the
@@ -117,17 +135,18 @@ public class AbstractCommitsTests {
     }
     
     /**
-     * Performs the commit extraction by calling {@link GitCommitExtractor#extract(String)} for (a subset of) the files
-     * in the given test commits directory. However, only the content of those files, where the file name matches on of
-     * the given test commit file names, is passed to the extractor.
+     * Performs the commit extraction by calling the commit extractor for (a subset of) the files in the given test
+     * commits directory. However, only the content of those files, where the file name matches on of the given test
+     * commit file names, is passed to the extractor.
      * 
      * @param testCommitsDirectory the {@link File} denoting the directory in which the test commit files are located
      * @param testCommitFileNames the names of the test commit files located in the given directory
-     * @param commitExtractor the {@link GitCommitExtractor}, which shall be used to extract the commits
+     * @param commitExtractor the {@link AbstractCommitExtractor}, which shall be used to extract the commits
      * 
      */
+    // TODO Update Javadoc from GitCommitExtractor to simply commit extractor
     private static void extractCommits(File testCommitsDirectory, String[] testCommitFileNames,
-            GitCommitExtractor commitExtractor) {
+            AbstractCommitExtractor commitExtractor) {
         File[] testCommitFiles = testCommitsDirectory.listFiles(new FilenameFilter() {
             // Extract only those commits where the corresponding file name matches one of the given file names
             @Override

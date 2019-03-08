@@ -27,7 +27,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import net.ssehub.comani.analysis.AnalysisSetupException;
-import net.ssehub.comani.analysis.variabilitychange.tests.AbstractCommitsTests;
+import net.ssehub.comani.analysis.variabilitychange.tests.AbstractLinuxLikeTests;
 import net.ssehub.comani.analysis.variabilitychange.tests.AllTests;
 import net.ssehub.comani.extraction.ExtractionSetupException;
 
@@ -42,7 +42,7 @@ import net.ssehub.comani.extraction.ExtractionSetupException;
  *
  */
 @RunWith(Parameterized.class)
-public class ArtificialCommitsTests extends AbstractCommitsTests {
+public class ArtificialCommitsTests extends AbstractLinuxLikeTests {
     
     /**
      * The directory in which the test commit files are located. Each file contains the information of a particular

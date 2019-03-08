@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package net.ssehub.comani.analysis.variabilitychange.tests.coman;
+package net.ssehub.comani.analysis.variabilitychange.tests.comani;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,37 +27,47 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import net.ssehub.comani.analysis.AnalysisSetupException;
-import net.ssehub.comani.analysis.variabilitychange.tests.AbstractLinuxLikeTests;
+import net.ssehub.comani.analysis.variabilitychange.tests.AbstractCommitsTests;
 import net.ssehub.comani.analysis.variabilitychange.tests.AllTests;
 import net.ssehub.comani.extraction.ExtractionSetupException;
+import net.ssehub.comani.utility.FileUtilities;
 
 /**
  * This class provides some {@link net.ssehub.comani.analysis.variabilitychange.core.VariabilityChangeAnalyzer} tests
- * based on selected, (partial) real commits previously causing problems during the development of the ComAn
- * tool-set.<br>
- * <br>
- * These tests were used initially to check the correct counting and categorization of changed lines of the ComAn 
- * tool-set.
+ * based on commits from the axTLS embedded SSL project.<br>
  * 
  * @author Christian Kroeher
  *
  */
 @RunWith(Parameterized.class)
-public class DebugCommitsTests extends AbstractLinuxLikeTests {
+public class AxtlsCommitsTests extends AbstractCommitsTests {
     
     /**
      * The directory in which the test commit files are located. Each file contains the information of a particular
-     * commit.
+     * commit from the axTLS repository.
      */
-    private static final File TEST_COMMITS_DIRECTORY = new File(AllTests.TESTDATA_DIRECTORY, "coman/debug");
+    private static final File TEST_COMMITS_DIRECTORY = new File(AllTests.TESTDATA_DIRECTORY, "comani/axtls");
     
     /**
      * The names of the test commit files located in the {@link #TEST_COMMITS_DIRECTORY}.
      */
-    private static final String[] TEST_COMMIT_FILE_NAMES = {"882cbcd.txt", "4694836.txt", "c8eedd5.txt", "e73fda8.txt",
-        "5332369.txt", "caffb6e.txt", "4da1aa8.txt", "11302f3.txt", "9344bde.txt", "5c22825.txt", "8f372d0.txt",
-        "5b35300.txt", "503e4fe.txt", "892d129.txt", "911cedf.txt", "ce011ec.txt", "e15dfc1.txt", "9c8a06a.txt",
-        "540ae01.txt", "05f26fc.txt", "2c018fb.txt", "45cc550.txt"};
+    private static final String[] TEST_COMMIT_FILE_NAMES = {"r98.txt"};
+    
+    /**
+     * The regular expression for identifying variability model files in the axTLS project.
+     */
+    private static final String VM_FILES_REGEX = ".*/Config\\.in((\\.|\\-|\\_|\\+|\\~).*)?";
+    
+    /**
+     * The regular expression for identifying code files in the axTLS project.
+     */
+    private static final String CODE_FILES_REGEX = ".*/.*\\.[hcS]((\\.|\\-|\\_|\\+|\\~).*)?";
+    
+    /**
+     * The regular expression for identifying build files in the axTLS project.
+     */
+    private static final String BUILD_FILES_REGEX = ".*/(Makefile|Kbuild)((\\.|\\-|\\_|\\+|\\~).*)?";
+    // Possible addition: |(.*/.*\\.(mak|make)))
     
     /**
      * The name of the test commit file currently under test.
@@ -134,7 +144,7 @@ public class DebugCommitsTests extends AbstractLinuxLikeTests {
     private int expectedChangedModelLinesVariability;
     
     /**
-     * Constructs a new {@link DebugCommitsTests} object for injecting test parameters.
+     * Constructs a new {@link AxtlsCommitsTests} object for injecting test parameters.
      * 
      * @param testcommitFileName the name of the test commit file; one of {@link #TEST_COMMIT_FILE_NAMES}
      * @param expectedChangedCodeFiles the expected number of changed code files
@@ -154,7 +164,7 @@ public class DebugCommitsTests extends AbstractLinuxLikeTests {
      *        variability information
      */
     //checkstyle: stop parameter number check
-    public DebugCommitsTests(String testcommitFileName, int expectedChangedCodeFiles,
+    public AxtlsCommitsTests(String testcommitFileName, int expectedChangedCodeFiles,
             int expectedChangedCodeLinesArtifactSpecific, int expectedChangedCodeLinesVariability, 
             int expectedChangedBuildFiles, int expectedChangedBuildLinesArtifactSpecific, 
             int expectedChangedBuildLinesVariability, int expectedChangedModelFiles,
@@ -192,37 +202,51 @@ public class DebugCommitsTests extends AbstractLinuxLikeTests {
      */
     @Parameters
     public static List<Object[]> getTestData() {
-        return Arrays.asList(new Object[][] {
-            {"882cbcd", 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {"4694836", 1, 13, 0, 1, 2, 0, 0, 0, 0},
-            {"c8eedd5", 2, 3, 0, 0, 0, 0, 0, 0, 0},
-            {"e73fda8", 2, 298, 0, 0, 0, 0, 0, 0, 0},
-            {"5332369", 2, 0, 0, 0, 0, 0, 0, 0, 0},
-            {"caffb6e", 5, 622, 0, 1, 6, 0, 0, 0, 0},
-            {"4da1aa8", 11, 270, 13, 0, 0, 0, 0, 0, 0},
-            {"11302f3", 1, 9, 2, 1, 0, 1, 1, 0, 10},
-            {"9344bde", 11, 48, 0, 0, 0, 0, 0, 0, 0},
-            {"5c22825", 8, 1600, 18, 0, 0, 0, 0, 0, 0},
-            {"8f372d0", 4, 342, 0, 0, 0, 0, 0, 0, 0},
-            {"5b35300", 4, 11, 4, 0, 0, 0, 0, 0, 0},
-            {"503e4fe", 1, 7, 6, 0, 0, 0, 1, 0, 1},
-            {"892d129", 15, 1918, 44, 1, 19, 5, 3, 0, 81},
-            {"911cedf", 4, 69, 8, 0, 0, 0, 1, 3, 3},
-            {"ce011ec", 7, 82, 5, 1, 6, 0, 0, 0, 0},
-            {"e15dfc1", 1, 372, 0, 0, 0, 0, 0, 0, 0},
-            {"9c8a06a", 4, 498, 0, 0, 0, 0, 0, 0, 0},
-            {"540ae01", 7, 207, 0, 0, 0, 0, 0, 0, 0},
-            {"05f26fc", 12, 1185, 0, 1, 4, 0, 0, 0, 0},
-            {"2c018fb", 29, 949, 12, 0, 0, 0, 0, 0, 0},
-            {"45cc550", 4, 649, 12, 0, 0, 0, 0, 0, 0}
-            });
+        Object[][] expectedResults = new Object[TEST_COMMIT_FILE_NAMES.length][10];
+        File expectedResultsFile = new File(TEST_COMMITS_DIRECTORY, "axtls_ExpectedValues.txt");
+        List<String> expectedResultsFileLines = FileUtilities.getInstance().readFile(expectedResultsFile);
+        /*
+         * Line index 0 = Column headers, like "Commit", "Changed Model Files", "Changed Source Lines", etc.
+         * Line index 1 = first extracted commit expected results
+         * Line index 2 = second extracted commit expected results
+         * Line index 3 = ...
+         */
+        String testCommitFileNameWithoutPostfix;
+        int expectedResultsFileLinesCounter;
+        boolean resultsFound;
+        for (int i = 0; i < TEST_COMMIT_FILE_NAMES.length; i++) {
+            testCommitFileNameWithoutPostfix = 
+                    TEST_COMMIT_FILE_NAMES[i].substring(0, TEST_COMMIT_FILE_NAMES[i].indexOf('.'));
+            expectedResultsFileLinesCounter = 1;
+            resultsFound = false;
+            while (!resultsFound && expectedResultsFileLinesCounter < expectedResultsFileLines.size()) {
+                String[] expectedResultsFileLineElements = 
+                        expectedResultsFileLines.get(expectedResultsFileLinesCounter).split("\t");
+                if (expectedResultsFileLineElements[0].equals(testCommitFileNameWithoutPostfix)) {
+                    resultsFound = true;
+                    expectedResults[i][0] = expectedResultsFileLineElements[0]; // Commit id
+                    expectedResults[i][1] = Integer.valueOf(expectedResultsFileLineElements[2]); // CCF
+                    expectedResults[i][2] = Integer.valueOf(expectedResultsFileLineElements[6]); // CCLAI
+                    expectedResults[i][3] = Integer.valueOf(expectedResultsFileLineElements[7]); // CCLVI
+                    expectedResults[i][4] = Integer.valueOf(expectedResultsFileLineElements[3]); // CBF
+                    expectedResults[i][5] = Integer.valueOf(expectedResultsFileLineElements[8]); // CBLAI
+                    expectedResults[i][6] = Integer.valueOf(expectedResultsFileLineElements[9]); // CBLVI
+                    expectedResults[i][7] = Integer.valueOf(expectedResultsFileLineElements[1]); // CMF
+                    expectedResults[i][8] = Integer.valueOf(expectedResultsFileLineElements[4]); // CMLAI
+                    expectedResults[i][9] = Integer.valueOf(expectedResultsFileLineElements[5]); // CMLVI
+                }
+                expectedResultsFileLinesCounter++;
+            }
+        }
+        return Arrays.asList(expectedResults);
     }
     
     /**
-     * Calls the {@link #setUp(File, String[])} of the parent class with {@link #TEST_COMMITS_DIRECTORY} and
-     * {@link #TEST_COMMIT_FILE_NAMES}.
+     * Calls the {@link #setUp(File, String[])} of the parent class with {@link #TEST_COMMITS_DIRECTORY}, 
+     * {@link #TEST_COMMIT_FILE_NAMES}, {@link #VM_FILES_REGEX}, {@link #CODE_FILES_REGEX}, and 
+     * {@link #BUILD_FILES_REGEX} as well as "svn".
      * 
-     * @throws ExtractionSetupException if instantiating the {@link net.ssehub.comani.extraction.git.GitCommitExtractor}
+     * @throws ExtractionSetupException if instantiating the {@link net.ssehub.comani.extraction.svn.SvnCommitExtractor}
      *         during {@link #setUp(File, String[])} fails
      * @throws AnalysisSetupException if instantiating the 
      *         {@link net.ssehub.comani.analysis.variabilitychange.core.VariabilityChangeAnalyzer} during
@@ -230,7 +254,8 @@ public class DebugCommitsTests extends AbstractLinuxLikeTests {
      */
     @BeforeClass
     public static void setUp() throws ExtractionSetupException, AnalysisSetupException {
-        setUp(TEST_COMMITS_DIRECTORY, TEST_COMMIT_FILE_NAMES);
+        setUp(TEST_COMMITS_DIRECTORY, TEST_COMMIT_FILE_NAMES, "svn", VM_FILES_REGEX, CODE_FILES_REGEX,
+                BUILD_FILES_REGEX);
     }
     
     /**
@@ -238,7 +263,7 @@ public class DebugCommitsTests extends AbstractLinuxLikeTests {
      */
     @AfterClass
     public static void tearDown() {
-        tearDown("DebugCommitsTests");
+        tearDown("AxtlsCommitsTests");
     }
 
     /**

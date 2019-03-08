@@ -23,6 +23,7 @@ import net.ssehub.comani.analysis.variabilitychange.tests.coman.CorebootCommitsT
 import net.ssehub.comani.analysis.variabilitychange.tests.coman.DebugCommitsTests;
 import net.ssehub.comani.analysis.variabilitychange.tests.coman.LinuxCommitsTests;
 import net.ssehub.comani.analysis.variabilitychange.tests.coman.LinuxMergeCommitsTests;
+import net.ssehub.comani.analysis.variabilitychange.tests.comani.AxtlsCommitsTests;
 
 /**
  * Definition of this test suite.
@@ -38,7 +39,9 @@ import net.ssehub.comani.analysis.variabilitychange.tests.coman.LinuxMergeCommit
     // The following classes contain tests that use commits as extracted by the GitCommitExtractor
     net.ssehub.comani.analysis.variabilitychange.tests.comani.CorebootCommitsTests.class,
     net.ssehub.comani.analysis.variabilitychange.tests.comani.LinuxCommitsTests.class,
-    net.ssehub.comani.analysis.variabilitychange.tests.comani.LinuxMergeCommitsTests.class
+    net.ssehub.comani.analysis.variabilitychange.tests.comani.LinuxMergeCommitsTests.class,
+    // The following classes contain tests that use commits as extracted by the SvnCommitExtractor
+    AxtlsCommitsTests.class
     })
 
 /**
