@@ -75,7 +75,8 @@ public class AbstractCommitsTests {
      * 
      * @param testCommitsDirectory the {@link File} denoting the directory in which the test commit files are located
      * @param testCommitFileNames the names of the test commit files located in the given directory
-     * @param vcs the name of the version control system from which the test commits stem from; either "git" or "svn"
+     * @param vcs the name of the version control system from which the test commits stem from (either "git" or "svn");
+     *        this also determines which extractor to use
      * @param vmFilesPattern the regular expression for identifying variability model files
      * @param codeFilesPattern the regular expression for identifying code files
      * @param buildFilesPattern the regular expression for identifying build files
@@ -98,7 +99,6 @@ public class AbstractCommitsTests {
         // Instantiate the common commit queue for the commit extractor and analyzer
         CommitQueue commitQueue = new CommitQueue(testCommitFileNames.length);
         // Instantiate the commit extractor and analyzer
-//        GitCommitExtractor commitExtractor = new GitCommitExtractor(pluginProperties, commitQueue);
         AbstractCommitExtractor commitExtractor;
         if (vcs.equals("git")) {
             commitExtractor = new GitCommitExtractor(pluginProperties, commitQueue);
