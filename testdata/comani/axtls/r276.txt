@@ -1,0 +1,1775 @@
+r276
+Index: ssl/x509.c
+===================================================================
+--- ssl/x509.c	(revision 276)
++++ ssl/x509.c	(revision 275)
+@@ -1,881 +1,860 @@
+ /*
+- * Copyright (c) 2007-2017, Cameron Rich
++ * Copyright (c) 2007-2016, Cameron Rich
+  * 
+  * All rights reserved.
+  * 
+  * Redistribution and use in source and binary forms, with or without 
+  * modification, are permitted provided that the following conditions are met:
+  *
+  * * Redistributions of source code must retain the above copyright notice, 
+  *   this list of conditions and the following disclaimer.
+  * * Redistributions in binary form must reproduce the above copyright notice, 
+  *   this list of conditions and the following disclaimer in the documentation 
+  *   and/or other materials provided with the distribution.
+  * * Neither the name of the axTLS project nor the names of its contributors 
+  *   may be used to endorse or promote products derived from this software 
+  *   without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ /**
+  * @file x509.c
+  * 
+  * Certificate processing.
+  */
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+ #include "os_port.h"
+ #include "crypto_misc.h"
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+ static int x509_v3_subject_alt_name(const uint8_t *cert, int offset, 
+         X509_CTX *x509_ctx);
+ static int x509_v3_basic_constraints(const uint8_t *cert, int offset, 
+         X509_CTX *x509_ctx);
+ static int x509_v3_key_usage(const uint8_t *cert, int offset, 
+         X509_CTX *x509_ctx);
+ 
+ /**
+  * Retrieve the signature from a certificate.
+  */
+ static const uint8_t *get_signature(const uint8_t *asn1_sig, int *len)
+ {
+     int offset = 0;
+     const uint8_t *ptr = NULL;
+ 
+     if (asn1_next_obj(asn1_sig, &offset, ASN1_SEQUENCE) < 0 || 
+             asn1_skip_obj(asn1_sig, &offset, ASN1_SEQUENCE))
+         goto end_get_sig;
+ 
+     if (asn1_sig[offset++] != ASN1_OCTET_STRING)
+         goto end_get_sig;
+     *len = get_asn1_length(asn1_sig, &offset);
+     ptr = &asn1_sig[offset];          /* all ok */
+ 
+ end_get_sig:
+     return ptr;
+ }
+ 
+ #endif
+ 
+ /**
+  * Construct a new x509 object.
+  * @return 0 if ok. < 0 if there was a problem.
+  */
+ int x509_new(const uint8_t *cert, int *len, X509_CTX **ctx)
+ {
+     int begin_tbs, end_tbs;
+     int ret = X509_NOT_OK, offset = 0, cert_size = 0;
+     int version = 0;
+     X509_CTX *x509_ctx;
+ #ifdef CONFIG_SSL_CERT_VERIFICATION /* only care if doing verification */
+     BI_CTX *bi_ctx;
+ #endif
+ 
+     *ctx = (X509_CTX *)calloc(1, sizeof(X509_CTX));
+     x509_ctx = *ctx;
+ 
+     /* get the certificate size */
+     asn1_skip_obj(cert, &cert_size, ASN1_SEQUENCE); 
+ 
+     if (asn1_next_obj(cert, &offset, ASN1_SEQUENCE) < 0)
+         goto end_cert;
+ 
+     begin_tbs = offset;         /* start of the tbs */
+     end_tbs = begin_tbs;        /* work out the end of the tbs */
+     asn1_skip_obj(cert, &end_tbs, ASN1_SEQUENCE);
+ 
+     if (asn1_next_obj(cert, &offset, ASN1_SEQUENCE) < 0)
+         goto end_cert;
+ 
+     /* optional version */
+     if (cert[offset] == ASN1_EXPLICIT_TAG && 
+             asn1_version(cert, &offset, &version) == X509_NOT_OK)
+         goto end_cert;
+ 
+     if (asn1_skip_obj(cert, &offset, ASN1_INTEGER) || /* serial number */ 
+             asn1_next_obj(cert, &offset, ASN1_SEQUENCE) < 0)
+         goto end_cert;
+ 
+     /* make sure the signature is ok */
+     if (asn1_signature_type(cert, &offset, x509_ctx))
+     {
+         ret = X509_VFY_ERROR_UNSUPPORTED_DIGEST;
+         goto end_cert;
+     }
+ 
+     if (asn1_name(cert, &offset, x509_ctx->ca_cert_dn) || 
+             asn1_validity(cert, &offset, x509_ctx) ||
+             asn1_name(cert, &offset, x509_ctx->cert_dn) ||
+             asn1_public_key(cert, &offset, x509_ctx))
+     {
+         goto end_cert;
+     }
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION /* only care if doing verification */
+     bi_ctx = x509_ctx->rsa_ctx->bi_ctx;
+ 
+     /* use the appropriate signature algorithm */
+     switch (x509_ctx->sig_type)
+     {
+         case SIG_TYPE_MD5:
+         {
+             MD5_CTX md5_ctx;
+             uint8_t md5_dgst[MD5_SIZE];
+             MD5_Init(&md5_ctx);
+             MD5_Update(&md5_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+             MD5_Final(md5_dgst, &md5_ctx);
+             x509_ctx->digest = bi_import(bi_ctx, md5_dgst, MD5_SIZE);
+         }
+             break;
+ 
+         case SIG_TYPE_SHA1:
+         {
+             SHA1_CTX sha_ctx;
+             uint8_t sha_dgst[SHA1_SIZE];
+             SHA1_Init(&sha_ctx);
+             SHA1_Update(&sha_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+             SHA1_Final(sha_dgst, &sha_ctx);
+             x509_ctx->digest = bi_import(bi_ctx, sha_dgst, SHA1_SIZE);
+         }
+             break;
+ 
+         case SIG_TYPE_SHA256:
+         {
+             SHA256_CTX sha256_ctx;
+             uint8_t sha256_dgst[SHA256_SIZE];
+             SHA256_Init(&sha256_ctx);
+             SHA256_Update(&sha256_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+             SHA256_Final(sha256_dgst, &sha256_ctx);
+             x509_ctx->digest = bi_import(bi_ctx, sha256_dgst, SHA256_SIZE);
+         }
+             break;
+ 
+         case SIG_TYPE_SHA384:
+         {
+             SHA384_CTX sha384_ctx;
+             uint8_t sha384_dgst[SHA384_SIZE];
+             SHA384_Init(&sha384_ctx);
+             SHA384_Update(&sha384_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+             SHA384_Final(sha384_dgst, &sha384_ctx);
+             x509_ctx->digest = bi_import(bi_ctx, sha384_dgst, SHA384_SIZE);
+         }
+             break;
+ 
+         case SIG_TYPE_SHA512:
+         {
+             SHA512_CTX sha512_ctx;
+             uint8_t sha512_dgst[SHA512_SIZE];
+             SHA512_Init(&sha512_ctx);
+             SHA512_Update(&sha512_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+             SHA512_Final(sha512_dgst, &sha512_ctx);
+             x509_ctx->digest = bi_import(bi_ctx, sha512_dgst, SHA512_SIZE);
+         }
+             break;
+     }
+ 
+     if (version == 2 && asn1_next_obj(cert, &offset, ASN1_V3_DATA) > 0)
+     {
+         x509_v3_subject_alt_name(cert, offset, x509_ctx);
+         x509_v3_basic_constraints(cert, offset, x509_ctx);
+         x509_v3_key_usage(cert, offset, x509_ctx);
+     }
+ 
+     offset = end_tbs;   /* skip the rest of v3 data */
+     if (asn1_skip_obj(cert, &offset, ASN1_SEQUENCE) || 
+             asn1_signature(cert, &offset, x509_ctx))
+         goto end_cert;
+ #endif
+     ret = X509_OK;
+ end_cert:
+     if (len)
+     {
+         *len = cert_size;
+     }
+ 
+     if (ret)
+     {
+ #ifdef CONFIG_SSL_FULL_MODE
+         printf("Error: Invalid X509 ASN.1 file (%s)\n",
+                         x509_display_error(ret));
+ #endif
+         x509_free(x509_ctx);
+         *ctx = NULL;
+     }
+ 
+     return ret;
+ }
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION /* only care if doing verification */
+ static int x509_v3_subject_alt_name(const uint8_t *cert, int offset, 
+         X509_CTX *x509_ctx)
+ {
+     if ((offset = asn1_is_subject_alt_name(cert, offset)) > 0)
+     {
+         x509_ctx->subject_alt_name_present = true;
+         x509_ctx->subject_alt_name_is_critical = 
+                         asn1_is_critical_ext(cert, &offset);
+ 
+         if (asn1_next_obj(cert, &offset, ASN1_OCTET_STRING) > 0)
+         {
+             int altlen;
+ 
+             if ((altlen = asn1_next_obj(cert, &offset, ASN1_SEQUENCE)) > 0)
+             {
+                 int endalt = offset + altlen;
+                 int totalnames = 0;
+ 
+                 while (offset < endalt)
+                 {
+                     int type = cert[offset++];
+                     int dnslen = get_asn1_length(cert, &offset);
+ 
+                     if (type == ASN1_CONTEXT_DNSNAME)
+                     {
+                         x509_ctx->subject_alt_dnsnames = (char**)
+                                 realloc(x509_ctx->subject_alt_dnsnames, 
+                                    (totalnames + 2) * sizeof(char*));
+                         x509_ctx->subject_alt_dnsnames[totalnames] = 
+                                 (char*)malloc(dnslen + 1);
+                         x509_ctx->subject_alt_dnsnames[totalnames+1] = NULL;
+                         memcpy(x509_ctx->subject_alt_dnsnames[totalnames], 
+                                 cert + offset, dnslen);
+                         x509_ctx->subject_alt_dnsnames[totalnames][dnslen] = 0;
+                         totalnames++;
+                     }
+ 
+                     offset += dnslen;
+                 }
+             }
+         }
+     }
+ 
+     return X509_OK;
+ }
+ 
+ /**
+  * Basic constraints - see https://tools.ietf.org/html/rfc5280#page-39
+  */
+ static int x509_v3_basic_constraints(const uint8_t *cert, int offset, 
+         X509_CTX *x509_ctx)
+ {
+     int ret = X509_OK;
+-    int lenSeq, l= 0;
+ 
+     if ((offset = asn1_is_basic_constraints(cert, offset)) == 0)
+         goto end_contraints;
+ 
+     x509_ctx->basic_constraint_present = true;
+     x509_ctx->basic_constraint_is_critical = 
+                     asn1_is_critical_ext(cert, &offset);
+ 
+-    /* Assign Defaults in case not specified
+-    basic_constraint_cA will already by zero by virtue of the calloc */
+-    x509_ctx->basic_constraint_cA = 0;
+-    /* basic_constraint_pathLenConstraint is unlimited by default. 
+-    10000 is just a large number (limits.h is not already included) */
+-    x509_ctx->basic_constraint_pathLenConstraint = 10000;
+-    
+-    if ((asn1_next_obj(cert, &offset, ASN1_OCTET_STRING) < 0) ||
+-            ((lenSeq = asn1_next_obj(cert, &offset, ASN1_SEQUENCE)) < 0))
++    if (asn1_next_obj(cert, &offset, ASN1_OCTET_STRING) < 0 ||
++    		asn1_next_obj(cert, &offset, ASN1_SEQUENCE) < 0 ||
++    		asn1_get_bool(cert, &offset, &x509_ctx->basic_constraint_cA) < 0 ||
++    		asn1_get_int(cert, &offset,
++    		                &x509_ctx->basic_constraint_pathLenConstraint) < 0)
+     {
+         ret = X509_NOT_OK;       
+     }
+-    
+-    /* If the Sequence Length is greater than zero, 
+-    continue with the basic_constraint_cA */
+-    if ((lenSeq>0)&&(asn1_get_bool(cert, &offset, 
+-            &x509_ctx->basic_constraint_cA) < 0))
+-    {
+-        ret = X509_NOT_OK;
+-    }
+-    
+-    /* If the Sequence Length is greater than 3, it has more content than 
+-    the basic_constraint_cA bool, so grab the pathLenConstraint */
+-    if ((lenSeq>3) && (asn1_get_int(cert, &offset, 
+-            &x509_ctx->basic_constraint_pathLenConstraint) < 0))
+-    {
+-        ret = X509_NOT_OK;
+-    }
+ 
+ end_contraints:
+     return ret;
+ }
+ 
+ /*
+  * Key usage - see https://tools.ietf.org/html/rfc5280#section-4.2.1.3
+  */
+ static int x509_v3_key_usage(const uint8_t *cert, int offset, 
+         X509_CTX *x509_ctx)
+ {
+     int ret = X509_OK;
+ 
+     if ((offset = asn1_is_key_usage(cert, offset)) == 0)
+         goto end_key_usage;
+ 
+     x509_ctx->key_usage_present = true;
+     x509_ctx->key_usage_is_critical = asn1_is_critical_ext(cert, &offset);
+ 
+     if (asn1_next_obj(cert, &offset, ASN1_OCTET_STRING) < 0 ||
+-            asn1_get_bit_string_as_int(cert, &offset, &x509_ctx->key_usage))
++    		asn1_get_bit_string_as_int(cert, &offset, &x509_ctx->key_usage))
+     {
+         ret = X509_NOT_OK;       
+     }
+ 
+ end_key_usage:
+     return ret;
+ }
+ #endif
+ 
+ /**
+  * Free an X.509 object's resources.
+  */
+ void x509_free(X509_CTX *x509_ctx)
+ {
+     X509_CTX *next;
+     int i;
+ 
+     if (x509_ctx == NULL)       /* if already null, then don't bother */
+         return;
+ 
+     for (i = 0; i < X509_NUM_DN_TYPES; i++)
+     {
+         free(x509_ctx->ca_cert_dn[i]);
+         free(x509_ctx->cert_dn[i]);
+     }
+ 
+     free(x509_ctx->signature);
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION 
+     if (x509_ctx->digest)
+     {
+         bi_free(x509_ctx->rsa_ctx->bi_ctx, x509_ctx->digest);
+     }
+ 
+     if (x509_ctx->subject_alt_dnsnames)
+     {
+         for (i = 0; x509_ctx->subject_alt_dnsnames[i]; ++i)
+             free(x509_ctx->subject_alt_dnsnames[i]);
+ 
+         free(x509_ctx->subject_alt_dnsnames);
+     }
+ #endif
+ 
+     RSA_free(x509_ctx->rsa_ctx);
+     next = x509_ctx->next;
+     free(x509_ctx);
+     x509_free(next);        /* clear the chain */
+ }
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+ /**
+  * Take a signature and decrypt it.
+  */
+ static bigint *sig_verify(BI_CTX *ctx, const uint8_t *sig, int sig_len,
+         bigint *modulus, bigint *pub_exp)
+ {
+     int i, size;
+     bigint *decrypted_bi, *dat_bi;
+     bigint *bir = NULL;
+     uint8_t *block = (uint8_t *)alloca(sig_len);
+ 
+     /* decrypt */
+     dat_bi = bi_import(ctx, sig, sig_len);
+     ctx->mod_offset = BIGINT_M_OFFSET;
+ 
+     /* convert to a normal block */
+     decrypted_bi = bi_mod_power2(ctx, dat_bi, modulus, pub_exp);
+ 
+     bi_export(ctx, decrypted_bi, block, sig_len);
+     ctx->mod_offset = BIGINT_M_OFFSET;
+ 
+     i = 10; /* start at the first possible non-padded byte */
+     while (block[i++] && i < sig_len);
+     size = sig_len - i;
+ 
+     /* get only the bit we want */
+     if (size > 0)
+     {
+         int len;
+         const uint8_t *sig_ptr = get_signature(&block[i], &len);
+ 
+         if (sig_ptr)
+         {
+             bir = bi_import(ctx, sig_ptr, len);
+         }
+     }
+ 
+     /* save a few bytes of memory */
+     bi_clear_cache(ctx);
+     return bir;
+ }
+ 
+ /**
+  * Do some basic checks on the certificate chain.
+  *
+  * Certificate verification consists of a number of checks:
+  * - The date of the certificate is after the start date.
+  * - The date of the certificate is before the finish date.
+  * - A root certificate exists in the certificate store.
+  * - That the certificate(s) are not self-signed.
+  * - The certificate chain is valid.
+  * - The signature of the certificate is valid.
+  * - Basic constraints 
+  */
+ int x509_verify(const CA_CERT_CTX *ca_cert_ctx, const X509_CTX *cert, 
+         int *pathLenConstraint) 
+ {
+     int ret = X509_OK, i = 0;
+     bigint *cert_sig;
+     X509_CTX *next_cert = NULL;
+     BI_CTX *ctx = NULL;
+     bigint *mod = NULL, *expn = NULL;
+     int match_ca_cert = 0;
+     struct timeval tv;
+     uint8_t is_self_signed = 0;
+ 
+     if (cert == NULL)
+     {
+         ret = X509_VFY_ERROR_NO_TRUSTED_CERT;       
+         goto end_verify;
+     }
+ 
+     /* a self-signed certificate that is not in the CA store - use this 
+        to check the signature */
+     if (asn1_compare_dn(cert->ca_cert_dn, cert->cert_dn) == 0)
+     {
+         is_self_signed = 1;
+         ctx = cert->rsa_ctx->bi_ctx;
+         mod = cert->rsa_ctx->m;
+         expn = cert->rsa_ctx->e;
+     }
+ 
+     gettimeofday(&tv, NULL);
+ 
+     /* check the not before date */
+     if (tv.tv_sec < cert->not_before)
+     {
+         ret = X509_VFY_ERROR_NOT_YET_VALID;
+         goto end_verify;
+     }
+ 
+     /* check the not after date */
+     if (tv.tv_sec > cert->not_after)
+     {
+         ret = X509_VFY_ERROR_EXPIRED;
+         goto end_verify;
+     }
+ 
+     if (cert->basic_constraint_present)
+     {
+-        /* If the cA boolean is not asserted,
+-           then the keyCertSign bit in the key usage extension MUST NOT be
+-           asserted. */
+-        if (!cert->basic_constraint_cA &&
++    	/* If the cA boolean is not asserted,
++    	   then the keyCertSign bit in the key usage extension MUST NOT be
++    	   asserted. */
++    	if (!cert->basic_constraint_cA &&
+                 IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_KEY_CERT_SIGN))
+-        {
+-            ret = X509_VFY_ERROR_BASIC_CONSTRAINT;
+-            goto end_verify;
+-        }
++		{
++			ret = X509_VFY_ERROR_BASIC_CONSTRAINT;
++			goto end_verify;
++		}
+ 
+         /* The pathLenConstraint field is meaningful only if the cA boolean is
+            asserted and the key usage extension, if present, asserts the
+            keyCertSign bit.  In this case, it gives the maximum number of 
+            non-self-issued intermediate certificates that may follow this 
+            certificate in a valid certification path. */
+-        if (cert->basic_constraint_cA &&
++		if (cert->basic_constraint_cA &&
+             (!cert->key_usage_present || 
+                 IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_KEY_CERT_SIGN)) &&
+             (cert->basic_constraint_pathLenConstraint+1) < *pathLenConstraint)
+-        {
+-            ret = X509_VFY_ERROR_BASIC_CONSTRAINT;
+-            goto end_verify;
+-        }
++		{
++			ret = X509_VFY_ERROR_BASIC_CONSTRAINT;
++			goto end_verify;
++		}
+     }
+ 
+     next_cert = cert->next;
+ 
+     /* last cert in the chain - look for a trusted cert */
+     if (next_cert == NULL)
+     {
+        if (ca_cert_ctx != NULL) 
+        {
+             /* go thru the CA store */
+             while (i < CONFIG_X509_MAX_CA_CERTS && ca_cert_ctx->cert[i])
+             {
+                 /* the extension is present but the cA boolean is not 
+                    asserted, then the certified public key MUST NOT be used 
+                    to verify certificate signatures. */
+                 if (cert->basic_constraint_present && 
+                         !ca_cert_ctx->cert[i]->basic_constraint_cA)
+                     continue;
+                         
+                 if (asn1_compare_dn(cert->ca_cert_dn,
+                                             ca_cert_ctx->cert[i]->cert_dn) == 0)
+                 {
+                     /* use this CA certificate for signature verification */
+                     match_ca_cert = true;
+                     ctx = ca_cert_ctx->cert[i]->rsa_ctx->bi_ctx;
+                     mod = ca_cert_ctx->cert[i]->rsa_ctx->m;
+                     expn = ca_cert_ctx->cert[i]->rsa_ctx->e;
+ 
+ 
+                     break;
+                 }
+ 
+                 i++;
+             }
+         }
+ 
+         /* couldn't find a trusted cert (& let self-signed errors 
+            be returned) */
+         if (!match_ca_cert && !is_self_signed)
+         {
+             ret = X509_VFY_ERROR_NO_TRUSTED_CERT;       
+             goto end_verify;
+         }
+     }
+     else if (asn1_compare_dn(cert->ca_cert_dn, next_cert->cert_dn) != 0)
+     {
+         /* check the chain */
+         ret = X509_VFY_ERROR_INVALID_CHAIN;
+         goto end_verify;
+     }
+     else /* use the next certificate in the chain for signature verify */
+     {
+         ctx = next_cert->rsa_ctx->bi_ctx;
+         mod = next_cert->rsa_ctx->m;
+         expn = next_cert->rsa_ctx->e;
+     }
+ 
+     /* cert is self signed */
+     if (!match_ca_cert && is_self_signed)
+     {
+         ret = X509_VFY_ERROR_SELF_SIGNED;
+         goto end_verify;
+     }
+ 
+     /* check the signature */
+     cert_sig = sig_verify(ctx, cert->signature, cert->sig_len, 
+                         bi_clone(ctx, mod), bi_clone(ctx, expn));
+ 
+     if (cert_sig && cert->digest)
+     {
+         if (bi_compare(cert_sig, cert->digest) != 0)
+             ret = X509_VFY_ERROR_BAD_SIGNATURE;
+ 
+ 
+         bi_free(ctx, cert_sig);
+     }
+     else
+     {
+         ret = X509_VFY_ERROR_BAD_SIGNATURE;
+     }
+ 
+     if (ret)
+         goto end_verify;
+ 
+     /* go down the certificate chain using recursion. */
+     if (next_cert != NULL)
+     {
+-        (*pathLenConstraint)++; /* don't include last certificate */
++    	(*pathLenConstraint)++; /* don't include last certificate */
+         ret = x509_verify(ca_cert_ctx, next_cert, pathLenConstraint);
+     }
+ 
+ end_verify:
+     return ret;
+ }
+ #endif
+ 
+ #if defined (CONFIG_SSL_FULL_MODE)
+ /**
+  * Used for diagnostics.
+  */
+ static const char *not_part_of_cert = "<Not Part Of Certificate>";
+ void x509_print(const X509_CTX *cert, CA_CERT_CTX *ca_cert_ctx) 
+ {
+     if (cert == NULL)
+         return;
+ 
+     printf("=== CERTIFICATE ISSUED TO ===\n");
+     printf("Common Name (CN):\t\t");
+     printf("%s\n", cert->cert_dn[X509_COMMON_NAME] ?
+                     cert->cert_dn[X509_COMMON_NAME] : not_part_of_cert);
+ 
+     printf("Organization (O):\t\t");
+     printf("%s\n", cert->cert_dn[X509_ORGANIZATION] ?
+         cert->cert_dn[X509_ORGANIZATION] : not_part_of_cert);
+ 
+     if (cert->cert_dn[X509_ORGANIZATIONAL_UNIT]) 
+     {
+         printf("Organizational Unit (OU):\t");
+         printf("%s\n", cert->cert_dn[X509_ORGANIZATIONAL_UNIT]);
+     }
+ 
+     if (cert->cert_dn[X509_LOCATION]) 
+     {
+         printf("Location (L):\t\t\t");
+         printf("%s\n", cert->cert_dn[X509_LOCATION]);
+     }
+ 
+     if (cert->cert_dn[X509_COUNTRY]) 
+     {
+         printf("Country (C):\t\t\t");
+         printf("%s\n", cert->cert_dn[X509_COUNTRY]);
+     }
+ 
+     if (cert->cert_dn[X509_STATE]) 
+     {
+         printf("State (ST):\t\t\t");
+         printf("%s\n", cert->cert_dn[X509_STATE]);
+     }
+ 
+     if (cert->basic_constraint_present)
+     {
+         printf("Basic Constraints:\t\t%sCA:%s, pathlen:%d\n",
+                 cert->basic_constraint_is_critical ? 
+                     "critical, " : "",
+                 cert->basic_constraint_cA? "TRUE" : "FALSE",
+                 cert->basic_constraint_pathLenConstraint);
+     }
+ 
+     if (cert->key_usage_present)
+     {
+         printf("Key Usage:\t\t\t%s", cert->key_usage_is_critical ? 
+                     "critical, " : "");
+         bool has_started = false;
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_DIGITAL_SIGNATURE))
+         {
+             printf("Digital Signature");
+             has_started = true;
+         }
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_NON_REPUDIATION))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Non Repudiation");
+             has_started = true;
+         }
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_KEY_ENCIPHERMENT))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Key Encipherment");
+             has_started = true;
+         }
+         
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_DATA_ENCIPHERMENT))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Data Encipherment");
+             has_started = true;
+         }
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_KEY_AGREEMENT))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Key Agreement");
+             has_started = true;
+         }
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_KEY_CERT_SIGN))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Key Cert Sign");
+             has_started = true;
+         }
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_CRL_SIGN))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("CRL Sign");
+             has_started = true;
+         }
+        
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_ENCIPHER_ONLY))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Encipher Only");
+             has_started = true;
+         }
+ 
+         if (IS_SET_KEY_USAGE_FLAG(cert, KEY_USAGE_DECIPHER_ONLY))
+         {
+             if (has_started)
+                 printf(", ");
+ 
+             printf("Decipher Only");
+             has_started = true;
+         }
+ 
+         printf("\n");
+     }
+ 
+     if (cert->subject_alt_name_present)
+     {
+         printf("Subject Alt Name:\t\t%s", cert->subject_alt_name_is_critical 
+                 ?  "critical, " : "");
+         if (cert->subject_alt_dnsnames)
+         {
+             int i = 0;
+ 
+             while (cert->subject_alt_dnsnames[i])
+                 printf("%s ", cert->subject_alt_dnsnames[i++]);
+         }
+         printf("\n");
+ 
+     }
+ 
+     printf("=== CERTIFICATE ISSUED BY ===\n");
+     printf("Common Name (CN):\t\t");
+     printf("%s\n", cert->ca_cert_dn[X509_COMMON_NAME] ?
+                     cert->ca_cert_dn[X509_COMMON_NAME] : not_part_of_cert);
+ 
+     printf("Organization (O):\t\t");
+     printf("%s\n", cert->ca_cert_dn[X509_ORGANIZATION] ?
+         cert->ca_cert_dn[X509_ORGANIZATION] : not_part_of_cert);
+ 
+     if (cert->ca_cert_dn[X509_ORGANIZATIONAL_UNIT]) 
+     {
+         printf("Organizational Unit (OU):\t");
+         printf("%s\n", cert->ca_cert_dn[X509_ORGANIZATIONAL_UNIT]);
+     }
+ 
+     if (cert->ca_cert_dn[X509_LOCATION]) 
+     {
+         printf("Location (L):\t\t\t");
+         printf("%s\n", cert->ca_cert_dn[X509_LOCATION]);
+     }
+ 
+     if (cert->ca_cert_dn[X509_COUNTRY]) 
+     {
+         printf("Country (C):\t\t\t");
+         printf("%s\n", cert->ca_cert_dn[X509_COUNTRY]);
+     }
+ 
+     if (cert->ca_cert_dn[X509_STATE]) 
+     {
+         printf("State (ST):\t\t\t");
+         printf("%s\n", cert->ca_cert_dn[X509_STATE]);
+     }
+ 
+     printf("Not Before:\t\t\t%s", ctime(&cert->not_before));
+     printf("Not After:\t\t\t%s", ctime(&cert->not_after));
+     printf("RSA bitsize:\t\t\t%d\n", cert->rsa_ctx->num_octets*8);
+     printf("Sig Type:\t\t\t");
+     switch (cert->sig_type)
+     {
+         case SIG_TYPE_MD5:
+             printf("MD5\n");
+             break;
+         case SIG_TYPE_SHA1:
+             printf("SHA1\n");
+             break;
+         case SIG_TYPE_SHA256:
+             printf("SHA256\n");
+             break;
+         case SIG_TYPE_SHA384:
+             printf("SHA384\n");
+             break;
+         case SIG_TYPE_SHA512:
+             printf("SHA512\n");
+             break;
+         default:
+             printf("Unrecognized: %d\n", cert->sig_type);
+             break;
+     }
+ 
+     if (ca_cert_ctx)
+     {
+         int pathLenConstraint = 0;
+         printf("Verify:\t\t\t\t%s\n",
+                 x509_display_error(x509_verify(ca_cert_ctx, cert,
+                         &pathLenConstraint)));
+     }
+ 
+ #if 0
+     print_blob("Signature", cert->signature, cert->sig_len);
+     bi_print("Modulus", cert->rsa_ctx->m);
+     bi_print("Pub Exp", cert->rsa_ctx->e);
+ #endif
+ 
+     if (ca_cert_ctx)
+     {
+         x509_print(cert->next, ca_cert_ctx);
+     }
+ 
+     TTY_FLUSH();
+ }
+ 
+ const char * x509_display_error(int error)
+ {
+     switch (error)
+     {
+         case X509_OK:
+             return "Certificate verify successful";
+ 
+         case X509_NOT_OK:
+             return "X509 not ok";
+ 
+         case X509_VFY_ERROR_NO_TRUSTED_CERT:
+             return "No trusted cert is available";
+ 
+         case X509_VFY_ERROR_BAD_SIGNATURE:
+             return "Bad signature";
+ 
+         case X509_VFY_ERROR_NOT_YET_VALID:
+             return "Cert is not yet valid";
+ 
+         case X509_VFY_ERROR_EXPIRED:
+             return "Cert has expired";
+ 
+         case X509_VFY_ERROR_SELF_SIGNED:
+             return "Cert is self-signed";
+ 
+         case X509_VFY_ERROR_INVALID_CHAIN:
+             return "Chain is invalid (check order of certs)";
+ 
+         case X509_VFY_ERROR_UNSUPPORTED_DIGEST:
+             return "Unsupported digest";
+ 
+         case X509_INVALID_PRIV_KEY:
+             return "Invalid private key";
+ 
+         case X509_VFY_ERROR_BASIC_CONSTRAINT:
+             return "Basic constraint invalid";
+ 
+         default:
+             return "Unknown";
+     }
+ }
+ #endif      /* CONFIG_SSL_FULL_MODE */
+ 
+Index: ssl/tls1_svr.c
+===================================================================
+--- ssl/tls1_svr.c	(revision 276)
++++ ssl/tls1_svr.c	(revision 275)
+@@ -1,530 +1,526 @@
+ /*
+- * Copyright (c) 2007-2017, Cameron Rich
++ * Copyright (c) 2007-2016, Cameron Rich
+  * 
+  * All rights reserved.
+  * 
+  * Redistribution and use in source and binary forms, with or without 
+  * modification, are permitted provided that the following conditions are met:
+  *
+  * * Redistributions of source code must retain the above copyright notice, 
+  *   this list of conditions and the following disclaimer.
+  * * Redistributions in binary form must reproduce the above copyright notice, 
+  *   this list of conditions and the following disclaimer in the documentation 
+  *   and/or other materials provided with the distribution.
+  * * Neither the name of the axTLS project nor the names of its contributors 
+  *   may be used to endorse or promote products derived from this software 
+  *   without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #include <stdlib.h>
+ #include <string.h>
+ #include <stdio.h>
+ #include "os_port.h"
+ #include "ssl.h"
+ 
+ static const uint8_t g_hello_done[] = { HS_SERVER_HELLO_DONE, 0, 0, 0 };
+ static const uint8_t g_asn1_sha256[] = 
+ { 
+     0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 
+     0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20
+ };
+ 
+ static int process_client_hello(SSL *ssl);
+ static int send_server_hello_sequence(SSL *ssl);
+ static int send_server_hello(SSL *ssl);
+ static int send_server_hello_done(SSL *ssl);
+ static int process_client_key_xchg(SSL *ssl);
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+ static int send_certificate_request(SSL *ssl);
+ static int process_cert_verify(SSL *ssl);
+ #endif
+ 
+ /*
+  * Establish a new SSL connection to an SSL client.
+  */
+ EXP_FUNC SSL * STDCALL ssl_server_new(SSL_CTX *ssl_ctx, int client_fd)
+ {
+     SSL *ssl;
+ 
+     ssl = ssl_new(ssl_ctx, client_fd);
+     ssl->next_state = HS_CLIENT_HELLO;
+ 
+ #ifdef CONFIG_SSL_FULL_MODE
+     if (ssl_ctx->chain_length == 0)
+         printf("Warning - no server certificate defined\n"); TTY_FLUSH();
+ #endif
+ 
+     return ssl;
+ }
+ 
+ /*
+  * Process the handshake record.
+  */
+ int do_svr_handshake(SSL *ssl, int handshake_type, uint8_t *buf, int hs_len)
+ {
+     int ret = SSL_OK;
+     ssl->hs_status = SSL_NOT_OK;            /* not connected */
+ 
+     /* To get here the state must be valid */
+     switch (handshake_type)
+     {
+         case HS_CLIENT_HELLO:
+             if ((ret = process_client_hello(ssl)) == SSL_OK)
+                 ret = send_server_hello_sequence(ssl);
+             break;
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+         case HS_CERTIFICATE:/* the client sends its cert */
+             ret = process_certificate(ssl, &ssl->x509_ctx);
+ 
+             if (ret == SSL_OK)    /* verify the cert */
+             { 
+                 int cert_res;
+                 int pathLenConstraint = 0;
+ 
+                 cert_res = x509_verify(ssl->ssl_ctx->ca_cert_ctx, 
+                         ssl->x509_ctx, &pathLenConstraint);
+                 ret = (cert_res == 0) ? SSL_OK : SSL_X509_ERROR(cert_res);
+             }
+             break;
+ 
+         case HS_CERT_VERIFY:    
+             ret = process_cert_verify(ssl);
+             add_packet(ssl, buf, hs_len);   /* needs to be done after */
+             break;
+ #endif
+         case HS_CLIENT_KEY_XCHG:
+             ret = process_client_key_xchg(ssl);
+             break;
+ 
+         case HS_FINISHED:
+             ret = process_finished(ssl, buf, hs_len);
+             disposable_free(ssl);   /* free up some memory */
+             break;
+     }
+ 
+     return ret;
+ }
+ 
+ /* 
+  * Process a client hello message.
+  */
+ static int process_client_hello(SSL *ssl)
+ {
+     uint8_t *buf = ssl->bm_data;
+     int pkt_size = ssl->bm_index;
+     int i, j, cs_len, id_len, offset = 6 + SSL_RANDOM_SIZE;
+     int ret = SSL_OK;
+     
+     uint8_t version = (buf[4] << 4) + buf[5];
+     ssl->version = ssl->client_version = version;
+ 
+     if (version > SSL_PROTOCOL_VERSION_MAX)
+     {
+         /* use client's version instead */
+         ssl->version = SSL_PROTOCOL_VERSION_MAX; 
+     }
+     else if (version < SSL_PROTOCOL_MIN_VERSION)  /* old version supported? */
+     {
+         ret = SSL_ERROR_INVALID_VERSION;
+         ssl_display_error(ret);
+         goto error;
+     }
+ 
+     memcpy(ssl->dc->client_random, &buf[6], SSL_RANDOM_SIZE);
+ 
+     /* process the session id */
+     id_len = buf[offset++];
+     if (id_len > SSL_SESSION_ID_SIZE)
+     {
+         return SSL_ERROR_INVALID_SESSION;
+     }
+ 
+ #ifndef CONFIG_SSL_SKELETON_MODE
+     ssl->session = ssl_session_update(ssl->ssl_ctx->num_sessions,
+             ssl->ssl_ctx->ssl_sessions, ssl, id_len ? &buf[offset] : NULL);
+ #endif
+ 
+     offset += id_len;
+     cs_len = (buf[offset]<<8) + buf[offset+1];
+-    offset += 2;
++    offset += 3;        /* add 1 due to all cipher suites being 8 bit */
+ 
+     PARANOIA_CHECK(pkt_size, offset + cs_len);
+ 
+     /* work out what cipher suite we are going to use - client defines 
+        the preference */
+     for (i = 0; i < cs_len; i += 2)
+     {
+-        /* only support ciphersuites with the form (0x00, xxxx) */
+-        if (buf[offset+i])
+-            continue;
+-
+         for (j = 0; j < NUM_PROTOCOLS; j++)
+         {
+-            if (ssl_prot_prefs[j] == buf[offset+i+1])   /* got a match? */
++            if (ssl_prot_prefs[j] == buf[offset+i])   /* got a match? */
+             {
+                 ssl->cipher = ssl_prot_prefs[j];
+                 goto do_compression;
+             }
+         }
+     }
+ 
+     /* ouch! protocol is not supported */
+     return SSL_ERROR_NO_CIPHER;
+ 
+     /* completely ignore compression */
+ do_compression:
+     offset += cs_len;
+     id_len = buf[offset++];
+     offset += id_len;
+     PARANOIA_CHECK(pkt_size, offset + id_len);
+ 
+     if (offset == pkt_size)
+     {
+         /* no extensions */
+         goto error;
+     }
+ 
+     /* extension size */
+     id_len = buf[offset++] << 8;
+     id_len += buf[offset++];
+     PARANOIA_CHECK(pkt_size, offset + id_len);
+     
+     // Check for extensions from the client - only the signature algorithm
+     // is supported
+     while (offset < pkt_size) 
+     {
+         int ext = buf[offset++] << 8;
+         ext += buf[offset++];
+         int ext_len = buf[offset++] << 8;
+         ext_len += buf[offset++];
+         PARANOIA_CHECK(pkt_size, offset + ext_len);
+         
+         if (ext == SSL_EXT_SIG_ALG)
+         {
+             while (ext_len > 0)
+             {
+                 uint8_t hash_alg = buf[offset++];
+                 uint8_t sig_alg = buf[offset++];
+                 ext_len -= 2;
+ 
+                 if (sig_alg == SIG_ALG_RSA && 
+                         (hash_alg == SIG_ALG_SHA1 ||
+                          hash_alg == SIG_ALG_SHA256 ||
+                          hash_alg == SIG_ALG_SHA384 ||
+                          hash_alg == SIG_ALG_SHA512))
+                 {
+                     ssl->sig_algs[ssl->num_sig_algs++] = hash_alg;
+                 }
+             }
+         }
+         else
+         {
+             offset += ext_len;
+         }
+     }
+ 
+     /* default is RSA/SHA1 */
+     if (ssl->num_sig_algs == 0)
+     {
+         ssl->sig_algs[ssl->num_sig_algs++] = SIG_ALG_SHA1;
+     }
+ 
+ error:
+     return ret;
+ }
+ 
+ /*
+  * Send the entire server hello sequence
+  */
+ static int send_server_hello_sequence(SSL *ssl)
+ {
+     int ret;
+ 
+     if ((ret = send_server_hello(ssl)) == SSL_OK)
+     {
+ #ifndef CONFIG_SSL_SKELETON_MODE
+         /* resume handshake? */
+         if (IS_SET_SSL_FLAG(SSL_SESSION_RESUME))
+         {
+             if ((ret = send_change_cipher_spec(ssl)) == SSL_OK)
+             {
+                 ret = send_finished(ssl);
+                 ssl->next_state = HS_FINISHED;
+             }
+         }
+         else 
+ #endif
+         if ((ret = send_certificate(ssl)) == SSL_OK)
+         {
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+             /* ask the client for its certificate */
+             if (IS_SET_SSL_FLAG(SSL_CLIENT_AUTHENTICATION))
+             {
+                 if ((ret = send_certificate_request(ssl)) == SSL_OK)
+                 {
+                     ret = send_server_hello_done(ssl);
+                     ssl->next_state = HS_CERTIFICATE;
+                 }
+             }
+             else
+ #endif
+             {
+                 ret = send_server_hello_done(ssl);
+                 ssl->next_state = HS_CLIENT_KEY_XCHG;
+             }
+         }
+     }
+ 
+     return ret;
+ }
+ 
+ /*
+  * Send a server hello message.
+  */
+ static int send_server_hello(SSL *ssl)
+ {
+     uint8_t *buf = ssl->bm_data;
+     int offset = 0;
+ 
+     buf[0] = HS_SERVER_HELLO;
+     buf[1] = 0;
+     buf[2] = 0;
+     /* byte 3 is calculated later */
+     buf[4] = 0x03;
+     buf[5] = ssl->version & 0x0f;
+ 
+     /* server random value */
+     if (get_random(SSL_RANDOM_SIZE, &buf[6]) < 0)
+         return SSL_NOT_OK;
+ 
+     memcpy(ssl->dc->server_random, &buf[6], SSL_RANDOM_SIZE);
+     offset = 6 + SSL_RANDOM_SIZE;
+ 
+ #ifndef CONFIG_SSL_SKELETON_MODE
+     if (IS_SET_SSL_FLAG(SSL_SESSION_RESUME))
+     {
+         /* retrieve id from session cache */
+         buf[offset++] = SSL_SESSION_ID_SIZE;
+         memcpy(&buf[offset], ssl->session->session_id, SSL_SESSION_ID_SIZE);
+         memcpy(ssl->session_id, ssl->session->session_id, SSL_SESSION_ID_SIZE);
+         ssl->sess_id_size = SSL_SESSION_ID_SIZE;
+         offset += SSL_SESSION_ID_SIZE;
+     }
+     else    /* generate our own session id */
+ #endif
+     {
+ #ifndef CONFIG_SSL_SKELETON_MODE
+         buf[offset++] = SSL_SESSION_ID_SIZE;
+         get_random(SSL_SESSION_ID_SIZE, &buf[offset]);
+         memcpy(ssl->session_id, &buf[offset], SSL_SESSION_ID_SIZE);
+         ssl->sess_id_size = SSL_SESSION_ID_SIZE;
+ 
+         /* store id in session cache */
+         if (ssl->ssl_ctx->num_sessions)
+         {
+             memcpy(ssl->session->session_id, 
+                     ssl->session_id, SSL_SESSION_ID_SIZE);
+         }
+ 
+         offset += SSL_SESSION_ID_SIZE;
+ #else
+         buf[offset++] = 0;  /* don't bother with session id in skelton mode */
+ #endif
+     }
+ 
+     buf[offset++] = 0;      /* cipher we are using */
+     buf[offset++] = ssl->cipher;
+     buf[offset++] = 0;      /* no compression and no extensions supported */
+     buf[3] = offset - 4;    /* handshake size */
+     return send_packet(ssl, PT_HANDSHAKE_PROTOCOL, NULL, offset);
+ }
+ 
+ /*
+  * Send the server hello done message.
+  */
+ static int send_server_hello_done(SSL *ssl)
+ {
+     return send_packet(ssl, PT_HANDSHAKE_PROTOCOL, 
+                             g_hello_done, sizeof(g_hello_done));
+ }
+ 
+ /*
+  * Pull apart a client key exchange message. Decrypt the pre-master key (using
+  * our RSA private key) and then work out the master key. Initialise the
+  * ciphers.
+  */
+ static int process_client_key_xchg(SSL *ssl)
+ {
+     uint8_t *buf = &ssl->bm_data[ssl->dc->bm_proc_index];
+     int pkt_size = ssl->bm_index;
+     int premaster_size, secret_length = (buf[2] << 8) + buf[3];
+     uint8_t premaster_secret[MAX_KEY_BYTE_SIZE];
+     RSA_CTX *rsa_ctx = ssl->ssl_ctx->rsa_ctx;
+     int offset = 4;
+     int ret = SSL_OK;
+     
+     if (rsa_ctx == NULL)
+     {
+         ret = SSL_ERROR_NO_CERT_DEFINED;
+         goto error;
+     }
+ 
+     /* is there an extra size field? */
+     if ((secret_length - 2) == rsa_ctx->num_octets)
+         offset += 2;
+ 
+     PARANOIA_CHECK(pkt_size, rsa_ctx->num_octets+offset);
+ 
+     /* rsa_ctx->bi_ctx is not thread-safe */
+     SSL_CTX_LOCK(ssl->ssl_ctx->mutex);
+     premaster_size = RSA_decrypt(rsa_ctx, &buf[offset], premaster_secret,
+             sizeof(premaster_secret), 1);
+     SSL_CTX_UNLOCK(ssl->ssl_ctx->mutex);
+ 
+     if (premaster_size != SSL_SECRET_SIZE || 
+             premaster_secret[0] != 0x03 ||  /* must be the same as client
+                                                offered version */
+                 premaster_secret[1] != (ssl->client_version & 0x0f))
+     {
+         /* guard against a Bleichenbacher attack */
+         if (get_random(SSL_SECRET_SIZE, premaster_secret) < 0)
+             return SSL_NOT_OK;
+ 
+         /* and continue - will die eventually when checking the mac */
+     }
+ 
+     generate_master_secret(ssl, premaster_secret);
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+     ssl->next_state = IS_SET_SSL_FLAG(SSL_CLIENT_AUTHENTICATION) ?  
+                                             HS_CERT_VERIFY : HS_FINISHED;
+ #else
+     ssl->next_state = HS_FINISHED; 
+ #endif
+ 
+     ssl->dc->bm_proc_index += rsa_ctx->num_octets+offset;
+ error:
+     return ret;
+ }
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+ static const uint8_t g_cert_request[] = { HS_CERT_REQ, 0, 
+                 0, 0x0e, 
+                 1, 1, // rsa sign 
+                 0x00, 0x08,
+                 SIG_ALG_SHA256, SIG_ALG_RSA,
+                 SIG_ALG_SHA512, SIG_ALG_RSA,
+                 SIG_ALG_SHA384, SIG_ALG_RSA,
+                 SIG_ALG_SHA1, SIG_ALG_RSA,
+                 0, 0
+ };
+ 
+ static const uint8_t g_cert_request_v1[] = { HS_CERT_REQ, 0, 0, 4, 1, 0, 0, 0 };
+ 
+ /*
+  * Send the certificate request message.
+  */
+ static int send_certificate_request(SSL *ssl)
+ {
+     if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2) // TLS1.2+
+     {
+         return send_packet(ssl, PT_HANDSHAKE_PROTOCOL, 
+             g_cert_request, sizeof(g_cert_request));
+     }
+     else
+     {
+         return send_packet(ssl, PT_HANDSHAKE_PROTOCOL, 
+             g_cert_request_v1, sizeof(g_cert_request_v1));
+     }
+ }
+ 
+ /*
+  * Ensure the client has the private key by first decrypting the packet and
+  * then checking the packet digests.
+  */
+ static int process_cert_verify(SSL *ssl)
+ {
+     uint8_t *buf = &ssl->bm_data[ssl->dc->bm_proc_index];
+     int pkt_size = ssl->bm_index;
+     uint8_t dgst_buf[MAX_KEY_BYTE_SIZE];
+     uint8_t dgst[MD5_SIZE + SHA1_SIZE];
+     X509_CTX *x509_ctx = ssl->x509_ctx;
+     int ret = SSL_OK;
+     int offset = 6;
+     int rsa_len;
+     int n;
+ 
+     DISPLAY_RSA(ssl, x509_ctx->rsa_ctx);
+ 
+     if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2) // TLS1.2+
+     {
+         // TODO: should really need to be able to handle other algorihms. An 
+         // assumption is made on RSA/SHA256 and appears to be OK.
+         //uint8_t hash_alg = buf[4];
+         //uint8_t sig_alg = buf[5];
+         offset = 8;
+         rsa_len = (buf[6] << 8) + buf[7];
+     }
+     else
+     {
+         rsa_len = (buf[4] << 8) + buf[5];
+     }
+ 
+     PARANOIA_CHECK(pkt_size, offset + rsa_len);
+ 
+     /* rsa_ctx->bi_ctx is not thread-safe */
+     SSL_CTX_LOCK(ssl->ssl_ctx->mutex);
+     n = RSA_decrypt(x509_ctx->rsa_ctx, &buf[offset], dgst_buf, 
+                     sizeof(dgst_buf), 0);
+     SSL_CTX_UNLOCK(ssl->ssl_ctx->mutex);
+ 
+     if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2) // TLS1.2+
+     {
+         if (memcmp(dgst_buf, g_asn1_sha256, sizeof(g_asn1_sha256)))
+         {
+             ret = SSL_ERROR_INVALID_KEY;
+             goto error;
+         }
+ 
+         finished_digest(ssl, NULL, dgst);       /* calculate the digest */
+         if (memcmp(&dgst_buf[sizeof(g_asn1_sha256)], dgst, SHA256_SIZE))
+         {
+             ret = SSL_ERROR_INVALID_KEY;
+             goto error;
+         }
+     }
+     else // TLS1.0/1.1
+     {
+         if (n != SHA1_SIZE + MD5_SIZE)
+         {
+             ret = SSL_ERROR_INVALID_KEY;
+             goto end_cert_vfy;
+         }
+ 
+         finished_digest(ssl, NULL, dgst);       /* calculate the digest */
+         if (memcmp(dgst_buf, dgst, MD5_SIZE + SHA1_SIZE))
+         {
+             ret = SSL_ERROR_INVALID_KEY;
+         }
+     }
+ 
+ end_cert_vfy:
+     ssl->next_state = HS_FINISHED;
+ error:
+     return ret;
+ }
+ 
+ #endif
+Index: ssl/tls1.h
+===================================================================
+--- ssl/tls1.h	(revision 276)
++++ ssl/tls1.h	(revision 275)
+@@ -1,323 +1,323 @@
+ /*
+  * Copyright (c) 2007-2016, Cameron Rich
+  * 
+  * All rights reserved.
+  * 
+  * Redistribution and use in source and binary forms, with or without 
+  * modification, are permitted provided that the following conditions are met:
+  *
+  * * Redistributions of source code must retain the above copyright notice, 
+  *   this list of conditions and the following disclaimer.
+  * * Redistributions in binary form must reproduce the above copyright notice, 
+  *   this list of conditions and the following disclaimer in the documentation 
+  *   and/or other materials provided with the distribution.
+  * * Neither the name of the axTLS project nor the names of its contributors 
+  *   may be used to endorse or promote products derived from this software 
+  *   without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ /**
+  * @file tls1.h
+  *
+  * @brief The definitions for the TLS library.
+  */
+ #ifndef HEADER_SSL_LIB_H
+ #define HEADER_SSL_LIB_H
+ 
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+ #include "version.h"
+ #include "config.h"
+ #include "os_int.h"
+ #include "os_port.h"
+ #include "crypto.h"
+ #include "crypto_misc.h"
+ 
+ #define SSL_PROTOCOL_MIN_VERSION    0x31   /* TLS v1.0 */
+ #define SSL_PROTOCOL_VERSION_MAX    0x33   /* TLS v1.3 */
+ #define SSL_PROTOCOL_VERSION_TLS1_1 0x32   /* TLS v1.1 */
+ #define SSL_PROTOCOL_VERSION_TLS1_2 0x33   /* TLS v1.2 */
+ #define SSL_RANDOM_SIZE             32
+ #define SSL_SECRET_SIZE             48
+ #define SSL_FINISHED_HASH_SIZE      12
+ #define SSL_RECORD_SIZE             5
+ #define SSL_SERVER_READ             0
+ #define SSL_SERVER_WRITE            1
+ #define SSL_CLIENT_READ             2
+ #define SSL_CLIENT_WRITE            3
+ #define SSL_HS_HDR_SIZE             4
+ 
+ /* the flags we use while establishing a connection */
+ #define SSL_NEED_RECORD             0x0001
+ #define SSL_TX_ENCRYPTED            0x0002 
+ #define SSL_RX_ENCRYPTED            0x0004
+ #define SSL_SESSION_RESUME          0x0008
+ #define SSL_IS_CLIENT               0x0010
+ #define SSL_HAS_CERT_REQ            0x0020
+ #define SSL_SENT_CLOSE_NOTIFY       0x0040
+ 
+ /* some macros to muck around with flag bits */
+ #define SET_SSL_FLAG(A)             (ssl->flag |= A)
+ #define CLR_SSL_FLAG(A)             (ssl->flag &= ~A)
+ #define IS_SET_SSL_FLAG(A)          (ssl->flag & A)
+ 
+ #define MAX_KEY_BYTE_SIZE           512     /* for a 4096 bit key */
+ #define RT_MAX_PLAIN_LENGTH         16384
+ #define RT_EXTRA                    1024
+ #define BM_RECORD_OFFSET            5
+ 
+ #define NUM_PROTOCOLS               4
+ 
+ #define MAX_SIG_ALGORITHMS          4
+ #define SIG_ALG_SHA1                2
+ #define SIG_ALG_SHA256              4
+ #define SIG_ALG_SHA384              5
+ #define SIG_ALG_SHA512              6
+ #define SIG_ALG_RSA                 1
+ 
+ #define PARANOIA_CHECK(A, B)        if (A < B) { \
+     ret = SSL_ERROR_INVALID_HANDSHAKE; goto error; }
+ 
+ /* protocol types */
+ enum
+ {
+     PT_CHANGE_CIPHER_SPEC = 20,
+     PT_ALERT_PROTOCOL,
+     PT_HANDSHAKE_PROTOCOL,
+     PT_APP_PROTOCOL_DATA
+ };
+ 
+ /* handshaking types */
+ enum
+ {
+     HS_HELLO_REQUEST,
+     HS_CLIENT_HELLO,
+     HS_SERVER_HELLO,
+     HS_CERTIFICATE = 11,
+     HS_SERVER_KEY_XCHG,
+     HS_CERT_REQ,
+     HS_SERVER_HELLO_DONE,
+     HS_CERT_VERIFY,
+     HS_CLIENT_KEY_XCHG,
+     HS_FINISHED = 20
+ };
+ 
+ /* SSL extension types */
+ enum
+ {
+     SSL_EXT_SERVER_NAME = 0,
+     SSL_EXT_MAX_FRAGMENT_SIZE,
+     SSL_EXT_SIG_ALG = 0x0d,
+ };
+ 
+ typedef struct 
+ {
+     uint8_t cipher;
+     uint8_t key_size;
+     uint8_t iv_size;
+     uint8_t padding_size;
+     uint8_t digest_size;
+     uint8_t key_block_size;
+     hmac_func hmac;
+     crypt_func encrypt;
+     crypt_func decrypt;
+ } cipher_info_t;
+ 
+ struct _SSLObjLoader 
+ {
+     uint8_t *buf;
+     int len;
+ };
+ 
+ typedef struct _SSLObjLoader SSLObjLoader;
+ 
+ typedef struct 
+ {
+     time_t conn_time;
+     uint8_t session_id[SSL_SESSION_ID_SIZE];
+     uint8_t master_secret[SSL_SECRET_SIZE];
+ } SSL_SESSION;
+ 
+ typedef struct
+ {
+     uint8_t *buf;
+     int size;
+     uint8_t hash_alg;
+ } SSL_CERT;
+ 
+ typedef struct
+ {
+     MD5_CTX md5_ctx;
+     SHA1_CTX sha1_ctx;
+     SHA256_CTX sha256_ctx;
+     uint8_t client_random[SSL_RANDOM_SIZE]; /* client's random sequence */
+     uint8_t server_random[SSL_RANDOM_SIZE]; /* server's random sequence */
+     uint8_t final_finish_mac[128];
+     uint8_t master_secret[SSL_SECRET_SIZE];
+     uint8_t key_block[256];
+     uint16_t bm_proc_index;
+     uint8_t key_block_generated;
+ } DISPOSABLE_CTX;
+ 
+ typedef struct 
+ {
+-    const char *host_name; /* Needed for the SNI support */
++    char *host_name; /* Needed for the SNI support */
+     /* Needed for the Max Fragment Size Extension. 
+        Allowed values: 2^9, 2^10 .. 2^14 */
+     uint16_t max_fragment_size; 
+ } SSL_EXTENSIONS;
+ 
+ struct _SSL
+ {
+     uint32_t flag;
+     uint16_t need_bytes;
+     uint16_t got_bytes;
+     uint8_t record_type;
+     uint8_t cipher;
+     uint8_t sess_id_size;
+     uint8_t version;
+     uint8_t client_version;
+     int16_t next_state;
+     int16_t hs_status;
+     DISPOSABLE_CTX *dc;         /* temporary data which we'll get rid of soon */
+     int client_fd;
+     const cipher_info_t *cipher_info;
+     void *encrypt_ctx;
+     void *decrypt_ctx;
+     uint8_t bm_all_data[RT_MAX_PLAIN_LENGTH+RT_EXTRA];
+     uint8_t *bm_data;
+     uint16_t bm_index;
+     uint16_t bm_read_index;
+     uint8_t sig_algs[MAX_SIG_ALGORITHMS];
+     uint8_t num_sig_algs;
+     struct _SSL *next;                  /* doubly linked list */
+     struct _SSL *prev;
+     struct _SSL_CTX *ssl_ctx;           /* back reference to a clnt/svr ctx */
+ #ifndef CONFIG_SSL_SKELETON_MODE
+     uint16_t session_index;
+     SSL_SESSION *session;
+ #endif
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+     X509_CTX *x509_ctx;
+ #endif
+ 
+     uint8_t session_id[SSL_SESSION_ID_SIZE]; 
+     uint8_t client_mac[SHA256_SIZE];    /* for HMAC verification */
+     uint8_t server_mac[SHA256_SIZE];    /* for HMAC verification */
+     uint8_t read_sequence[8];           /* 64 bit sequence number */
+     uint8_t write_sequence[8];          /* 64 bit sequence number */
+     uint8_t hmac_header[SSL_RECORD_SIZE];    /* rx hmac */
+     SSL_EXTENSIONS *extensions; /* Contains the SSL (client) extensions */
+ };
+ 
+ typedef struct _SSL SSL;
+ 
+ struct _SSL_CTX
+ {
+     uint32_t options;
+     uint8_t chain_length;
+     RSA_CTX *rsa_ctx;
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+     CA_CERT_CTX *ca_cert_ctx;
+ #endif
+     SSL *head;
+     SSL *tail;
+     SSL_CERT certs[CONFIG_SSL_MAX_CERTS];
+ #ifndef CONFIG_SSL_SKELETON_MODE
+     uint16_t num_sessions;
+     SSL_SESSION **ssl_sessions;
+ #endif
+ #ifdef CONFIG_SSL_CTX_MUTEXING
+     SSL_CTX_MUTEX_TYPE mutex;
+ #endif
+ #ifdef CONFIG_OPENSSL_COMPATIBLE
+     void *bonus_attr;
+ #endif
+ };
+ 
+ typedef struct _SSL_CTX SSL_CTX;
+ 
+ /* backwards compatibility */
+ typedef struct _SSL_CTX SSLCTX;
+ 
+ extern const uint8_t ssl_prot_prefs[NUM_PROTOCOLS];
+ 
+ SSL *ssl_new(SSL_CTX *ssl_ctx, int client_fd);
+ void disposable_new(SSL *ssl);
+ void disposable_free(SSL *ssl);
+ int send_packet(SSL *ssl, uint8_t protocol, 
+         const uint8_t *in, int length);
+ int do_svr_handshake(SSL *ssl, int handshake_type, uint8_t *buf, int hs_len);
+ int do_clnt_handshake(SSL *ssl, int handshake_type, uint8_t *buf, int hs_len);
+ int process_finished(SSL *ssl, uint8_t *buf, int hs_len);
+ int process_sslv23_client_hello(SSL *ssl);
+ int send_alert(SSL *ssl, int error_code);
+ int send_finished(SSL *ssl);
+ int send_certificate(SSL *ssl);
+ int basic_read(SSL *ssl, uint8_t **in_data);
+ int send_change_cipher_spec(SSL *ssl);
+ int finished_digest(SSL *ssl, const char *label, uint8_t *digest);
+ void generate_master_secret(SSL *ssl, const uint8_t *premaster_secret);
+ void add_packet(SSL *ssl, const uint8_t *pkt, int len);
+ int add_cert(SSL_CTX *ssl_ctx, const uint8_t *buf, int len);
+ int add_private_key(SSL_CTX *ssl_ctx, SSLObjLoader *ssl_obj);
+ void ssl_obj_free(SSLObjLoader *ssl_obj);
+ int pkcs8_decode(SSL_CTX *ssl_ctx, SSLObjLoader *ssl_obj, const char *password);
+ int pkcs12_decode(SSL_CTX *ssl_ctx, SSLObjLoader *ssl_obj, const char *password);
+ int load_key_certs(SSL_CTX *ssl_ctx);
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+ int add_cert_auth(SSL_CTX *ssl_ctx, const uint8_t *buf, int len);
+ void remove_ca_certs(CA_CERT_CTX *ca_cert_ctx);
+ #endif
+ #ifdef CONFIG_SSL_ENABLE_CLIENT
+ int do_client_connect(SSL *ssl);
+ #endif
+ 
+ #ifdef CONFIG_SSL_FULL_MODE
+ void DISPLAY_STATE(SSL *ssl, int is_send, uint8_t state, int not_ok);
+ void DISPLAY_BYTES(SSL *ssl, const char *format, 
+         const uint8_t *data, int size, ...);
+ void DISPLAY_CERT(SSL *ssl, const X509_CTX *x509_ctx);
+ void DISPLAY_RSA(SSL *ssl,  const RSA_CTX *rsa_ctx);
+ void DISPLAY_ALERT(SSL *ssl, int alert);
+ #else
+ #define DISPLAY_STATE(A,B,C,D)
+ #define DISPLAY_CERT(A,B)
+ #define DISPLAY_RSA(A,B)
+ #define DISPLAY_ALERT(A, B)
+ #ifdef WIN32
+ void DISPLAY_BYTES(SSL *ssl, const char *format,/* win32 has no variadic macros */
+         const uint8_t *data, int size, ...);
+ #else
+ #define DISPLAY_BYTES(A,B,C,D,...)
+ #endif
+ #endif
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION
+ int process_certificate(SSL *ssl, X509_CTX **x509_ctx);
+ #endif
+ 
+ SSL_SESSION *ssl_session_update(int max_sessions, 
+         SSL_SESSION *ssl_sessions[], SSL *ssl,
+         const uint8_t *session_id);
+ void kill_ssl_session(SSL_SESSION **ssl_sessions, SSL *ssl);
+ 
+ #ifdef __cplusplus
+ }
+ #endif
+ 
+ #endif 

@@ -1,0 +1,1247 @@
+r130
+Index: ssl/Makefile
+===================================================================
+--- ssl/Makefile	(revision 130)
++++ ssl/Makefile	(revision 129)
+@@ -1,110 +1,110 @@
+ #
+ #  Copyright(C) 2007 Cameron Rich
+ #
+ #  This library is free software; you can redistribute it and/or modify
+ #  it under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2 of the License, or
+ #  (at your option) any later version.
+ #
+ #  This library is distributed in the hope that it will be useful,
+ #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ #  GNU Lesser General Public License for more details.
+ #
+ #  You should have received a copy of the GNU Lesser General Public License
+ #  along with this library; if not, write to the Free Software
+ #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ #
+ 
+ AXTLS_HOME=..
+ 
+ include $(AXTLS_HOME)/config/.config
+ include $(AXTLS_HOME)/config/makefile.conf
+ 
+ all: libs
+ ifdef CONFIG_PERFORMANCE_TESTING
+ 	$(MAKE) -C test
+ else
+ ifdef CONFIG_SSL_TEST
+ 	$(MAKE) -C test
+ endif
+ endif
+ 
+ ifndef CONFIG_PLATFORM_WIN32
+ TARGET1=$(AXTLS_HOME)/$(STAGE)/libaxtls.a
+ BASETARGET=libaxtls.so
+ CRYPTO_PATH=$(AXTLS_HOME)/crypto/
+ ifdef CONFIG_PLATFORM_CYGWIN
+ TARGET2=$(AXTLS_HOME)/$(STAGE)/libaxtls.dll.a
+ else
+ TARGET2=$(AXTLS_HOME)/$(STAGE)/$(LIBMINOR)
+ endif
+ 
+ # shared library major/minor numbers
+ LIBMAJOR=$(BASETARGET).1
+ LIBMINOR=$(BASETARGET).1.2
+ else
+-TARGET1=$(AXTLS_HOME)/$(STAGE)/axtls.lib
++TARGET1=$(AXTLS_HOME)/axtls.lib
+ TARGET2=$(AXTLS_HOME)/$(STAGE)/axtls.dll
+ STATIC_LIB=$(AXTLS_HOME)/$(STAGE)/axtls.static.lib
+ CRYPTO_PATH=$(AXTLS_HOME)\\crypto\\
+ endif
+ 
+ libs: $(TARGET1) $(TARGET2)
+ 
+ CRYPTO_OBJ=\
+ 	$(CRYPTO_PATH)aes.o \
+ 	$(CRYPTO_PATH)hmac.o \
+ 	$(CRYPTO_PATH)md2.o \
+ 	$(CRYPTO_PATH)md5.o \
+ 	$(CRYPTO_PATH)rc4.o \
+ 	$(CRYPTO_PATH)sha1.o
+ 
+ OBJ=\
+ 	asn1.o \
+ 	x509.o \
+ 	bigint.o \
+ 	crypto_misc.o \
+ 	os_port.o \
+ 	loader.o \
+ 	openssl.o \
+ 	p12.o \
+ 	rsa.o \
+ 	tls1.o \
+ 	tls1_svr.o \
+ 	tls1_clnt.o
+ 
+ include $(AXTLS_HOME)/config/makefile.post
+ 
+ ifndef CONFIG_PLATFORM_WIN32     # Linux/Unix/Cygwin
+ 
+ $(TARGET1) : $(OBJ)
+ 	$(AR) -r $@ $(CRYPTO_OBJ) $(OBJ)
+ 
+ $(TARGET2) : $(OBJ)
+ ifndef CONFIG_PLATFORM_CYGWIN
+ 	$(LD) $(LDFLAGS) $(LDSHARED) -Wl,-soname,$(LIBMAJOR) -o $(AXTLS_HOME)/$(STAGE)/$(LIBMINOR) $(CRYPTO_OBJ) $(OBJ)
+ 	cd $(AXTLS_HOME)/$(STAGE); ln -sf $(LIBMINOR) $(LIBMAJOR); ln -sf $(LIBMAJOR) $(BASETARGET); cd -
+ else
+ 	$(LD) $(LDFLAGS) $(LDSHARED) -o $(AXTLS_HOME)/$(STAGE)/cygaxtls.dll \
+     -Wl,--out-implib=$(AXTLS_HOME)/$(STAGE)/libaxtls.dll.a \
+     -Wl,--export-all-symbols \
+     -Wl,--enable-auto-import $(CRYPTO_OBJ) $(OBJ)
+ endif
+ 
+ else  # Win32
+ CRYPTO_OBJ:=$(CRYPTO_OBJ:.o=.obj)
+ 
+ $(TARGET1) : $(OBJ)
+ 	$(AR) /out:$@ $(CRYPTO_OBJ) $(OBJ)
+ 
+ $(TARGET2) : $(OBJ)
+ 	cp $(TARGET1) $(STATIC_LIB)
+ 	$(LD) $(LDFLAGS) $(LDSHARED) /out:$@ $(CRYPTO_OBJ) $(OBJ)
+ 
+ endif    
+ 
+ clean::
+ 	$(MAKE) -C test clean
+ 	-@rm -f $(AXTLS_HOME)/$(STAGE)/* *.a $(TARGET1) $(TARGET2)
+ 
+Index: ssl/Config.in
+===================================================================
+--- ssl/Config.in	(revision 130)
++++ ssl/Config.in	(revision 129)
+@@ -1,271 +1,274 @@
+ #
+ # For a description of the syntax of this configuration file,
+ # see scripts/config/Kconfig-language.txt
+ #
+ 
+ menu "SSL Library"
+ 
+ choice
+     prompt "Mode"
+     default CONFIG_SSL_FULL_MODE
+ 
+ config CONFIG_SSL_SERVER_ONLY
+     bool "Server only - no verification"
+     help
+         Enable server functionality (no client functionality). 
+         This mode still supports sessions and chaining (which can be turned
+         off in configuration).
+ 
+         The axssl sample runs with the minimum of features.
+                 
+         This is the most space efficient of the modes with the library 
+         about 45kB in size. Use this mode if you are doing standard SSL server
+         work.
+ 
+ config CONFIG_SSL_CERT_VERIFICATION
+     bool "Server only - with verification"
+     help
+         Enable server functionality with client authentication (no client
+         functionality). 
+ 
+         The axssl sample runs with the "-verify" and "-CAfile" options.
+ 
+         This mode produces a library about 49kB in size. Use this mode if you
+         have an SSL server which requires client authentication (which is 
+         uncommon in browser applications).
+ 
+ config CONFIG_SSL_ENABLE_CLIENT
+     bool "Client/Server enabled"
+     help
+         Enable client/server functionality (including peer authentication).
+ 
+         The axssl sample runs with the "s_client" option enabled.
+ 
+         This mode produces a library about 51kB in size. Use this mode if you
+         require axTLS to use SSL client functionality (the SSL server code
+         is always enabled).
+ 
+ config CONFIG_SSL_FULL_MODE
+     bool "Client/Server enabled with diagnostics"
+     help
+         Enable client/server functionality including diagnostics. Most of the
+         extra size in this mode is due to the storage of various strings that
+         are used.
+ 
+         The axssl sample has 3 more options, "-debug", "-state" and "-show-rsa"
+ 
+         This mode produces a library about 58kB in size. It is suggested that 
+         this mode is used only during development, or systems that have more
+         generous memory limits.
+ 
+         It is the default to demonstrate the features of axTLS.
+ 
+ config CONFIG_SSL_SKELETON_MODE
+     bool "Skeleton mode - the smallest server mode"
+     help
+         This is an experiment to build the smallest library at the expense of
+         features and speed.
+ 
+         * Server mode only.
+         * The AES cipher is disabled.
+         * No session resumption.
+         * No external keys/certificates are supported.
+         * The bigint library has most of the performance features disabled.
+         * Some other features/API calls may not work.
+ 
+         This mode produces a library about 37kB in size. The main
+         disadvantage of this mode is speed - it will be much slower than the 
+         other build modes.
+ 
+ endchoice
+ 
+ choice
+     prompt "Protocol Preference"
+     depends on !CONFIG_SSL_SKELETON_MODE
+     default CONFIG_SSL_PROT_MEDIUM
+ 
+ config CONFIG_SSL_PROT_LOW
+     bool "Low"
+     help
+         Chooses the cipher in the order of RC4-SHA, AES128-SHA, AES256-SHA.
+       
+         This will use the fastest cipher(s) but at the expense of security.
+ 
+ config CONFIG_SSL_PROT_MEDIUM
+     bool "Medium"
+     help
+         Chooses the cipher in the order of AES128-SHA, AES256-SHA, RC4-SHA.
+        
+         This mode is a balance between speed and security and is the default.
+ 
+ config CONFIG_SSL_PROT_HIGH
+     bool "High"
+     help
+         Chooses the cipher in the order of AES256-SHA, AES128-SHA, RC4-SHA.
+         
+         This will use the strongest cipher(s) at the cost of speed.
+ 
+ endchoice
+ 
+ config CONFIG_SSL_USE_DEFAULT_KEY
+     bool "Enable default key"
+     depends on !CONFIG_SSL_SKELETON_MODE
+     default y 
+     help
+         Some applications will not require the default private key/certificate
+         that is built in. This is one way to save on a couple of kB's if an
+         external private key/certificate is used.
+ 
+         The advantage of a built-in private key/certificate is that no file
+         system is required for access. 
+         
+         However this private key/certificate can never be changed (without a
+         code update).
+ 
+         This mode is enabled by default. Disable this mode if the 
+         built-in key/certificate is not used.
+ 
+ config CONFIG_SSL_ENABLE_V23_HANDSHAKE
+     bool "Enable v23 Handshake"
+     default y
+     help
+         Some browsers use the v23 handshake client hello message 
+         (an SSL2 format message which all SSL servers can understand). 
+         It may be used if SSL2 is enabled in the browser.
+ 
+         Since this feature takes a kB or so, this feature may be disabled - at
+         the risk of making it incompatible with some browsers (IE6 is ok,
+         Firefox 1.5 and below use it).
+ 
+         Disable if backwards compatibility is not an issue (i.e. the client is
+         always using TLS1.0)
+ 
+ config CONFIG_SSL_HAS_PEM
+     bool "Enable PEM"
+     default n if !CONFIG_SSL_FULL_MODE
+     default y if CONFIG_SSL_FULL_MODE
+     depends on !CONFIG_SSL_SKELETON_MODE
+     help
+         Enable the use of PEM format for certificates and private keys.
+ 
+         PEM is not normally needed - PEM files can be converted into DER files
+         quite easily. However they have the convenience of allowing multiple
+         certificates/keys in the same file.
+         
+         This feature will add a couple of kB to the library. 
+ 
+         Disable if PEM is not used (which will be in most cases).
+ 
+ config CONFIG_SSL_USE_PKCS12
+     bool "Use PKCS8/PKCS12"
+     default n if !CONFIG_SSL_FULL_MODE
+     default y if CONFIG_SSL_FULL_MODE
+     depends on !CONFIG_SSL_SERVER_ONLY && !CONFIG_SSL_SKELETON_MODE
+     help
+         PKCS#12 certificates combine private keys and certificates together in
+         one file.
+ 
+         PKCS#8 private keys are also suppported (as it is a subset of PKCS#12).
+ 
+         The decryption of these certificates uses RC4-128 (and these
+         certificates must be encrypted using this cipher). The actual
+         algorithm is "PBE-SHA1-RC4-128".
+ 
+         Disable if PKCS#12 is not used (which will be in most cases).
+ 
+ config CONFIG_SSL_EXPIRY_TIME
+     int "Session expiry time (in hours)"
+     depends on !CONFIG_SSL_SKELETON_MODE
+     default 24 
+     help
+         The time (in hours) before a session expires. 
+         
+         A longer time means that the expensive parts of a handshake don't 
+         need to be run when a client reconnects later.
+ 
+         The default is 1 day.
+ 
+ config CONFIG_X509_MAX_CA_CERTS
+     int "Maximum number of certificate authorites"
+     default 4
+     depends on !CONFIG_SSL_SERVER_ONLY && !CONFIG_SSL_SKELETON_MODE
+     help
+         Determines the number of CA's allowed. 
+ 
+         Increase this figure if more trusted sites are allowed. Each
+         certificate adds about 300 bytes (when added).
+ 
+         The default is to allow four certification authorities.
+ 
+ config CONFIG_SSL_MAX_CERTS
+     int "Maximum number of chained certificates"
+     default 2
+     help
+         Determines the number of certificates used in a certificate
+         chain. The chain length must be at least 1.
+ 
+         Increase this figure if more certificates are to be added to the 
+         chain. Each certificate adds about 300 bytes (when added).
+ 
+         The default is to allow one certificate + 1 certificate in the chain
+         (which may be the certificate authority certificate).
+ 
+ config CONFIG_SSL_CTX_MUTEXING
+     bool "Enable SSL_CTX mutexing"
+     default n
+     help
+         Normally mutexing is not required - each SSL_CTX object can deal with
+         many SSL objects (as long as each SSL_CTX object is using a single
+         thread).
+ 
+         If the SSL_CTX object is not thread safe e.g. the case where a 
+         new thread is created for each SSL object, then mutexing is required. 
+ 
+         Select y when a mutex on the SSL_CTX object is required.
+ 
+ config CONFIG_USE_DEV_URANDOM
+     bool "Use /dev/urandom"
+     default y
+     depends on !CONFIG_PLATFORM_WIN32
+     help 
+         Use /dev/urandom. Otherwise a custom RNG is used.
+ 
+         This will be the default on most Linux systems.
+ 
+ config CONFIG_WIN32_USE_CRYPTO_LIB
+     bool "Use Win32 Crypto Library"
++    default y if !CONFIG_VISUAL_STUDIO_6_0
++    default n if CONFIG_VISUAL_STUDIO_6_0
+     depends on CONFIG_PLATFORM_WIN32
+     help 
+         Microsoft produce a Crypto API which requires the Platform SDK to be
+         installed. It's used for the RNG.
+ 
+-        This will be the default on most Win32 systems.
++        This will be the default on most Win32 systems. If using Visual Studio
++        6.0, then the SDK containing the crypto libraries must be used.
+ 
+ config CONFIG_OPENSSL_COMPATIBLE
+     bool "Enable openssl API compatibility"
+     default n
+     help 
+         To ease the porting of openssl applications, a subset of the openssl
+         API is wrapped around the axTLS API.
+ 
+         Note: not all the API is implemented, so parts may still break. And
+         it's definitely not 100% compatible.
+ 
+ config CONFIG_PERFORMANCE_TESTING
+     bool "Build the bigint performance test tool"
+     default n
+     help
+         Used for performance testing of bigint.
+ 
+         This is a testing tool and is normally disabled.
+ 
+ config CONFIG_SSL_TEST
+     bool "Build the SSL testing tool"
+     default n
+     depends on CONFIG_SSL_FULL_MODE
+     help
+         Used for sanity checking the SSL handshaking.
+ 
+         This is a testing tool and is normally disabled.
+ 
+ endmenu
+Index: httpd/Config.in
+===================================================================
+--- httpd/Config.in	(revision 130)
++++ httpd/Config.in	(revision 129)
+@@ -1,168 +1,168 @@
+ #
+ # For a description of the syntax of this configuration file,
+ # see scripts/config/Kconfig-language.txt
+ #
+ 
+ menu "Axhttpd Configuration"
+ depends on CONFIG_AXHTTPD
+ 
+ config CONFIG_HTTP_STATIC_BUILD
+     bool "Static Build"
+     default n
+     help
+         Select y if you want axhttpd to be a static build (i.e. don't use the
+         axtls shared library or dll).
+         
+ config CONFIG_HTTP_PORT
+     int "HTTP port"
+     default 80
+     help
+         The port number of the normal HTTP server. 
+ 
+         You must be a root user in order to use the default port.
+ 
+ config CONFIG_HTTP_HTTPS_PORT
+     int "HTTPS port"
+     default 443
+     help
+         The port number of the HTTPS server.
+ 
+         You must be a root user in order to use the default port.
+ 
+ config CONFIG_HTTP_SESSION_CACHE_SIZE
+     int "SSL session cache size"
+     default 5
+     help
+         The size of the SSL session cache.
+         
+         This is not actually related to the number of concurrent users, but 
+         for optimum performance they should be the same (with a penalty 
+         in memory usage).
+ 
+ config CONFIG_HTTP_WEBROOT
+     string "Web root location"
+     default "../www" if !CONFIG_PLATFORM_WIN32
+     default "..\\www" if CONFIG_PLATFORM_WIN32
+     help
+         The location of the web root in relation to axhttpd. This is 
+         the directory where index.html lives.
+ 
+ config CONFIG_HTTP_TIMEOUT
+     int "Timeout"
+     default 300
+     help
+         Set the timeout of a connection in seconds.
+ 
+ menu "CGI"
+-depends on !CONFIG_PLATFORM_WIN32
+ 
+ config CONFIG_HTTP_HAS_CGI
+     bool "Enable CGI"
+     default y
++    depends on !CONFIG_PLATFORM_WIN32
+     help
+         Enable the CGI capability. Not available on Win32 platforms.
+ 
+ config CONFIG_HTTP_CGI_EXTENSIONS
+     string "CGI File Extension(s)"
+     default ".lua,.lp"
+     depends on CONFIG_HTTP_HAS_CGI
+     help
+         Tell axhhtpd what file extension(s) are used for CGI.
+ 
+         This is a comma separated list - e.g. ".php,.pl" etc
+ 
+ config CONFIG_HTTP_ENABLE_LUA
+     bool "Enable Lua"
+     default y
+     depends on CONFIG_HTTP_HAS_CGI
+     help
+         Lua is a powerful, fast, light-weight, embeddable scripting language.
+ 
+         See http://www.lua.org for details.
+ 
+ config CONFIG_HTTP_LUA_PREFIX
+     string "Lua's Installation Prefix"
+     default "/usr/local"
+     depends on CONFIG_HTTP_ENABLE_LUA
+ 
+     help
+         The location of Lua's installation prefix. This is also necessary for
+         Lua's cgi launcher application.
+ 
+ config CONFIG_HTTP_LUA_CGI_LAUNCHER
+     string "CGI launcher location"
+     default "/bin/cgi.exe" if CONFIG_PLATFORM_CYGWIN
+     default "/bin/cgi" if !CONFIG_PLATFORM_CYGWIN
+     depends on CONFIG_HTTP_ENABLE_LUA
+     help
+         The location of LUA's CGI launcher application (after
+         the CONFIG_HTTP_LUA_PREFIX)
+ 
+ config CONFIG_HTTP_BUILD_LUA
+     bool "Build Lua"
+     default n
+     depends on CONFIG_HTTP_ENABLE_LUA
+     help
+         Build Lua and install in /usr/local/bin
+ 
+ endmenu
+ 
+ config CONFIG_HTTP_DIRECTORIES
+     bool "Enable Directory Listing"
+     default y
+     help
+         Enable directory listing.
+     
+ config CONFIG_HTTP_HAS_AUTHORIZATION
+     bool "Enable authorization"
+     default y
+     help
+         Pages/directories can have passwords associated with them.
+ 
+ config CONFIG_HTTP_USE_CHROOT
+     bool "Use chroot()"
+     default n
+     depends on !CONFIG_PLATFORM_WIN32
+     help
+         Use chroot() to switch directories with a certain degree of
+         protection. However access to /bin and /lib have to replaced with
+         duplicate binaries.
+         
+         This feature is normally disabled.
+ 
+ config CONFIG_HTTP_CHANGE_UID
+     bool "Change UID"
+     default n
+     depends on !CONFIG_PLATFORM_WIN32
+     help
+         Call setgid()/setuid() to disable access to protected files.
+         
+         This feature is normally disabled.
+ 
+ config CONFIG_HTTP_HAS_IPV6
+     bool "Enable IPv6"
+     default n
+     depends on !CONFIG_PLATFORM_WIN32
+     help
+         Use IPv6 instead of IPv4.
+     
+         Does not work under Win32
+ 
+ config CONFIG_HTTP_VERBOSE
+     bool "Verbose Mode"
+     default y if CONFIG_SSL_FULL_MODE
+     default n if !CONFIG_SSL_FULL_MODE
+     help
+         Enable extra statements used when using axhttpd.
+ 
+ config CONFIG_HTTP_IS_DAEMON
+     bool "Run as a daemon"
+     default n
+     depends on !CONFIG_PLATFORM_WIN32
+     help 
+         Run axhttpd as a background process.
+ 
+         Does not work under Win32
+ 
+ endmenu
+ 
+Index: config/makefile.conf
+===================================================================
+--- config/makefile.conf	(revision 130)
++++ config/makefile.conf	(revision 129)
+@@ -1,113 +1,120 @@
+ #
+ #  Copyright(C) 2006 Cameron Rich
+ #
+ #  This library is free software; you can redistribute it and/or modify
+ #  it under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2 of the License, or
+ #  (at your option) any later version.
+ #
+ #  This library is distributed in the hope that it will be useful,
+ #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ #  GNU Lesser General Public License for more details.
+ #
+ #  You should have received a copy of the GNU Lesser General Public License
+ #  along with this library; if not, write to the Free Software
+ #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ #
+ 
+ #
+ # A standard makefile for all makefiles
+ #
+ 
+ # All executables and libraries go here
+ STAGE=./_stage
+ 
+ ifneq ($(MAKECMDGOALS), clean)
+ 
+ # Give an initial rule
+ all: 
+ 
+ # Win32 
+ ifdef CONFIG_PLATFORM_WIN32
+ 
++ifdef CONFIG_VISUAL_STUDIO_6_0
++CONFIG_VISUAL_STUDIO_6_0_BASE_UNIX:=$(shell cygpath -u $(CONFIG_VISUAL_STUDIO_6_0_BASE))
++export INCLUDE=$(shell echo "$(CONFIG_VISUAL_STUDIO_6_0_BASE)\vc98\Include")
++export LIB=$(shell echo "$(CONFIG_VISUAL_STUDIO_6_0_BASE)\vc98\Lib")
++PATH:=$(CONFIG_VISUAL_STUDIO_6_0_BASE_UNIX)/common/msdev98/bin:$(CONFIG_VISUAL_STUDIO_6_0_BASE_UNIX)/vc98/bin:$(PATH)
++else
+ ifdef CONFIG_VISUAL_STUDIO_7_0
+ CONFIG_VISUAL_STUDIO_7_0_BASE_UNIX:=$(shell cygpath -u $(CONFIG_VISUAL_STUDIO_7_0_BASE))
+ export INCLUDE=$(shell echo "$(CONFIG_VISUAL_STUDIO_7_0_BASE)\vc7\include;$(CONFIG_VISUAL_STUDIO_7_0_BASE)\vc7\platformsdk\include")
+ export LIB=$(shell echo "$(CONFIG_VISUAL_STUDIO_7_0_BASE)\vc7\\platformsdk\lib;$(CONFIG_VISUAL_STUDIO_7_0_BASE)\vc7\lib")
+ PATH:=$(CONFIG_VISUAL_STUDIO_7_0_BASE_UNIX)/vc7/bin:$(CONFIG_VISUAL_STUDIO_7_0_BASE_UNIX)/common7/ide:$(PATH)
+ else 
+ ifdef CONFIG_VISUAL_STUDIO_8_0
+ CONFIG_VISUAL_STUDIO_8_0_BASE_UNIX:=$(shell cygpath -u $(CONFIG_VISUAL_STUDIO_8_0_BASE))
+ export INCLUDE=$(shell echo "$(CONFIG_VISUAL_STUDIO_8_0_BASE)\vc\include;$(CONFIG_VISUAL_STUDIO_8_0_BASE)\vc\platformsdk\include")
+ export LIB=$(shell echo "$(CONFIG_VISUAL_STUDIO_8_0_BASE)\vc\platformsdk\lib;$(CONFIG_VISUAL_STUDIO_8_0_BASE)\vc\lib")
+ PATH:=$(CONFIG_VISUAL_STUDIO_8_0_BASE_UNIX)/vc/bin:$(CONFIG_VISUAL_STUDIO_8_0_BASE_UNIX)/common7/ide:$(PATH)
+ stuff:
+ 	@echo $(INCLUDE)
+ endif
+ endif
++endif
+ 
+ CC=cl.exe
+ LD=link.exe
+ AXTLS_INCLUDE=$(shell cygpath -w $(AXTLS_HOME))
+ CFLAGS+=/nologo /W3 /D"WIN32" /D"_MBCS" /D"_CONSOLE" /D"_CRT_SECURE_NO_DEPRECATE" /FD /I"$(AXTLS_INCLUDE)crypto" /I"$(AXTLS_INCLUDE)ssl" /I"$(AXTLS_INCLUDE)config" /c 
+-LDFLAGS=/nologo /subsystem:console /machine:I386
++LDFLAGS=/nologo /subsystem:console /machine:I386 Advapi32.lib
+ LDSHARED = /dll
+ AR=lib /nologo
+ 
+ ifdef CONFIG_DEBUG
+ 	CFLAGS += /Gm /Zi /Od /D "_DEBUG"
+ 	LDFLAGS += /debug /incremental:yes 
+ else
+ 	CFLAGS += /O2 /D "NDEBUG"
+ 	LDFLAGS += /incremental:no 
+ endif
+ 
+ else    # Not Win32
+ 
+ -include .depend
+ 
+ CFLAGS += -I$(AXTLS_HOME)/config -I$(AXTLS_HOME)/ssl -I$(AXTLS_HOME)/crypto
+ LD=$(CC)
+ 
+ # Solaris
+ ifdef CONFIG_PLATFORM_SOLARIS
+ CFLAGS += -DCONFIG_PLATFORM_SOLARIS
+ LDFLAGS += -lsocket -lnsl -lc
+ LDSHARED = -G
+ # Linux/Cygwin
+ else 
+ CFLAGS += -Wall -Wstrict-prototypes -Wshadow
+ LDSHARED = -shared
+ 
+ # Linux
+ ifndef CONFIG_PLATFORM_CYGWIN
+ # CFLAGS += -fPIC 
+ 
+ # Cygwin
+ else
+ CFLAGS += -DCONFIG_PLATFORM_CYGWIN
+ endif
+ endif
+ 
+ ifdef CONFIG_DEBUG
+ CFLAGS += -g
+ else
+ LDFLAGS += -s
+ ifdef CONFIG_PLATFORM_SOLARIS
+ CFLAGS += -O 
+ else
+ CFLAGS += -O3
+ endif
+ 
+ endif	# CONFIG_DEBUG
+ endif   # WIN32
+ 
+ CFLAGS+=$(subst ",, $(strip $(CONFIG_EXTRA_CFLAGS_OPTIONS)))
+ LDFLAGS+=$(subst ",, $(strip $(CONFIG_EXTRA_LDFLAGS_OPTIONS)))
+ 
+ endif   # not 'clean'
+ 
+ clean::
+ 	-@rm -f *.o *.obj core* *.out *~ \.depend vc*0* 
+ 
+Index: config/win32config
+===================================================================
+--- config/win32config	(revision 130)
++++ config/win32config	(revision 129)
+@@ -1,118 +1,120 @@
+ #
+ # Automatically generated make config: don't edit
+ #
+ HAVE_DOT_CONFIG=y
+ # CONFIG_PLATFORM_LINUX is not set
+ # CONFIG_PLATFORM_CYGWIN is not set
+ # CONFIG_PLATFORM_SOLARIS is not set
+ CONFIG_PLATFORM_WIN32=y
+ 
+ #
+ # General Configuration
+ #
+ PREFIX=""
+ # CONFIG_DEBUG is not set
+ # CONFIG_STRIP_UNWANTED_SECTIONS is not set
+ 
+ #
+ # Microsoft Compiler Options
+ #
++# CONFIG_VISUAL_STUDIO_6_0 is not set
+ # CONFIG_VISUAL_STUDIO_7_0 is not set
+ CONFIG_VISUAL_STUDIO_8_0=y
++CONFIG_VISUAL_STUDIO_6_0_BASE=""
+ CONFIG_VISUAL_STUDIO_7_0_BASE=""
+ CONFIG_VISUAL_STUDIO_8_0_BASE="c:\\Program Files\\Microsoft Visual Studio 8"
+ CONFIG_EXTRA_CFLAGS_OPTIONS=""
+ CONFIG_EXTRA_LDFLAGS_OPTIONS=""
+ 
+ #
+ # SSL Library
+ #
+ # CONFIG_SSL_SERVER_ONLY is not set
+ # CONFIG_SSL_CERT_VERIFICATION is not set
+ # CONFIG_SSL_ENABLE_CLIENT is not set
+ CONFIG_SSL_FULL_MODE=y
+ # CONFIG_SSL_SKELETON_MODE is not set
+ # CONFIG_SSL_PROT_LOW is not set
+ CONFIG_SSL_PROT_MEDIUM=y
+ # CONFIG_SSL_PROT_HIGH is not set
+ CONFIG_SSL_USE_DEFAULT_KEY=y
+ CONFIG_SSL_ENABLE_V23_HANDSHAKE=y
+ CONFIG_SSL_HAS_PEM=y
+ CONFIG_SSL_USE_PKCS12=y
+ CONFIG_SSL_EXPIRY_TIME=24
+ CONFIG_X509_MAX_CA_CERTS=4
+ CONFIG_SSL_MAX_CERTS=2
+ # CONFIG_SSL_CTX_MUTEXING is not set
+ # CONFIG_USE_DEV_URANDOM is not set
+ CONFIG_WIN32_USE_CRYPTO_LIB=y
+ # CONFIG_OPENSSL_COMPATIBLE is not set
+ # CONFIG_PERFORMANCE_TESTING is not set
+ # CONFIG_SSL_TEST is not set
+ CONFIG_AXHTTPD=y
+ 
+ #
+ # Axhttpd Configuration
+ #
+ # CONFIG_HTTP_STATIC_BUILD is not set
+ CONFIG_HTTP_PORT=80
+ CONFIG_HTTP_HTTPS_PORT=443
+ CONFIG_HTTP_SESSION_CACHE_SIZE=5
+ CONFIG_HTTP_WEBROOT="www"
+ CONFIG_HTTP_TIMEOUT=300
+ 
+ #
+ # CGI
+ #
+ # CONFIG_HTTP_HAS_CGI is not set
+ CONFIG_HTTP_CGI_EXTENSIONS=""
+ # CONFIG_HTTP_ENABLE_LUA is not set
+ CONFIG_HTTP_LUA_PREFIX=""
+ CONFIG_HTTP_LUA_CGI_LAUNCHER=""
+ # CONFIG_HTTP_BUILD_LUA is not set
+ CONFIG_HTTP_DIRECTORIES=y
+ CONFIG_HTTP_HAS_AUTHORIZATION=y
+ # CONFIG_HTTP_USE_CHROOT is not set
+ # CONFIG_HTTP_CHANGE_UID is not set
+ # CONFIG_HTTP_HAS_IPV6 is not set
+ CONFIG_HTTP_VERBOSE=y
+ # CONFIG_HTTP_IS_DAEMON is not set
+ 
+ #
+ # Language Bindings
+ #
+ # CONFIG_BINDINGS is not set
+ # CONFIG_CSHARP_BINDINGS is not set
+ # CONFIG_VBNET_BINDINGS is not set
+ CONFIG_DOT_NET_FRAMEWORK_BASE=""
+ # CONFIG_JAVA_BINDINGS is not set
+ CONFIG_JAVA_HOME=""
+ # CONFIG_PERL_BINDINGS is not set
+ CONFIG_PERL_CORE=""
+ CONFIG_PERL_LIB=""
+ # CONFIG_LUA_BINDINGS is not set
+ CONFIG_LUA_CORE=""
+ 
+ #
+ # Samples
+ #
+ CONFIG_SAMPLES=y
+ CONFIG_C_SAMPLES=y
+ # CONFIG_CSHARP_SAMPLES is not set
+ # CONFIG_VBNET_SAMPLES is not set
+ # CONFIG_JAVA_SAMPLES is not set
+ # CONFIG_PERL_SAMPLES is not set
+ # CONFIG_LUA_SAMPLES is not set
+ 
+ #
+ # BigInt Options
+ #
+ # CONFIG_BIGINT_CLASSICAL is not set
+ # CONFIG_BIGINT_MONTGOMERY is not set
+ CONFIG_BIGINT_BARRETT=y
+ CONFIG_BIGINT_CRT=y
+ # CONFIG_BIGINT_KARATSUBA is not set
+ MUL_KARATSUBA_THRESH=0
+ SQU_KARATSUBA_THRESH=0
+ CONFIG_BIGINT_SLIDING_WINDOW=y
+ CONFIG_BIGINT_SQUARE=y
+ # CONFIG_BIGINT_CHECK_ON is not set
+Index: config/Config.in
+===================================================================
+--- config/Config.in	(revision 130)
++++ config/Config.in	(revision 129)
+@@ -1,117 +1,127 @@
+ #
+ # For a description of the syntax of this configuration file,
+ # see scripts/config/Kconfig-language.txt
+ #
+ 
+ mainmenu "axTLS Configuration"
+ 
+ config HAVE_DOT_CONFIG
+     bool
+     default y
+ 
+ choice 
+     prompt "Platform"
+     default CONFIG_PLATFORM_LINUX
+ 
+ config CONFIG_PLATFORM_LINUX
+     bool "Linux"
+ 
+ config CONFIG_PLATFORM_CYGWIN
+     bool "Cygwin"
+ 
+ config CONFIG_PLATFORM_SOLARIS
+     bool "Solaris"
+ 
+ config CONFIG_PLATFORM_WIN32
+     bool "Win32"
+ 
+ endchoice 
+ 
+ menu "General Configuration"
+ 
+ config PREFIX
+     string "axTLS installation prefix"
+     depends on !CONFIG_PLATFORM_WIN32
+     default "/usr/local"
+     help
+       Define your directory to install axTLS files/subdirs in.
+ 
+ config CONFIG_DEBUG
+     bool "Build axTLS with Debugging symbols"
+     default n
+     help
+       Say Y here if you wish to compile axTLS with debugging symbols.
+       This will allow you to use a debugger to examine axTLS internals.  
+       This increases the size of the binary considerably and should only be 
+       used when doing development.
+       If you are doing development and want to debug axTLS, answer Y.
+ 
+       Most people should answer N.
+ 
+ config CONFIG_STRIP_UNWANTED_SECTIONS
+     depends on !CONFIG_PLATFORM_WIN32 && !CONFIG_DEBUG
+     bool "Strip unwanted sections from elf binaries"
+     default y
+     help
+         Strip unwanted sections from the resulting binaries
+ 
+ menu "Microsoft Compiler Options"
+ depends on CONFIG_PLATFORM_WIN32
+ 
+ choice 
+     prompt "Compiler"
+     depends on CONFIG_PLATFORM_WIN32
+     default CONFIG_VISUAL_STUDIO_7_0
+ 
++config CONFIG_VISUAL_STUDIO_6_0
++    bool "Visual Studio 6.0 (VC98)"
++    help
++        Use Microsoft's Visual Studio 6.0 platform.
++
+ config CONFIG_VISUAL_STUDIO_7_0
+     bool "Visual Studio 7.0 (2003)"
+     help 
+         Use Microsoft's Visual Studio 2003 platform.
+ 
+ config CONFIG_VISUAL_STUDIO_8_0
+     bool "Visual Studio 8.0 (2005)"
+     help 
+         Use Microsoft's Visual Studio 2005 platform.
+ 
+ endchoice
+ 
++config CONFIG_VISUAL_STUDIO_6_0_BASE
++    string "Base"
++    depends on CONFIG_VISUAL_STUDIO_6_0
++    default "c:\\Program Files\\Microsoft Visual Studio"
++
+ config CONFIG_VISUAL_STUDIO_7_0_BASE
+     string "Base"
+     depends on CONFIG_VISUAL_STUDIO_7_0
+     default "c:\\Program Files\\Microsoft Visual Studio .NET 2003"
+ 
+ config CONFIG_VISUAL_STUDIO_8_0_BASE
+     string "Base"
+     depends on CONFIG_VISUAL_STUDIO_8_0
+     default "c:\\Program Files\\Microsoft Visual Studio 8"
+ 
+ endmenu
+ 
+ config CONFIG_EXTRA_CFLAGS_OPTIONS
+     string "Any extra CFLAGS options for the compiler?"
+     help
+         Do you want to pass any extra CFLAGS options to the compiler as  
+         you build axTLS? If so, this is the option for you...  For
+         example, if you want to add some simple compiler switches (like
+         -march=i686), or check for warnings using -Werror, just those 
+         options here.
+ 
+ config CONFIG_EXTRA_LDFLAGS_OPTIONS
+     string "Any extra LDFLAGS options for the compiler?"
+     help
+         Do you want to pass any extra LDFLAGS options to the compiler?
+ 
+ endmenu
+ 
+ source ssl/Config.in
+ config CONFIG_AXHTTPD
+     bool "Enable HTTP/HTTPS Web Server"
+     default y
+     help
+         Build the AXHTTPD web server
+ 
+ source httpd/Config.in
+ source bindings/Config.in
+ source samples/Config.in
+ source ssl/BigIntConfig.in
+ 
+Index: config/linuxconfig
+===================================================================
+--- config/linuxconfig	(revision 130)
++++ config/linuxconfig	(revision 129)
+@@ -1,112 +1,114 @@
+ #
+ # Automatically generated make config: don't edit
+ #
+ HAVE_DOT_CONFIG=y
+ CONFIG_PLATFORM_LINUX=y
+ # CONFIG_PLATFORM_CYGWIN is not set
+ # CONFIG_PLATFORM_SOLARIS is not set
+ # CONFIG_PLATFORM_WIN32 is not set
+ 
+ #
+ # General Configuration
+ #
+ PREFIX="/usr/local"
+ # CONFIG_DEBUG is not set
++# CONFIG_VISUAL_STUDIO_6_0 is not set
+ # CONFIG_VISUAL_STUDIO_7_0 is not set
+ # CONFIG_VISUAL_STUDIO_8_0 is not set
++CONFIG_VISUAL_STUDIO_6_0_BASE=""
+ CONFIG_VISUAL_STUDIO_7_0_BASE=""
+ CONFIG_VISUAL_STUDIO_8_0_BASE=""
+ CONFIG_EXTRA_CFLAGS_OPTIONS=""
+ CONFIG_EXTRA_LDFLAGS_OPTIONS=""
+ 
+ #
+ # SSL Library
+ #
+ # CONFIG_SSL_SERVER_ONLY is not set
+ # CONFIG_SSL_CERT_VERIFICATION is not set
+ # CONFIG_SSL_ENABLE_CLIENT is not set
+ CONFIG_SSL_FULL_MODE=y
+ # CONFIG_SSL_SKELETON_MODE is not set
+ # CONFIG_SSL_PROT_LOW is not set
+ CONFIG_SSL_PROT_MEDIUM=y
+ # CONFIG_SSL_PROT_HIGH is not set
+ CONFIG_SSL_USE_DEFAULT_KEY=y
+ CONFIG_SSL_ENABLE_V23_HANDSHAKE=y
+ CONFIG_SSL_HAS_PEM=y
+ CONFIG_SSL_USE_PKCS12=y
+ CONFIG_SSL_EXPIRY_TIME=24
+ CONFIG_X509_MAX_CA_CERTS=4
+ CONFIG_SSL_MAX_CERTS=2
+ # CONFIG_SSL_CTX_MUTEXING is not set
+ CONFIG_USE_DEV_URANDOM=y
+ # CONFIG_WIN32_USE_CRYPTO_LIB is not set
+ CONFIG_OPENSSL_COMPATIBLE=y
+ # CONFIG_PERFORMANCE_TESTING is not set
+ # CONFIG_SSL_TEST is not set
+ CONFIG_AXHTTPD=y
+ 
+ #
+ # Axhttpd Configuration
+ #
+ # CONFIG_HTTP_STATIC_BUILD is not set
+ CONFIG_HTTP_PORT=80
+ CONFIG_HTTP_HTTPS_PORT=443
+ CONFIG_HTTP_SESSION_CACHE_SIZE=5
+ CONFIG_HTTP_WEBROOT="../www"
+ CONFIG_HTTP_TIMEOUT=300
+ 
+ #
+ # CGI
+ #
+ CONFIG_HTTP_HAS_CGI=y
+ CONFIG_HTTP_CGI_EXTENSIONS=".lua,.lp"
+ CONFIG_HTTP_ENABLE_LUA=y
+ CONFIG_HTTP_LUA_PREFIX="/usr/local"
+ # CONFIG_HTTP_BUILD_LUA is not set
+ CONFIG_HTTP_DIRECTORIES=y
+ CONFIG_HTTP_HAS_AUTHORIZATION=y
+ # CONFIG_HTTP_USE_CHROOT is not set
+ # CONFIG_HTTP_CHANGE_UID is not set
+ # CONFIG_HTTP_HAS_IPV6 is not set
+ # CONFIG_HTTP_VERBOSE is not set
+ # CONFIG_HTTP_IS_DAEMON is not set
+ 
+ #
+ # Language Bindings
+ #
+ CONFIG_BINDINGS=y
+ # CONFIG_CSHARP_BINDINGS is not set
+ # CONFIG_VBNET_BINDINGS is not set
+ CONFIG_DOT_NET_FRAMEWORK_BASE=""
+ # CONFIG_JAVA_BINDINGS is not set
+ CONFIG_JAVA_HOME=""
+ # CONFIG_PERL_BINDINGS is not set
+ CONFIG_PERL_CORE=""
+ CONFIG_PERL_LIB=""
+ # CONFIG_LUA_BINDINGS is not set
+ CONFIG_LUA_CORE=""
+ 
+ #
+ # Samples
+ #
+ CONFIG_SAMPLES=y
+ CONFIG_C_SAMPLES=y
+ # CONFIG_CSHARP_SAMPLES is not set
+ # CONFIG_VBNET_SAMPLES is not set
+ # CONFIG_JAVA_SAMPLES is not set
+ # CONFIG_PERL_SAMPLES is not set
+ # CONFIG_LUA_SAMPLES is not set
+ 
+ #
+ # BigInt Options
+ #
+ # CONFIG_BIGINT_CLASSICAL is not set
+ # CONFIG_BIGINT_MONTGOMERY is not set
+ CONFIG_BIGINT_BARRETT=y
+ CONFIG_BIGINT_CRT=y
+ # CONFIG_BIGINT_KARATSUBA is not set
+ MUL_KARATSUBA_THRESH=0
+ SQU_KARATSUBA_THRESH=0
+ CONFIG_BIGINT_SLIDING_WINDOW=y
+ CONFIG_BIGINT_SQUARE=y
+ # CONFIG_BIGINT_CHECK_ON is not set
+Index: crypto/crypto.h
+===================================================================
+--- crypto/crypto.h	(revision 130)
++++ crypto/crypto.h	(revision 129)
+@@ -1,154 +1,154 @@
+ /*
+  *  Copyright(C) 2006 Cameron Rich
+  *
+  *  This library is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU Lesser General Public License as published by
+  *  the Free Software Foundation; either version 2 of the License, or
+  *  (at your option) any later version.
+  *
+  *  This library is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU Lesser General Public License for more details.
+  *
+  *  You should have received a copy of the GNU Lesser General Public License
+  *  along with this library; if not, write to the Free Software
+  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  */
+ 
+ /**
+  * @file crypto.h
+  */
+ 
+ #ifndef HEADER_CRYPTO_H
+ #define HEADER_CRYPTO_H
+ 
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
++#include "os_port.h"
+ #include "config.h"
+-#include "os_port.h"
+ 
+ /* enable features based on a 'super-set' capbaility. */
+ #if defined(CONFIG_SSL_FULL_MODE) 
+ #define CONFIG_SSL_ENABLE_CLIENT
+ #define CONFIG_SSL_CERT_VERIFICATION
+ #elif defined(CONFIG_SSL_ENABLE_CLIENT)
+ #define CONFIG_SSL_CERT_VERIFICATION
+ #endif
+ 
+ /**************************************************************************
+  * AES declarations 
+  **************************************************************************/
+ 
+ #define AES_MAXROUNDS			14
+ #define AES_BLOCKSIZE           16
+ #define AES_IV_SIZE             16
+ 
+ typedef struct aes_key_st 
+ {
+     uint16_t rounds;
+     uint16_t key_size;
+     uint32_t ks[(AES_MAXROUNDS+1)*8];
+     uint8_t iv[AES_IV_SIZE];
+ } AES_CTX;
+ 
+ typedef enum
+ {
+     AES_MODE_128,
+     AES_MODE_256
+ } AES_MODE;
+ 
+ void AES_set_key(AES_CTX *ctx, const uint8_t *key, 
+         const uint8_t *iv, AES_MODE mode);
+ void AES_cbc_encrypt(AES_CTX *ctx, const uint8_t *msg, 
+         uint8_t *out, int length);
+ void AES_cbc_decrypt(AES_CTX *ks, const uint8_t *in, uint8_t *out, int length);
+ void AES_convert_key(AES_CTX *ctx);
+ 
+ /**************************************************************************
+  * RC4 declarations 
+  **************************************************************************/
+ 
+ typedef struct 
+ {
+     uint8_t x, y, m[256];
+ } RC4_CTX;
+ 
+ void RC4_setup(RC4_CTX *s, const uint8_t *key, int length);
+ void RC4_crypt(RC4_CTX *s, const uint8_t *msg, uint8_t *data, int length);
+ 
+ /**************************************************************************
+  * SHA1 declarations 
+  **************************************************************************/
+ 
+ #define SHA1_SIZE   20
+ 
+ /*
+  *  This structure will hold context information for the SHA-1
+  *  hashing operation
+  */
+ typedef struct 
+ {
+     uint32_t Intermediate_Hash[SHA1_SIZE/4]; /* Message Digest */
+     uint32_t Length_Low;            /* Message length in bits */
+     uint32_t Length_High;           /* Message length in bits */
+     uint16_t Message_Block_Index;   /* Index into message block array   */
+     uint8_t Message_Block[64];      /* 512-bit message blocks */
+ } SHA1_CTX;
+ 
+ void SHA1_Init(SHA1_CTX *);
+ void SHA1_Update(SHA1_CTX *, const uint8_t * msg, int len);
+ void SHA1_Final(uint8_t *digest, SHA1_CTX *);
+ 
+ /**************************************************************************
+  * MD2 declarations 
+  **************************************************************************/
+ 
+ #define MD2_SIZE 16
+ 
+ typedef struct
+ {
+     unsigned char cksum[16];    /* checksum of the data block */
+     unsigned char state[48];    /* intermediate digest state */
+     unsigned char buffer[16];   /* data block being processed */
+     int left;                   /* amount of data in buffer */
+ } MD2_CTX;
+ 
+ EXP_FUNC void STDCALL MD2_Init(MD2_CTX *ctx);
+ EXP_FUNC void STDCALL MD2_Update(MD2_CTX *ctx, const uint8_t *input, int ilen);
+ EXP_FUNC void STDCALL MD2_Final(uint8_t *digest, MD2_CTX *ctx);
+ 
+ /**************************************************************************
+  * MD5 declarations 
+  **************************************************************************/
+ 
+ #define MD5_SIZE    16
+ 
+ typedef struct 
+ {
+   uint32_t state[4];        /* state (ABCD) */
+   uint32_t count[2];        /* number of bits, modulo 2^64 (lsb first) */
+   uint8_t buffer[64];       /* input buffer */
+ } MD5_CTX;
+ 
+ EXP_FUNC void STDCALL MD5_Init(MD5_CTX *);
+ EXP_FUNC void STDCALL MD5_Update(MD5_CTX *, const uint8_t *msg, int len);
+ EXP_FUNC void STDCALL MD5_Final(uint8_t *digest, MD5_CTX *);
+ 
+ /**************************************************************************
+  * HMAC declarations 
+  **************************************************************************/
+ void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, 
+         int key_len, uint8_t *digest);
+ void hmac_sha1(const uint8_t *msg, int length, const uint8_t *key, 
+         int key_len, uint8_t *digest);
+ 
+ 
+ 
+ #ifdef __cplusplus
+ }
+ #endif
+ 
+ #endif 
+Index: www/lua/tcgi1.lua
+===================================================================
+--- www/lua/tcgi1.lua	(nonexistent)
++++ www/lua/tcgi1.lua	(revision 129)
+@@ -0,0 +1,9 @@
++io.stdout:write"Content-type: text/html\n\n"
++
++for i,v in pairs{"QUERY_STRING", } do
++	io.stdout:write (string.format ("%s = %s", v, os.getenv(v) or '&nbsp;'))
++end
++io.stdout:write "<br>\n"
++
++local post_data = io.stdin:read"*a"
++io.stdout:write (string.format ("post_data = {%s}", post_data))

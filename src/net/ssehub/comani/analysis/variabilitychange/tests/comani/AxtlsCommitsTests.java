@@ -51,7 +51,9 @@ public class AxtlsCommitsTests extends AbstractCommitsTests {
     /**
      * The names of the test commit files located in the {@link #TEST_COMMITS_DIRECTORY}.
      */
-    private static final String[] TEST_COMMIT_FILE_NAMES = {"r98.txt"};
+    private static final String[] TEST_COMMIT_FILE_NAMES = {"r79.txt", "r88.txt", "r91.txt", "r98.txt", "r100.txt",
+        "r101.txt", "r122.txt", "r130.txt", "r153.txt", "r169.txt", "r176.txt", "r198.txt", "r201.txt", "r213.txt",
+        "r217.txt", "r218.txt", "r226.txt", "r234.txt", "r275.txt", "r276.txt"};
     
     /**
      * The regular expression for identifying variability model files in the axTLS project.
@@ -68,6 +70,8 @@ public class AxtlsCommitsTests extends AbstractCommitsTests {
      */
     private static final String BUILD_FILES_REGEX = ".*/(Makefile|Kbuild)((\\.|\\-|\\_|\\+|\\~).*)?";
     // Possible addition: |(.*/.*\\.(mak|make)))
+    //                    | makefile.*
+    //                    | in general all GNU default makefile names
     
     /**
      * The name of the test commit file currently under test.
