@@ -34,7 +34,7 @@ import net.ssehub.comani.utility.FileUtilities;
  * @author Christian Kroeher
  *
  */
-public class AbstractCommitsTests {
+public abstract class AbstractCommitsTests {
     
     /**
      * The return value of the {@link VariabilityChangeAnalyzer#analyze()} method indicating whether the extraction
