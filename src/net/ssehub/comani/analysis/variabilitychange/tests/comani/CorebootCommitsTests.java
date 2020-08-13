@@ -64,7 +64,8 @@ public class CorebootCommitsTests extends AbstractLinuxLikeTests {
     private static final String[] TEST_COMMIT_FILE_NAMES = {"000bf83.txt", "00b579a.txt", "2a19fb1.txt", "2b7c88f.txt",
         "9d6be3e.txt", "0010bf6.txt", "0054afa.txt", "0092c99.txt", "00093a8.txt", "398e84c.txt", "480b37f.txt",
         "00636b0.txt", "00809eb.txt", "005028e.txt", "006364e.txt", "74234eb.txt", "9855895.txt", "c3e728f.txt",
-        "eedf7a6.txt", "f040858.txt"};
+        "eedf7a6.txt", "f040858.txt", "07f5b62.txt"};
+    
     
     /**
      * The name of the test commit file currently under test.
