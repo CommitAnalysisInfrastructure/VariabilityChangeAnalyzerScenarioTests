@@ -275,7 +275,7 @@ public abstract class AbstractCommitsTests {
      * @param element the {@link AnalysisResultElement} for which the number provided by the analysis results for the
      *        given commit shall be returned
      * @return the number greater than or equal to zero representing the number of counted changed elements or
-     *         <tt>-1</tt> if the given commit file name or {@link AnalysisResultElement} is not part of the 
+     *         <i>-1</i> if the given commit file name or {@link AnalysisResultElement} is not part of the 
      *         {@link #parsedAnalysisResults} 
      */
     protected int getAnalysisResultValue(String testCommitFileName, AnalysisResultElement element) {
